@@ -1,7 +1,6 @@
 // --- START OF CODE TO PUT IN INSPECT CONSOLE ---
-function login_bot() {
+function login_bot(tok) {
     let gateway_url = "https://discordapp.com/api/v9/gateway/bot";
-    let tok = prompt('bot token: ');
     let request = new XMLHttpRequest();
     request.withCredentials = true;
     request.open("GET", gateway_url);
