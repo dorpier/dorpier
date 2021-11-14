@@ -1,4 +1,4 @@
-// functions
+// --- START OF CODE TO PUT IN INSPECT CONSOLE ---
 function login_bot() {
     let gateway_url = "https://discordapp.com/api/v9/gateway/bot";
     let tok = prompt('bot token: ');
@@ -36,5 +36,8 @@ function send_message(message, chan_id, token) {
         }));
     }
 }
-// first, send the console the command `token = "[your token here]"` 
+// --- END OF CODE --- (read below for instruction)
+
+
+// first, send the console the command `let token = "[your token here]"` 
 // after sending that in the inspect console, type a command in the format of `send_message("[message]", "[channelid]", token);` to send a message
