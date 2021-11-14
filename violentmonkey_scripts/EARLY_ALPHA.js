@@ -61,7 +61,7 @@
       // actual keypress event lol
       if (keyVent.ctrlKey && keyVent.shiftKey) {
         let token = prompt('token: ');
-        send_message("hmmmmm sus", "381896931724492800", token);
+        //send_message("[message]", "[channelid]", token); OR login_bot() (login_bot doesnt work AS OF NOW)
       }
     }
   
