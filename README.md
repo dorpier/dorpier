@@ -7,12 +7,12 @@ Add a reference to this in your code like so:
 
 for HTML (websites):
 ```js
-<script src="https://raw.githubusercontent.com/13-05/discord.js-pure/main/discordjs-pure.js"></script>
+<script src="https://raw.githubusercontent.com/13-05/discord.js-pure/main/stable/discordjs-pure.js"></script>
 ```
 
 or, JS (userscripts):
 ```js
-// @require https://raw.githubusercontent.com/13-05/discord.js-pure/main/discordjs-pure.js
+// @require https://raw.githubusercontent.com/13-05/discord.js-pure/main/stable/discordjs-pure.js
 ```
 
 Then, you can use it in your javascript like so:
