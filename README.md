@@ -15,7 +15,7 @@ or, JS (userscripts):
 //@require https://raw.githubusercontent.com/13-05/discord.js-pure/main/discordjs-pure.js
 ```
 
-Then, you can use it like so:
+Then, you can use it in your javascript like so:
 
 ```js
 client.send_message("sup world!", "694201234564206969", "osdf.-sdfKLFJDSkkl-LSKDjldf.dsdjklSKLDJFsl"); //message, channelid, token
