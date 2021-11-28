@@ -1,0 +1,85 @@
+// ==UserScript==
+// @name        Developing djs-pure
+// @match       *://*/*
+// @grant       none
+// @version     1.0
+// @author      -
+// @description Me testing and developing discord.js-pure.
+// ==/UserScript==
+// START.
+function client() {}
+client.send_message = function(message, chan_id, token) {
+    if (!token) {
+        console.warn("[discordjs-pure] no token was provided. aborting message send!");
+    }
+    if (!message) {
+        console.warn("[discordjs-pure] no message was specified, aborting message send!");
+    }
+    if (!chan_id) {
+        console.warn("[discordjs-pure] no channel id was specified, aborting message send!");
+    }
+    if (token && message && chan_id) {
+        let post_url = `https://discord.com/api/v9/channels/${chan_id}/messages`;
+        let once = 1;
+        for (let i = 0; i < once; i++) {
+            let request = new XMLHttpRequest();
+            request.withCredentials = true;
+            request.open("POST", post_url);
+            request.setRequestHeader("authorization", token);
+            request.setRequestHeader("accept", "/");
+            request.setRequestHeader("authority", "discordapp.com");
+            request.setRequestHeader("content-type", "application/json");
+            request.send(JSON.stringify({
+                content: message
+            }));
+        }
+    } else {
+        console.warn("[discordjs-pure] message send aborted!");
+    }
+
+}
+
+client.spam_message = function(message, amount, chan_id, token) {
+    if (!message) {
+        console.warn("[discordjs-pure] no message was provided. aborting message spam!");
+    }
+    if (!amount) {
+        console.warn("[discordjs-pure] no amount was provided. aborting message spam!");
+    }
+    if (!chan_id) {
+        console.warn("[discordjs-pure] no channel id was provided. aborting message spam!");
+    }
+    if (!token) {
+        console.warn("[discordjs-pure] no token was provided. aborting message spam!");
+    }
+    if (message && amount && chan_id && token) {
+        let post_url = `https://discord.com/api/v9/channels/${chan_id}/messages`;
+        for (let i = 0; i < amount; i++) {
+            let request = new XMLHttpRequest();
+            request.withCredentials = true;
+            request.open("POST", post_url);
+            request.setRequestHeader("authorization", token);
+            request.setRequestHeader("accept", "/");
+            request.setRequestHeader("authority", "discordapp.com");
+            request.setRequestHeader("content-type", "application/json");
+            request.send(JSON.stringify({
+                content: message
+            }));
+        }
+    }
+}
+// END.
+KeyEvent = (typeof KeyEvent === "object") ? KeyEvent : [];
+const LEFT_KEY = KeyEvent.DOM_VK_LEFT || 37;
+const RIGHT_KEY = KeyEvent.DOM_VK_RIGHT || 39;
+
+window.addEventListener("keydown", keyboardHandler, false);
+
+function keyboardHandler(keyCheck) {
+    var bBlockDefaultAction = false;
+    // actual keypress event lol
+    if (keyCheck.ctrlKey && keyCheck.shiftKey) {
+        // client.send_message("ok", "124124124234235234", "LSKDfjsdklfjsdlfSDFKsdjhfslDKf");
+        // client.spam_message("ez", "123412432534623462", "fldksajfLSKDFJDSFlkSDFJSDKLFJS");
+    }
+}
