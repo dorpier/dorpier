@@ -12,7 +12,7 @@ for HTML (websites):
 
 or, JS (userscripts):
 ```js
-//@require https://raw.githubusercontent.com/13-05/discord.js-pure/main/discordjs-pure.js
+// @require https://raw.githubusercontent.com/13-05/discord.js-pure/main/discordjs-pure.js
 ```
 
 Then, you can use it in your javascript like so:
