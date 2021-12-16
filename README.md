@@ -21,6 +21,13 @@ Then, you can use it in your javascript like so:
 client.send_message("sup world!", "694201234564206969", "osdf.-sdfKLFJDSkkl-LSKDjldf.dsdjklSKLDJFsl"); //message, channelid, token
 ```
 
+# Checklist/TODOs
+- [x] Sending messages (text)
+- [ ] Add `on_message()` event and other gateway ones
+- [ ] Login feature
+- [ ] Getting guild members
+- [ ] More features over all
+
 ## Tests
 My userscript tests with this code can be found at `https://github.com/13-05/discord.js-pure/blob/main/testing/testing-djs-pure.user.js`.
 
