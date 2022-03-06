@@ -4,13 +4,6 @@ A Discord API wrapper, written in pure javascript! You could run it in the inspe
 
 ## Usage
 Add a reference to this in your code like so:
-
-for HTML (websites):
-```js
-<script src="https://raw.githubusercontent.com/13-05/discord.js-pure/main/stable/discordjs-pure.js"></script>
-```
-
-or, JS (userscripts):
 ```js
 // @require https://raw.githubusercontent.com/13-05/discord.js-pure/main/stable/discordjs-pure.js
 ```
@@ -18,13 +11,39 @@ or, JS (userscripts):
 Then, you can use it in your javascript like so:
 
 ```js
-client.send_message("sup world!", "694201234564206969", "osdf.-sdfKLFJDSkkl-LSKDjldf.dsdjklSKLDJFsl"); //message, channelid, token
+// ==UserScript==
+// @name        testing discord.js-pure
+// @match       https://discord.com/*
+// @grant       none
+// @version     1.0
+// @author      1305
+// @require https://raw.githubusercontent.com/13-05/discord.js-pure/main/stable/discordjs-pure.js
+// ==/UserScript==
+
+
+let GLOBAL_USER_TOKEN = client.get_token();
+
+
+client.on_message = function(message, token) {
+  let content = message.content.trim(); // sometimes the message content has whitespace at the end, so we just say message.content.trim() is == to message.content
+  if (message.author.id.toString() != "YOURDISCORDUSERID") { // put your userid here!!!! <--------
+    return;
+  }
+  else{
+    if (content == "ping"){
+      client.send_message("pong!", message.channel_id, token); // i looked at the "message" object and that's the path of a channelid; now it'll respond ez!
+      client.delete_message(message, token);
+    }
+  }
+}
+
+client.run(GLOBAL_USER_TOKEN);
 ```
 
 # Checklist/TODOs
 - [x] Sending messages (text)
-- [ ] Add `on_message()` event and other gateway ones
-- [ ] Login feature
+- [x] Add `on_message()` event and other gateway ones
+- [x] Login feature
 - [ ] Getting guild members
 - [ ] More features over all
 
