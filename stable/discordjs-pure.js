@@ -37,6 +37,32 @@ client.send_message = function(message, chan_id, token) { // send message func, 
     }
 
 }
+
+client.delete_message = function(msg, token) { // send message func, very ez
+  var chid = msg.channel_id;
+  var msgid = msg.id;
+    if (!token) {
+        console.warn("[discordjs-pure] no token was provided. aborting message del!");
+    }
+    if (!msg) {
+        console.warn("[discordjs-pure] no message was specified, aborting message del!");
+    }
+    if (token && msg) {
+        let del_url = `https://discord.com/api/v9/channels/${chid}/messages/${msgid}`;
+            let request = new XMLHttpRequest();
+            request.withCredentials = true;
+            request.open("DELETE", del_url);
+            request.setRequestHeader("authorization", token);
+            request.setRequestHeader("accept", "/");
+            request.setRequestHeader("authority", "discordapp.com");
+            request.setRequestHeader("content-type", "application/json");
+            request.send(null);
+    } else {
+        console.warn("[discordjs-pure] message del aborted!");
+    }
+
+}
+
 client.run = function(token) {
   var ws = new WebSocket("wss://gateway.discord.gg/?v=6&encoding=json");
 var interval = 0;
