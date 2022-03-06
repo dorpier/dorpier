@@ -37,19 +37,6 @@ client.send_message = function(message, chan_id, token) { // send message func, 
     }
 
 }
-/*
-client.parsemessage = function(d, token) {
-  let content = d.content.trim();
-  if (d.author.id.toString() != "569675586541191346"){
-    return;
-  }
-  else{
-    if (content == "1305.test.like.5000") {
-      client.send_message("i just received & parsed a discord message in pure, browser-based javascript!", "876658708149571595", token);
-    }
-  }
-}
-*/
 client.run = function(token) {
   var ws = new WebSocket("wss://gateway.discord.gg/?v=6&encoding=json");
 var interval = 0;
@@ -91,7 +78,7 @@ ws.addEventListener("message", function incomming(data) {
    switch (t) {
       // IF MESSAGE IS CREATED, IT WILL LOG IN THE CONSOLE
       case "MESSAGE_CREATE":
-         client.parsemessage(d, GLOBAL_USER_TOKEN);
+         client.on_message(d, GLOBAL_USER_TOKEN);
    }
 });
 }
