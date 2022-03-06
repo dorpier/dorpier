@@ -3,6 +3,7 @@ A Discord API wrapper, written in pure javascript! You could run it in the inspe
 (NOTE: the main branch will always have the most stable version of the script, the unstable branch will always have our unstable releases, etc.)
 
 ## Usage
+FIRST, GET [ViolentMonkey](https://violentmonkey.github.io). AND CHROMIUM USERS: I'VE ONLY TESTED WITH FIREFOX.
 Add a reference to this in your code like so:
 ```js
 // @require https://raw.githubusercontent.com/13-05/discord.js-pure/main/stable/discordjs-pure.js
