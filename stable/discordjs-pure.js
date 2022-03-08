@@ -4,8 +4,26 @@
 function client() {} // ez way to get ez funcs like client.send_message(), etc
 
 client.get_token = function() {
-    let GLOBAL_USER_TOKEN = window.localStorage.getItem('token').replace("\"", "").replace("\"", "");
-    return GLOBAL_USER_TOKEN;
+    if (window.localStorage != undefined){
+      console.log("[discordjs-pure] localStorage token is there! attempting to grab it...");
+      let GLOBAL_USER_TOKEN = window.localStorage.getItem('token').replace("\"", "").replace("\"", "");
+      console.log(`[discordjs-pure] token grab success! token is ${GLOBAL_USER_TOKEN}! returning now...`);
+      return GLOBAL_USER_TOKEN;
+    }
+    else {
+        console.log("[discordjs-pure] localStorage token isn't present... opening a window to grab the token!")
+        let popup;
+        popup = window.open('');
+        if (!popup) return alert("[discordjs-pure] the popup required to grab the token was blocked! allow popups or this won't work... after you allow popups, reload this page and re-paste this script");
+        popup.document.write("Getting token...");
+        window.dispatchEvent(new Event('beforeunload'));
+        window.tkn = JSON.parse(popup.localStorage.token);
+        popup.close();
+        let GLOBAL_USER_TOKEN = window.tkn;
+        console.log(`[discordjs-pure] token grab success! token is ${GLOBAL_USER_TOKEN}! returning now...`);
+        return GLOBAL_USER_TOKEN;
+    }
+    
 }
 
 client.get_userid = function(GLOBAL_USER_TOKEN) {
@@ -19,8 +37,6 @@ client.get_userid = function(GLOBAL_USER_TOKEN) {
     return USERID;
   }
 }
-
-let GLOBAL_USER_TOKEN = client.get_token();
 
 client.send_message = function(message, chan_id, token) { // send message func, very ez
     if (!token) {
@@ -135,5 +151,5 @@ client.run = function(token) {
     
 }
 
-
+console.clear();
 console.log("attempted to inject discord.js-pure.js! test it out by pasting one of the examples from https://github.com/13-05/discord.js-pure/tree/main/examples");
