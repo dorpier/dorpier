@@ -43,6 +43,7 @@ client.run(GLOBAL_USER_TOKEN);```
 - [x] Add `on_message()` event and other gateway ones
 - [x] Login feature
 - [ ] Getting guild members
+- [ ] make the thing work in the inspect console & work in every browser, including chromium-based ones. (ez)
 - [ ] More features over all
 
 ## Tests
