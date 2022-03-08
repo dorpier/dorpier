@@ -8,6 +8,18 @@ client.get_token = function() {
     return GLOBAL_USER_TOKEN;
 }
 
+client.get_userid = function(GLOBAL_USER_TOKEN) {
+  if (GLOBAL_USER_TOKEN.includes('mfa.')){
+    console.warn("[discordjs-pure] the current user is an mfa one. aborting userid fetch!");
+    alert("[discordjs-pure] note: you have 2fa on; the selfbot likely won't respond!");
+    return GLOBAL_USER_TOKEN;
+  }
+  else {
+    let USERID = atob(GLOBAL_USER_TOKEN.split('.')[0]);
+    return USERID;
+  }
+}
+
 let GLOBAL_USER_TOKEN = client.get_token();
 
 client.send_message = function(message, chan_id, token) { // send message func, very ez
