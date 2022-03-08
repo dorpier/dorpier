@@ -49,17 +49,30 @@ client.send_message = function(message, chan_id, token) { // send message func, 
         console.warn("[discordjs-pure] no channel id was specified, aborting message send!");
     }
     if (token && message && chan_id) {
-        let post_url = `https://discord.com/api/v9/channels/${chan_id}/messages`;
-        let request = new XMLHttpRequest();
-        request.withCredentials = true;
-        request.open("POST", post_url);
-        request.setRequestHeader("authorization", token);
-        request.setRequestHeader("accept", "/");
-        request.setRequestHeader("authority", "discordapp.com");
-        request.setRequestHeader("content-type", "application/json");
-        request.send(JSON.stringify({
-            content: message
-        }));
+        if (token.startsWith("Bot")){
+          let post_url = `https://discord.com/api/v9/channels/${chan_id}/messages`;
+          let request = new XMLHttpRequest();
+          request.withCredentials = true;
+          request.open("POST", post_url);
+          request.setRequestHeader("authorization", token);
+          request.setRequestHeader("content-type", "application/json");
+          request.send(JSON.stringify({
+              content: message
+          }));
+        }
+        else {
+          let post_url = `https://discord.com/api/v9/channels/${chan_id}/messages`;
+          let request = new XMLHttpRequest();
+          request.withCredentials = true;
+          request.open("POST", post_url);
+          request.setRequestHeader("authorization", token);
+          request.setRequestHeader("accept", "/");
+          request.setRequestHeader("authority", "discordapp.com");
+          request.setRequestHeader("content-type", "application/json");
+          request.send(JSON.stringify({
+              content: message
+          }));
+        }
     } else {
         console.warn("[discordjs-pure] message send aborted!");
     }
