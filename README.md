@@ -2,6 +2,7 @@
 A Discord API wrapper, written in pure javascript!
 
 ## Usage
+### Manually Inject It
 If you're like most people, you don't want to download anything. Well, you're in luck! Follow the below steps to get this working in the inspect element JavaScript console of most browsers:
 1) Go onto [Discord](https://discord.com/app) in your web browser
 2) Open inspect element and then navigate to the `Console` section.
@@ -31,5 +32,10 @@ client.run(GLOBAL_USER_TOKEN);
 ```
 
 6) Say 'ping' in any channel in Discord, and it should respond with `pong`! If it does, then you did everything right; the library's working! Now, you can get to making your own scripts ;)
+
+### Automatically Inject It (known as a bookmarklet)
+1) Copy the code from [here](https://raw.githubusercontent.com/13-05/discord.js-pure/main/inspect-console/minified.js)
+2) Make a new bookmark with the name as `inject discord.js-pure` and the url as `javascript:PASTETHECODEYOUCOPIEDJUSTNOWRIGHTHERE!!`
+3) Now, save it and you can click it from discord whenever you wanna inject discord.js-pure into the discord webapp!
 
 ###### ive been procrasinating on this too much
