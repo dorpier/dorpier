@@ -129,6 +129,11 @@ client.run = function(token) {
                 client.on_message(d, GLOBAL_USER_TOKEN);
         }
     });
+
+    console.clear();
+    console.log("attempted to log in!");
+    
 }
 
-client.run(GLOBAL_USER_TOKEN);
+
+console.log("attempted to inject discord.js-pure.js! test it out by pasting one of the examples from https://github.com/13-05/discord.js-pure/tree/main/examples");
