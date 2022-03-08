@@ -36,7 +36,8 @@ client.on_message = function(message, token) {
   }
 }
 
-client.run(GLOBAL_USER_TOKEN);```
+client.run(GLOBAL_USER_TOKEN);
+```
 
 # Checklist/TODOs
 - [x] Sending messages (text)
