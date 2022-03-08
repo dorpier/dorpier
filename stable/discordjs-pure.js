@@ -91,7 +91,7 @@ client.delete_message = function(msg, token) { // send message func, very ez
 
 }
 
-client.run = function(token) {
+client.run = function(GLOBAL_USER_TOKEN) {
     var ws = new WebSocket("wss://gateway.discord.gg/?v=6&encoding=json");
     var interval = 0;
 
