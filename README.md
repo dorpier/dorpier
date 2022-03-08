@@ -22,23 +22,21 @@ Then, you can use it in your javascript like so:
 
 
 let GLOBAL_USER_TOKEN = client.get_token();
-
+let USERID = client.get_userid(GLOBAL_USER_TOKEN);
 
 client.on_message = function(message, token) {
   let content = message.content.trim(); // sometimes the message content has whitespace at the end, so we just say message.content.trim() is == to message.content
-  if (message.author.id.toString() != "YOURDISCORDUSERID") { // put your userid here!!!! <--------
+  if (message.author.id.toString() != USERID) {
     return;
   }
   else{
     if (content == "ping"){
       client.send_message("pong!", message.channel_id, token); // i looked at the "message" object and that's the path of a channelid; now it'll respond ez!
-      client.delete_message(message, token);
     }
   }
 }
 
-client.run(GLOBAL_USER_TOKEN);
-```
+client.run(GLOBAL_USER_TOKEN);```
 
 # Checklist/TODOs
 - [x] Sending messages (text)
