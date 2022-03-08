@@ -98,7 +98,7 @@ client.run = function(GLOBAL_USER_TOKEN) {
     payload = {
         op: 2,
         d: {
-            token: token,
+            token: GLOBAL_USER_TOKEN,
             intents: 512,
             properties: {
                 $os: "linux",
