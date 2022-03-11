@@ -133,40 +133,7 @@ client.run = function(GLOBAL_USER_TOKEN) {
 var User = {
     experimental: {
         enable_staff: function() {
-            window.webpackChunkdiscord_app.push([
-                [Math.random()], {}, (req) => {
-                    for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
-                        if (m.default && m.default.getCurrentUser !== undefined) {
-                            return m.default.getCurrentUser().flags += 1;
-                        }
-                        if (m.getCurrentUser !== undefined) {
-                            return m.getCurrentUser().flags += 1
-                        }
-                    }
-                }
-            ]);
-            window.webpackChunkdiscord_app.push([
-                [Math.random()], {}, (req) => {
-                    for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
-                        if (m.default && m.default.isDeveloper !== undefined) {
-                            Object.defineProperty(m.default, "isDeveloper", {
-                                get: (a) => 1,
-                                set: (a) => a,
-                                configurable: true
-                            });
-                            console.log("enabled developer mode! check settings...!");
-                        }
-                        if (m.isDeveloper !== undefined) {
-                            Object.defineProperty(m, "isDeveloper", {
-                                get: (a) => 1,
-                                set: (a) => a,
-                                configurable: true
-                            });
-                            console.log("enabled developer mode! check settings...!");
-                        }
-                    }
-                }
-            ]);
+             Object.defineProperty((webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let c in e.c)m.push(e.c[c])}]),m).find(m=>m?.exports?.default?.isDeveloper!==void 0).exports.default,"isDeveloper",{get:()=>true}); 
         }
     }
 }
