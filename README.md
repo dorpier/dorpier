@@ -2,6 +2,7 @@
 A Discord API wrapper, written in pure javascript!
 
 ## Usage
+##### NOTE: Check the [Documentation](https://github.com/13-05/discord.js-pure/wiki) for a more detailed walkthrough of this lib's usage!
 ### Manually Inject It
 If you're like most people, you don't want to download anything. Well, you're in luck! Follow the below steps to get this working in the inspect element JavaScript console of most browsers:
 1) Go onto [Discord](https://discord.com/app) in your web browser
