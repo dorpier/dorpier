@@ -12,6 +12,7 @@ If you're like most people, you don't want to download anything. Well, you're in
 ![image of inspect console displaying stuff](https://raw.githubusercontent.com/13-05/discord.js-pure/main/images/image.png)
 
 5) Paste the following to test it:
+###### Example Code: 
 ```js
 let GLOBAL_USER_TOKEN = client.get_token();
 let USERID = client.get_userid(GLOBAL_USER_TOKEN);
