@@ -6,6 +6,7 @@ var Discord = {
       },
       false: function(){
         KEEPLOGS = false;
+        console.clear();
       },
       get_value: function(){
         return KEEPLOGS;
