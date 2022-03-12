@@ -13,16 +13,27 @@ var Discord = {
       }
     },
     experimental: {
-      staff_mode: {
+      silent_typing: {
         enable: function(){
-          while (typeof window.webpackChunkdiscord_app === "undefined"){
-            Object.defineProperty((window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let c in e.c)m.push(e.c[c])}]),m).find(m=>m?.exports?.default?.isDeveloper!==void 0).exports.default,"isDeveloper",{get:()=>true, configurable:true});
-          }
+          var findModule=(item)=>window.webpackChunkdiscord_app.push([[Math.random()],{},(req)=>{for(const m of Object.keys(req.c).map((x)=>req.c[x].exports).filter((x)=>x)){if(m.default&&m.default[item]!==undefined)return m.default}}]);
+          findModule("startTyping").startTyping = function() { return; }
         },
         disable: function(){
-         while (typeof window.webpackChunkdiscord_app === "undefined"){
-            Object.defineProperty((window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let c in e.c)m.push(e.c[c])}]),m).find(m=>m?.exports?.default?.isDeveloper!==void 0).exports.default,"isDeveloper",{get:()=>true, configurable:true});
+          if (Discord.library_event_logging.get_value() == true){
+            console.log("[discordjs-pure] this function cannot be disabled at the moment. reloading to reset variables!");
+            window.location.reload();
           }
+          else {
+            window.location.reload();
+          }
+        },
+      },
+      staff_mode: {
+        enable: function(){
+            Object.defineProperty((window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let c in e.c)m.push(e.c[c])}]),m).find(m=>m?.exports?.default?.isDeveloper!==void 0).exports.default,"isDeveloper",{get:()=>true, configurable:true});
+        },
+        disable: function(){
+            Object.defineProperty((window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let c in e.c)m.push(e.c[c])}]),m).find(m=>m?.exports?.default?.isDeveloper!==void 0).exports.default,"isDeveloper",{get:()=>true, configurable:true});
         }
       },
 
