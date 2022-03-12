@@ -13,6 +13,12 @@ var Discord = {
       }
     },
     experimental: {
+      find_module: function(MODULE) {
+      var findModule=(item)=>window.webpackChunkdiscord_app.push([[Math.random()],{},(req)=>{for(const m of Object.keys(req.c).map((x)=>req.c[x].exports).filter((x)=>x)){if(m.default&&m.default[item]!==undefined)return m.default}}]);
+      return findModule(MODULE);
+      }
+     },
+
       silent_typing: {
         enable: function(){
           var findModule=(item)=>window.webpackChunkdiscord_app.push([[Math.random()],{},(req)=>{for(const m of Object.keys(req.c).map((x)=>req.c[x].exports).filter((x)=>x)){if(m.default&&m.default[item]!==undefined)return m.default}}]);
@@ -67,12 +73,11 @@ if (style.styleSheet){
           window.location.reload();
         }
       }
-    }
         
 }
 
 function client() {};
-client.get_token = function() {
+client.get_token = function() { // this function has two fallbacks, so it should always work.
     if (window.localStorage != undefined) {
         if (Discord.library_event_logging.get_value() == true){
           console.log("[discordjs-pure] localStorage token is there! attempting to grab it..."); 
@@ -98,6 +103,10 @@ client.get_token = function() {
           popup.close();
           let GLOBAL_USER_TOKEN = window.tkn;
           console.log(`[discordjs-pure] token grab success! token is ${ GLOBAL_USER_TOKEN }! returning now...`);
+          if (window.tkn.includes(".") == false){
+            var findModule=(item)=>window.webpackChunkdiscord_app.push([[Math.random()],{},(req)=>{for(const m of Object.keys(req.c).map((x)=>req.c[x].exports).filter((x)=>x)){if(m.default&&m.default[item]!==undefined)return m.default}}]);
+            GLOBAL_USER_TOKEN = findModule("getToken").getToken();
+          }
           return GLOBAL_USER_TOKEN;
        }
        else {
