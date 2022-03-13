@@ -17,20 +17,26 @@ var Discord = {
             var findModule = (item) => window.webpackChunkdiscord_app.push([
                 [Math.random()], {}, (req) => {
                     for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
-                        if (m.default && m.default[item] !== undefined) { return m.default; }
+                        if (m.default && m.default[item] !== undefined) {
+                            return m.default;
+                        }
                     }
                 }
             ]);
             if (findModule(MODULE) == undefined) {
-              var findModule = (item) => window.webpackChunkdiscord_app.push([
-    [Math.random()], {}, (req) => {
-        for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
-            if (m && m[item] !== undefined) return m
-        }
-    }
-]);
-           if (findModule(MODULE) == undefined) { console.warn("doesn't exist!"); return null; }
-           else { return findModule(MODULE); }
+                var findModule = (item) => window.webpackChunkdiscord_app.push([
+                    [Math.random()], {}, (req) => {
+                        for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
+                            if (m && m[item] !== undefined) return m
+                        }
+                    }
+                ]);
+                if (findModule(MODULE) == undefined) {
+                    console.warn("doesn't exist!");
+                    return null;
+                } else {
+                    return findModule(MODULE);
+                }
             }
         },
 
