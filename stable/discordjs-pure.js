@@ -13,7 +13,20 @@ var Discord = {
         }
     },
     experimental: {
-        find_module: function(MODULE) {
+        find_module: {
+          by_props: function(MODULE){
+            var findModule = (item) => window.webpackChunkdiscord_app.push([
+                    [Math.random()], {}, (req) => {
+                        for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
+                            if (m && m[item] !== undefined) return m;
+                        }
+                    }
+                ]);
+
+            return findModule(MODULE);
+          },
+
+          by_display_name: function(MODULE){
             var findModule = (item) => window.webpackChunkdiscord_app.push([
                 [Math.random()], {}, (req) => {
                     for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
@@ -23,21 +36,8 @@ var Discord = {
                     }
                 }
             ]);
-            if (findModule(MODULE) == undefined) {
-                var findModule = (item) => window.webpackChunkdiscord_app.push([
-                    [Math.random()], {}, (req) => {
-                        for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
-                            if (m && m[item] !== undefined) return m
-                        }
-                    }
-                ]);
-                if (findModule(MODULE) == undefined) {
-                    console.warn("doesn't exist!");
-                    return null;
-                } else {
-                    return findModule(MODULE);
-                }
-            }
+            return findModule(MODULE);
+          }
         },
 
         disable_discord_tracking: function() {
