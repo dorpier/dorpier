@@ -41,14 +41,14 @@ var Discord = {
         },
 
         disable_discord_tracking: function() {
-            Discord.experimental.find_module("track").track = function() {
+            Discord.experimental.find_module.by_display_name("track").track = function() {
                 return;
             }
         },
 
         silent_typing: {
             enable: function() {
-                Discord.experimental.find_module("startTyping").startTyping = function() {
+                Discord.experimental.find_module.by_display_name("startTyping").startTyping = function() {
                     return;
                 }
             },
@@ -90,10 +90,10 @@ var Discord = {
 
         nsfw_allowed: {
             enable: function() {
-                Discord.experimental.find_module("getCurrentUser").getCurrentUser().nsfwAllowed = true;
+                Discord.experimental.find_module.by_display_name("getCurrentUser").getCurrentUser().nsfwAllowed = true;
             },
             disable: function() {
-                Discord.experimental.find_module("getCurrentUser").getCurrentUser().nsfwAllowed = false;
+                Discord.experimental.find_module.by_display_name("getCurrentUser").getCurrentUser().nsfwAllowed = false;
             }
         },
 
