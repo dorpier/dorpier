@@ -40,6 +40,10 @@ var Discord = {
           }
         },
 
+        send_clyde_message: function(message) {
+          Discord.experimental.find_module.by_display_name('sendBotMessage').sendBotMessage(Discord.experimental.find_module.by_display_name('getLastSelectedChannelId', 'getChannelId').getChannelId(), message);
+        },
+
         disable_discord_tracking: function() {
             Discord.experimental.find_module.by_display_name("track").track = function() {
                 return;
