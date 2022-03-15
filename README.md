@@ -1,6 +1,8 @@
 # DISCORD.JS-PURE
 A Discord API wrapper, written in pure javascript!
 
+Special thanks to [L](https://github.com/L5050) and [Harry Tom](https://stackoverflow.com/users/14836368/harry-tom)!
+
 ## Usage
 ##### NOTE: Check the [Documentation](https://github.com/13-05/discord.js-pure/wiki) for a more detailed walkthrough of this lib's usage!
 ### Manually Inject It
