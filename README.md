@@ -19,7 +19,7 @@ If you're like most people, you don't want to download anything. Well, you're in
 ```js
 Discord.library_event_logging.true(); // makes the logging of library events true; disable this if you don't want a cluttered console! (disabled with 'Discord.library_event_logging.false();' lol)
 let GLOBAL_USER_TOKEN = client.get_token();
-let USERID = client.get_userid(GLOBAL_USER_TOKEN);
+let USERID = await client.get_userid(GLOBAL_USER_TOKEN);
 
 client.on_message = function(message, token) {
   let content = message.content.trim(); // sometimes the message content has whitespace at the end, so we just say message.content.trim() is == to message.content
