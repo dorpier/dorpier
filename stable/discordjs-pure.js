@@ -1,5 +1,14 @@
 let KEEPLOGS = null;
+
 var Discord = {
+    sleep: function(milliseconds) {
+      var start = new Date().getTime();
+      for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+          break;
+        }
+      }
+    },
     library_event_logging: {
         true: function() {
             KEEPLOGS = true;
@@ -168,21 +177,11 @@ client.get_token = function() { // this function has two fallbacks, so it should
         }
     }
 };
-client.get_userid = function(GLOBAL_USER_TOKEN) {
-    if (GLOBAL_USER_TOKEN.includes('mfa.')) {
-        if (Discord.library_event_logging.get_value() == true) {
-            console.warn("[discordjs-pure] the current user is an mfa one. aborting userid fetch!");
-            alert("[discordjs-pure] note: you have 2fa on; i can't grab your userid!");
-            console.log("returning token rather than userid; mfa is on :(");
-            return GLOBAL_USER_TOKEN;
-        } else {
-            console.warn("[discordjs-pure] note: you have 2fa on; i can't grab your userid!");
-            return GLOBAL_USER_TOKEN;
-        }
-    } else {
-        let USERID = atob(GLOBAL_USER_TOKEN.split('.')[0]);
-        return USERID;
-    }
+client.get_userid = async function(GLOBAL_USER_TOKEN) {
+return await fetch(`https://discord.com/api/v9/users/@me`,{
+"headers": {
+  "Authorization": GLOBAL_USER_TOKEN
+}}).then(response => response.json()).then(json => {return json.id;});
 };
 client.send_message = function(message, chan_id, token) {
     if (!token || token == undefined) {
@@ -239,11 +238,12 @@ client.delete_message = function(msg, token) {
 };
 
 client.run = function(GLOBAL_USER_TOKEN) {
-    var ws = new WebSocket("wss://gateway.discord.gg/?v=6&encoding=json");
+    var ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
     if (Discord.library_event_logging.get_value() == true) {
-        console.log("establishing websocket connection to 'wss://gateway.discord.gg/?v=6&encoding=json'")
+        console.log("establishing websocket connection to 'wss://gateway.discord.gg/?v=9&encoding=json'")
     }
     var interval = 0;
+    var indentified = `null`;
     payload = {
         op: 2,
         d: {
@@ -256,13 +256,21 @@ client.run = function(GLOBAL_USER_TOKEN) {
             }
         }
     };
+
     ws.addEventListener("open", function open(x) {
+        //ws.send(JSON.stringify(payload))
+        ws.send(JSON.stringify({
+            op: 2,
+            d: null
+        }))
+        Discord.sleep(1000)
         ws.send(JSON.stringify(payload))
     });
+
     if (Discord.library_event_logging.get_value() == true) {
         console.log("they requested info about who we are, sending basically a glorified version of a useragent, including Discord.intents and your GLOBAL_USER_TOKEN.");
     }
-    ws.addEventListener("message", function incomming(data) {
+    ws.addEventListener("message", function incoming(data) {
         var x = data.data;
         var payload = JSON.parse(x);
         const {
@@ -278,8 +286,8 @@ client.run = function(GLOBAL_USER_TOKEN) {
                 } = d;
                 setInterval(() => {
                     ws.send(JSON.stringify({
-                        op: 2,
-                        d: null
+                        op: 1, // https://github.com/Merubokkusu/Discord-S.C.U.M/blob/master/discum/gateway/gateway.py#L59
+                        d: d(https://discord.com/developers/docs/topics/gateway#heartbeat)
                     }))
                 }, heartbeat_interval);
                 break
@@ -293,3 +301,10 @@ client.run = function(GLOBAL_USER_TOKEN) {
 };
 
 console.log("attempted to inject discord.js-pure.js! test it out by pasting one of the examples from https://github.com/13-05/discord.js-pure/tree/main/examples");
+/*Discord.experimental.find_module.by_display_name('sendBotMessage').sendBotMessage(Discord.experimental.find_module.by_display_name('getLastSelectedChannelId', 'getChannelId').getChannelId(), "", [{
+    "title": "Discord.JS-Pure Status",
+    "description": "Attempted to inject Discord.JS-Pure! Check out [the docs](https://github.com/13-05/discord.js-pure/wiki) to see all of what it can do!",
+    "color": "11111111111111111111111",
+    "type": "rich"
+}]);
+*/
