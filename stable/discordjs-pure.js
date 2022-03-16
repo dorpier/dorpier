@@ -33,7 +33,7 @@ var Discord = {
                         }
                     }
                 ]);
-
+            Discord.Logger.Log(`Attempted to find module '${MODULE}' by its properties`);
             return findModule(MODULE);
           },
 
@@ -47,18 +47,21 @@ var Discord = {
                     }
                 }
             ]);
+            Discord.Logger.Log(`Attempted to find module '${MODULE}' by its display name`);
             return findModule(MODULE);
           }
         },
 
         send_clyde_message: function(message) {
           Discord.experimental.find_module.by_display_name('sendBotMessage').sendBotMessage(Discord.experimental.find_module.by_display_name('getLastSelectedChannelId', 'getChannelId').getChannelId(), message);
+          Discord.Logger.Log(`Attempted to send message '${message}' through Clyde (only you can see it)`);
         },
 
         disable_discord_tracking: function() {
             Discord.experimental.find_module.by_display_name("track").track = function() {
                 return;
             }
+            Discord.Logger.Log(`Attempted to disable Discord's tracking by patching the inbuilt module 'track'`);
         },
 
         silent_typing: {
@@ -66,14 +69,10 @@ var Discord = {
                 Discord.experimental.find_module.by_display_name("startTyping").startTyping = function() {
                     return;
                 }
+                Discord.Logger.Log(`Attempted to enable silent typing; a patch to the inbuilt Discord module 'startTyping' has made it simply a return function`);
             },
             disable: function() {
-                if (Discord.library_event_logging.get_value() == true) {
-                    console.log("[discordjs-pure] this function cannot be disabled at the moment. reloading to reset variables!");
-                    window.location.reload();
-                } else {
-                    window.location.reload();
-                }
+                Discord.Logger.Log(`Currently, silent typing cannot be disabled automatically. Please reload the page to disable it.`);
             },
         },
         staff_mode: {
@@ -88,6 +87,7 @@ var Discord = {
                     get: () => true,
                     configurable: true
                 });
+                Discord.Logger.Log(`Attempted to patch Discord's module system and make you a 'developer'; check settings for Discord Experiments and more!`);
             },
             disable: function() {
                 Object.defineProperty((window.webpackChunkdiscord_app.push([
@@ -100,15 +100,18 @@ var Discord = {
                     get: () => true,
                     configurable: true
                 });
+                Discord.Logger.Log(`Attempted to remove your 'developer permissions'`);
             }
         },
 
         nsfw_allowed: {
             enable: function() {
                 Discord.experimental.find_module.by_display_name("getCurrentUser").getCurrentUser().nsfwAllowed = true;
+                Discord.Logger.Log(`Attempted to patch the current user and allow them to view nsfw`);
             },
             disable: function() {
                 Discord.experimental.find_module.by_display_name("getCurrentUser").getCurrentUser().nsfwAllowed = false;
+                Discord.Logger.Log(`Attempted to disable nsfw-viewing permissions in the current session by patching the current user`);
             }
         },
 
@@ -126,9 +129,10 @@ var Discord = {
                 } else {
                     style.appendChild(document.createTextNode(css));
                 }
+                Discord.Logger.Log(`Attempted to inject an 'amoled dark mode' for desktop Discord!`);
             },
             disable: function() {
-                window.location.reload();
+                Discord.Logger.Log(`Currently, amoled dark cannot be disabled automatically. Please reload the page to disable it.`);
             }
         }
     }
@@ -137,18 +141,12 @@ var Discord = {
 function client() {};
 client.get_token = function() { // this function has two fallbacks, so it should always work.
     if (window.localStorage != undefined) {
-        if (Discord.library_event_logging.get_value() == true) {
-            console.log("[discordjs-pure] localStorage token is there! attempting to grab it...");
-            let GLOBAL_USER_TOKEN = window.localStorage.getItem('token').replace("\"", "").replace("\"", "");
-            console.log(`[discordjs-pure] token grab success! token is ${ GLOBAL_USER_TOKEN }! returning now...`);
-            return GLOBAL_USER_TOKEN;
-        } else {
-            let GLOBAL_USER_TOKEN = window.localStorage.getItem('token').replace("\"", "").replace("\"", "");
-            return GLOBAL_USER_TOKEN;
-        }
+          Discord.Logger.Log(`A local-storage token is present. Attempting to grab it...`);
+          let GLOBAL_USER_TOKEN = window.localStorage.getItem('token').replace("\"", "").replace("\"", "");
+          Discord.Logger.Log(`Successfully grabbed the local-storage token! Returning now...`);
+          return GLOBAL_USER_TOKEN;
     } else {
-        if (Discord.library_event_logging.get_value() == true) {
-            console.log("[discordjs-pure] localStorage token isn't present... opening a window to grab the token!");
+            Discord.Logger.Log(`No local-storage token is present - attempting to grab the token by opening a window/popup...`);
             let popup;
             popup = window.open('');
             if (!popup) {
@@ -164,19 +162,6 @@ client.get_token = function() { // this function has two fallbacks, so it should
                 Discord.experimental.find_module("getToken").getToken();
             }
             return GLOBAL_USER_TOKEN;
-        } else {
-            let popup;
-            popup = window.open('');
-            if (!popup) {
-                return alert("[discordjs-pure] the popup required to grab the token was blocked! allow popups or this won't work... after you allow popups, reload this page and re-paste this script")
-            }
-            popup.document.write("Getting token...");
-            window.dispatchEvent(new Event('beforeunload'));
-            window.tkn = JSON.parse(popup.localStorage.token);
-            popup.close();
-            let GLOBAL_USER_TOKEN = window.tkn;
-            return GLOBAL_USER_TOKEN;
-        }
     }
 };
 client.get_userid = async function(GLOBAL_USER_TOKEN) {
@@ -184,17 +169,9 @@ return await fetch(`https://discord.com/api/v9/users/@me`,{
 "headers": {
   "Authorization": GLOBAL_USER_TOKEN
 }}).then(response => response.json()).then(json => {return json.id;});
+Discord.Logger.Log(`Attempted to fetch the USERID for the token '${GLOBAL_USER_TOKEN}'`);
 };
 client.send_message = function(message, chan_id, token) {
-    if (!token || token == undefined) {
-        console.warn("[discordjs-pure] no token was provided. aborting message send!")
-    }
-    if (!message || message == undefined) {
-        console.warn("[discordjs-pure] no message was specified, aborting message send!")
-    }
-    if (!chan_id || chan_id == undefined) {
-        console.warn("[discordjs-pure] no channel id was specified, aborting message send!")
-    }
     if (token && message && chan_id) {
         let post_url = `https://discord.com/api/v9/channels/${ chan_id }/messages`;
         let request = new XMLHttpRequest();
@@ -208,20 +185,12 @@ client.send_message = function(message, chan_id, token) {
             content: message
         }))
     } else {
-        if (Discord.library_event_logging.get_value() == true) {
-            console.warn("[discordjs-pure] message send aborted!");
-        }
+        Discord.Logger.Log(`Not all of the specified values for the 'send_message' function of the client object were fufilled - aborting message send!`);
     }
 };
 client.delete_message = function(msg, token) {
     var chid = msg.channel_id;
     var msgid = msg.id;
-    if (!token || token == undefined) {
-        console.warn("[discordjs-pure] no token was provided. aborting message del!")
-    }
-    if (!msg || msg == undefined) {
-        console.warn("[discordjs-pure] no message was specified, aborting message del!")
-    }
     if (token && msg) {
         let del_url = `https://discord.com/api/v9/channels/${ chid }/messages/${ msgid }`;
         let request = new XMLHttpRequest();
@@ -233,9 +202,7 @@ client.delete_message = function(msg, token) {
         request.setRequestHeader("content-type", "application/json");
         request.send(null)
     } else {
-        if (Discord.library_event_logging.get_value() == true) {
-            console.warn("[discordjs-pure] message del aborted!");
-        }
+        Discord.Logger.Log(`Not all of the specified values for the 'delete_message' function of the client object were fufilled - aborting message delete!`);
     }
 };
 
@@ -296,13 +263,14 @@ client.run = function(GLOBAL_USER_TOKEN) {
         }
         switch (t) {
             case "MESSAGE_CREATE":
-                client.on_message(d, GLOBAL_USER_TOKEN)
+                Discord.Logger.Log(`A message was created ---- ${d.author.username}#${d.author.discriminator}: '${d.content}'. Message sent in guild '${d.guild.name}' and channel '${d.channel.name}'`);
+                client.on_message(d, GLOBAL_USER_TOKEN);
         }
     });
-    console.log("attempted to log in!")
+    Discord.Logger.Log(`Attempted to log in!`);
 };
 
-console.log("attempted to inject discord.js-pure.js! test it out by pasting one of the examples from https://github.com/13-05/discord.js-pure/tree/main/examples");
+Discord.Logger.Log("Attempted to start-up Discord.JS-Pure!")
 /*Discord.experimental.find_module.by_display_name('sendBotMessage').sendBotMessage(Discord.experimental.find_module.by_display_name('getLastSelectedChannelId', 'getChannelId').getChannelId(), "", [{
     "title": "Discord.JS-Pure Status",
     "description": "Attempted to inject Discord.JS-Pure! Check out [the docs](https://github.com/13-05/discord.js-pure/wiki) to see all of what it can do!",
