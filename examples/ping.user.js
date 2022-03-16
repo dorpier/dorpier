@@ -2,7 +2,7 @@
 // @name        Ping-SB
 // @match       *://discord.com/*
 // @grant       none
-// @version     0.1
+// @version     1.0
 // @require https://raw.githubusercontent.com/13-05/discord.js-pure/main/stable/discordjs-pure.js
 // @author      1305
 // @description A 'ping' selfbot written in the pure javascript version of discord.js!
