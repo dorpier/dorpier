@@ -208,9 +208,7 @@ client.delete_message = function(msg, token) {
 
 client.run = function(GLOBAL_USER_TOKEN) {
     var ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
-    if (Discord.library_event_logging.get_value() == true) {
-        console.log("establishing websocket connection to 'wss://gateway.discord.gg/?v=9&encoding=json'")
-    }
+    Discord.Logger.Log(`Establishing WebSocket connection to 'wss://gateway.discord.gg/?v=9&encoding=json'...`);
     var interval = 0;
     var indentified = `null`;
     payload = {
@@ -231,14 +229,12 @@ client.run = function(GLOBAL_USER_TOKEN) {
         ws.send(JSON.stringify({
             op: 2,
             d: null
-        }))
-        Discord.sleep(1000)
-        ws.send(JSON.stringify(payload))
+        }));
+        Discord.sleep(1000);
+        Discord.Logger.Log(`Sending identify...`);
+        ws.send(JSON.stringify(payload));
     });
 
-    if (Discord.library_event_logging.get_value() == true) {
-        console.log("they requested info about who we are, sending basically a glorified version of a useragent, including Discord.intents and your GLOBAL_USER_TOKEN.");
-    }
     ws.addEventListener("message", function incoming(data) {
         var x = data.data;
         var payload = JSON.parse(x);
