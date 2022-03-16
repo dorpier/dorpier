@@ -1,4 +1,5 @@
-let KEEPLOGS = null;
+let KEEPLOGS = true;
+Discord.Logger.Log(`NOTE: By default, Discord.JS-Pure logs events. Run 'Discord.Logger'`);
 
 var Discord = {
     sleep: function(milliseconds) {
@@ -10,17 +11,18 @@ var Discord = {
       }
     },
     Logger: {
-        Log: function(to_log) {
-            if (KEEPLOGS == true) {
-              console.log(`[discordjs-pure] ${to_log}`);
-            } // TODO: FIX THIS LATER EZPZ
+        enable: function() {
+            KEEPLOGS = true;
         },
-        false: function() {
+        disable: function() {
             KEEPLOGS = false;
-            console.clear();
         },
-        get_value: function() {
-            return KEEPLOGS;
+        Log: function(to_log) {
+            let plaincss = [ "color: #ffffff" ];
+            let redcss = [ "color: #9e0700" ];
+            if (KEEPLOGS == true) {
+              console.log(`%c[discordjs-pure] (LOGGER)%c ${to_log}`, redcss, plaincss);
+            } // TODO: FIX THIS LATER EZPZ
         }
     },
     experimental: {
