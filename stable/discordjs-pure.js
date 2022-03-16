@@ -286,8 +286,8 @@ client.run = function(GLOBAL_USER_TOKEN) {
                 } = d;
                 setInterval(() => {
                     ws.send(JSON.stringify({
-                        op: 1, // https://github.com/Merubokkusu/Discord-S.C.U.M/blob/master/discum/gateway/gateway.py#L59
-                        d: d //https://discord.com/developers/docs/topics/gateway#heartbeat
+                        op: 1,
+                        d: d
                     }))
                 }, heartbeat_interval);
                 break
