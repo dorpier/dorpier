@@ -9,9 +9,11 @@ var Discord = {
         }
       }
     },
-    library_event_logging: {
-        true: function() {
-            KEEPLOGS = true;
+    Logger: {
+        Log: function(to_log) {
+            if (KEEPLOGS == true) {
+              console.log(`[discordjs-pure] ${to_log}`);
+            } // TODO: FIX THIS LATER EZPZ
         },
         false: function() {
             KEEPLOGS = false;
