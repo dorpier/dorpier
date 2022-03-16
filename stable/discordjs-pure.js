@@ -1,5 +1,5 @@
 let KEEPLOGS = true;
-Discord.Logger.Log(`NOTE: By default, Discord.JS-Pure logs events. Run 'Discord.Logger.disable();' to disable the logs if they get too intrusive.`);
+Discord.Logger.Log(`NOTE: By default, Discord.JS-Pure logs events. Run 'Discord.Logger.disable();' to disable the logs if they get too intrusive.`); // tell them about stuff ezpz
 
 var Discord = {
     sleep: function(milliseconds) {
