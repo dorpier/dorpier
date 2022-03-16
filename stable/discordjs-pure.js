@@ -1,5 +1,4 @@
 let KEEPLOGS = true;
-Discord.Logger.Log(`NOTE: By default, Discord.JS-Pure logs events. Run 'Discord.Logger.disable();' to disable the logs if they get too intrusive.`); // tell them about stuff ezpz
 
 var Discord = {
     sleep: function(milliseconds) {
@@ -269,6 +268,7 @@ client.run = function(GLOBAL_USER_TOKEN) {
 };
 
 Discord.Logger.Log("Attempted to start-up Discord.JS-Pure!")
+Discord.Logger.Log(`NOTE: By default, Discord.JS-Pure logs events. Run 'Discord.Logger.disable();' to disable the logs if they get too intrusive.`); // tell them about stuff ezpz
 /*Discord.experimental.find_module.by_display_name('sendBotMessage').sendBotMessage(Discord.experimental.find_module.by_display_name('getLastSelectedChannelId', 'getChannelId').getChannelId(), "", [{
     "title": "Discord.JS-Pure Status",
     "description": "Attempted to inject Discord.JS-Pure! Check out [the docs](https://github.com/13-05/discord.js-pure/wiki) to see all of what it can do!",
