@@ -17,7 +17,6 @@ If you're like most people, you don't want to download anything. Well, you're in
 5) Paste the following to test it:
 ###### Example Code: 
 ```js
-Discord.library_event_logging.true(); // makes the logging of library events true; disable this if you don't want a cluttered console! (disabled with 'Discord.library_event_logging.false();' lol)
 let GLOBAL_USER_TOKEN = client.get_token();
 let USERID = await client.get_userid(GLOBAL_USER_TOKEN);
 
@@ -39,4 +38,4 @@ client.run(GLOBAL_USER_TOKEN);
 2) Make a new bookmark with the name as `inject discord.js-pure` and the url as `javascript:PASTETHECODEYOUCOPIEDJUSTNOWRIGHTHERE!!`
 3) Now, save it and you can click it from discord whenever you wanna inject discord.js-pure into the discord webapp!
 
-###### ive been procrasinating on this too much
+###### ive been procrasinating on this too much xd
