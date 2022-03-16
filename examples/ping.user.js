@@ -1,4 +1,3 @@
-javascript
 // ==UserScript==
 // @name        Ping-SB
 // @match       *://discord.com/*
