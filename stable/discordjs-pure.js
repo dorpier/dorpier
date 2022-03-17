@@ -231,7 +231,6 @@ client.run = function(GLOBAL_USER_TOKEN) {
             op: 2,
             d: null
         }));
-        Discord.sleep(1000);
         Discord.Logger.Log(`Sending identify...`);
         ws.send(JSON.stringify(payload));
     });
@@ -264,7 +263,6 @@ client.run = function(GLOBAL_USER_TOKEN) {
                 client.on_message(d, GLOBAL_USER_TOKEN);
         }
     });
-    Discord.Logger.Log(`Attempted to log in!`);
 };
 
 Discord.Logger.Log("Attempted to start-up Discord.JS-Pure!")
