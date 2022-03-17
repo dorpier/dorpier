@@ -27,7 +27,7 @@ client.on_ready = function() {
 client.on_message = function(message) {
   if (message.author.id != USERID) return;
   if (message.content.trim() == "ping"){
-    client.send_message("pong!", message.channel_id); // i looked at the "message" object and that's the path of a channelid; now it'll respond ez
+    client.send_message("pong!", message.channel_id);
     }
 }
 
