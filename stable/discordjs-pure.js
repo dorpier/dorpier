@@ -260,7 +260,6 @@ client.run = function(GLOBAL_USER_TOKEN) {
         }
         switch (t) {
             case "MESSAGE_CREATE":
-                Discord.Logger.Log(`A message was created ---- ${d.author.username}#${d.author.discriminator}: '${d.content}'. Message sent in guild '${d.guild.name}' and channel '${d.channel.name}'`);
                 client.on_message(d, GLOBAL_USER_TOKEN);
         }
     });
