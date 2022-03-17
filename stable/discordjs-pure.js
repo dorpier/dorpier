@@ -172,8 +172,7 @@ client.get_userid = async function(GLOBAL_USER_TOKEN) {
 return await fetch(`https://discord.com/api/v9/users/@me`,{
 "headers": {
   "Authorization": GLOBAL_USER_TOKEN
-}}).then(response => response.json()).then(json => {return json.id;});
-Discord.Logger.Log(`Attempted to fetch the USERID for the token '${GLOBAL_USER_TOKEN}'`);
+}}).then(response => response.json()).then(json => {Discord.Logger.Log(`Attempted to fetch the USERID for the token '${GLOBAL_USER_TOKEN}'`); return json.id;});
 };
 client.send_message = function(message, chan_id, token) {
     if (token && message && chan_id) {
