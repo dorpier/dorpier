@@ -244,7 +244,6 @@ client.run = function(GLOBAL_USER_TOKEN) {
             op,
             d
         } = payload;
-        //Discord.Logger.Log(`Websocket: ${op.toString()}`);
         switch (op) {
             case 9:
                 if (COUNTER > 0) return;
@@ -287,4 +286,3 @@ Discord.Logger.Log(`NOTE: By default, Discord.JS-Pure logs events. Run 'Discord.
     "type": "rich"
 }]);
 */
-// pointless comment
