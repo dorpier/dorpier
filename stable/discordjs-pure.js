@@ -1,7 +1,9 @@
 let KEEPLOGS = true;
 let COUNTER = 0;
-var ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
-
+let seq;
+let session_id;
+let ws;
+let recon;
 var Discord = {
     sleep: function(milliseconds) {
       var start = new Date().getTime();
@@ -208,9 +210,10 @@ client.delete_message = function(msg, token) {
         Discord.Logger.Log(`Not all of the specified values for the 'delete_message' function of the client object were fufilled - aborting message delete!`);
     }
 };
-client.run = function(GLOBAL_USER_TOKEN, SHOW_SOCKET_CODES=false) {
-    var ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
-    Discord.Logger.Log(`Establishing WebSocket connection to 'wss://gateway.discord.gg/?v=9&encoding=json'...`);
+client.run = function(GLOBAL_USER_TOKEN, SOCKET_LOGGING=false) {
+const conEvent = new Event('connection');
+ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
+  Discord.Logger.Log(`Establishing WebSocket connection to 'wss://gateway.discord.gg/?v=9&encoding=json'...`);
     var interval = 0;
     var indentified = `null`;
     payload = {
@@ -225,15 +228,31 @@ client.run = function(GLOBAL_USER_TOKEN, SHOW_SOCKET_CODES=false) {
             }
         }
     };
-
+    document.addEventListener('connection', function (){
+ws.addEventListener('close', event => {
+recon = true;
+ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
+document.dispatchEvent(conEvent)
+})
     ws.addEventListener("open", function open(x) {
+        if (recon != true){
         ws.send(JSON.stringify({
-            op: 2,
+            op: 1,
             d: null
-        }));
-        Discord.Logger.Log(`Sending identify in 1s...`);
-        Discord.sleep(1000);
-        ws.send(JSON.stringify(payload));
+        }))
+        Discord.sleep(1000)
+        ws.send(JSON.stringify(payload))}
+        else {
+          ws.send(JSON.stringify({
+            "op": 6,
+            "d": {
+              "token": GLOBAL_USER_TOKEN,
+              "session_id": session_id,
+              "seq": seq
+            }
+          }))
+          recon = false;
+        }
     });
 
     ws.addEventListener("message", function incoming(data) {
@@ -241,59 +260,14 @@ client.run = function(GLOBAL_USER_TOKEN, SHOW_SOCKET_CODES=false) {
         var payload = JSON.parse(x);
         const {
             t,
-            event,
+            s,
             op,
             d
         } = payload;
-        if (SHOW_SOCKET_CODES == true) {
-          Discord.Logger.Log(`Websocket: ${op.toString()}`);
+        if (SOCKET_LOGGING != false) {
+          Discord.Logger.Log(payload); 
         }
         switch (op) {
-            case 9:
-                if (COUNTER > 0) {
-                  ws.close();
-                  Discord.Logger.Log("Initial connection failed. Attempting to reconnect...")
-                  var ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
-                  Discord.Logger.Log(`(reconnect) Establishing WebSocket connection to 'wss://gateway.discord.gg/?v=9&encoding=json'...`);
-                  var interval = 0;
-                  var indentified = `null`;
-                  payload = {
-                      op: 2,
-                      d: {
-                          token: GLOBAL_USER_TOKEN,
-                          intents: 512,
-                          properties: {
-                              $os: "linux",
-                              $browser: "chrome",
-                              $device: "chrome"
-                          }
-                      }
-                  };
-
-                  ws.addEventListener("open", function open(x) {
-                      ws.send(JSON.stringify({
-                          op: 2,
-                          d: null
-                      }));
-                      Discord.Logger.Log(`(reconnect) Sending identify in 1s...`);
-                      Discord.sleep(1000);
-                      ws.send(JSON.stringify(payload));
-                      Discord.Logger.Log("(reconnect) Reconnected!");
-                      if (typeof client.on_ready === 'function') { client.on_ready(); }
-                      else { Discord.Logger.Log("No `on_ready` function defined. Aborting `on_ready` event response!"); }
-                      return;
-                  });
-                }
-                if (COUNTER == 0){
-                  if (typeof client.on_ready === 'function') {
-                    client.on_ready();
-                  }
-                  else {
-                    Discord.Logger.Log("No `on_ready` function defined. Aborting `on_ready` event response!");
-                  }
-                  COUNTER=COUNTER+1;
-                }
-                
             case 10:
                 const {
                     heartbeat_interval
@@ -304,26 +278,40 @@ client.run = function(GLOBAL_USER_TOKEN, SHOW_SOCKET_CODES=false) {
                         d: d
                     }))
                 }, heartbeat_interval);
-                break
+                break;
+              case 7:
+              ws.close()
+              break;
         }
         switch (t) {
             case "MESSAGE_CREATE":
-                if (typeof client.on_message === 'function') {
+                if (typeof client.on_message === 'function'){
                   client.on_message(d, GLOBAL_USER_TOKEN);
                 }
                 else {
                   Discord.Logger.Log("No `on_message` function defined. Aborting `on_message` event response!");
                 }
+                seq = s;
+                break;
+            case "READY":
+                Discord.Logger.Log("Connected to socket");
+                if (typeof client.on_ready === 'function') {
+                  client.on_ready();
+                }
+                else {
+                  Discord.Logger.Log("No `on_ready` function defined. Aborting `on_ready` event response!");
+                }
+                session_id = d.session_id;
+                Discord.Logger.Log("Collected sessionId");
+                break;
+                default:
+                seq = s;
+                break;
         }
     });
+    Discord.Logger.Log("Started to log in...")})
+    document.dispatchEvent(conEvent)
 };
 
 Discord.Logger.Log("Attempted to start-up Discord.JS-Pure!")
 Discord.Logger.Log(`NOTE: By default, Discord.JS-Pure logs events. Run 'Discord.Logger.disable();' to disable the logs if they get too intrusive.`);
-/*Discord.experimental.find_module.by_display_name('sendBotMessage').sendBotMessage(Discord.experimental.find_module.by_display_name('getLastSelectedChannelId', 'getChannelId').getChannelId(), "", [{
-    "title": "Discord.JS-Pure Status",
-    "description": "Attempted to inject Discord.JS-Pure! Check out [the docs](https://github.com/13-05/discord.js-pure/wiki) to see all of what it can do!",
-    "color": "11111111111111111111111",
-    "type": "rich"
-}]);
-*/
