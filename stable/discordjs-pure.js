@@ -287,4 +287,3 @@ Discord.Logger.Log(`NOTE: By default, Discord.JS-Pure logs events. Run 'Discord.
     "type": "rich"
 }]);
 */
-// pointless comment
