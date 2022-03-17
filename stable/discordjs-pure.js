@@ -209,6 +209,7 @@ client.delete_message = function(msg, token) {
     }
 };
 client.run = function(GLOBAL_USER_TOKEN, SOCKET_LOGGING=false) {
+//sets up the event for reconnecting in case the websocket closes
 const conEvent = new Event('connection');
 ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
   Discord.Logger.Log(`Establishing WebSocket connection to 'wss://gateway.discord.gg/?v=9&encoding=json'...`);
@@ -226,13 +227,18 @@ ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
             }
         }
     };
-    document.addEventListener('connection', function (){
+//all events for websocket goes in this listener so that when we reopen the socket it reassigns the events
+document.addEventListener('connection', function (){
 ws.addEventListener('close', event => {
+//sets up reconnection variable to change the payload sent later
 recon = true;
+//reopens websocket
 ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
+//reruns the entire connection event, adding the listeners to the new websocket
 document.dispatchEvent(conEvent)
 })
     ws.addEventListener("open", function open(x) {
+//if the recon is false then it sends a normal connection payload
         if (recon != true){
         ws.send(JSON.stringify({
             op: 1,
@@ -241,6 +247,7 @@ document.dispatchEvent(conEvent)
         Discord.sleep(1000)
         ws.send(JSON.stringify(payload))}
         else {
+//if recon is true then it sends the reconnect payload
           ws.send(JSON.stringify({
             "op": 6,
             "d": {
@@ -249,6 +256,7 @@ document.dispatchEvent(conEvent)
               "seq": seq
             }
           }))
+//turns the recon value false so that the payload doesn't send again
           recon = false;
         }
     });
@@ -263,7 +271,7 @@ document.dispatchEvent(conEvent)
             d
         } = payload;
         if (SOCKET_LOGGING != false) {
-          Discord.Logger.Log(payload); 
+          Discord.Logger.Log(payload);
         }
         switch (op) {
             case 10:
