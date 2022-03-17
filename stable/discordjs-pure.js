@@ -208,7 +208,7 @@ client.delete_message = function(msg, token) {
     }
 };
 
-client.run = function(GLOBAL_USER_TOKEN) {
+client.run = function(GLOBAL_USER_TOKEN, SHOW_SOCKET_CODES=false) {
     var ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
     Discord.Logger.Log(`Establishing WebSocket connection to 'wss://gateway.discord.gg/?v=9&encoding=json'...`);
     var interval = 0;
@@ -245,7 +245,9 @@ client.run = function(GLOBAL_USER_TOKEN) {
             op,
             d
         } = payload;
-        Discord.Logger.Log(`Websocket: ${op.toString()}`);
+        if (SHOW_SOCKET_CODES == true) {
+          Discord.Logger.Log(`Websocket: ${op.toString()}`);
+        }
         switch (op) {
             case 9:
                 if (COUNTER > 0) {
