@@ -159,7 +159,7 @@ client.get_token = function() { // this function has two fallbacks, so it should
             window.tkn = JSON.parse(popup.localStorage.token);
             popup.close();
             let GLOBAL_USER_TOKEN = window.tkn;
-            console.log(`[discordjs-pure] token grab success! token is ${ GLOBAL_USER_TOKEN }! returning now...`);
+            Discord.Logger.Log("Token grab success! Returning now...");
             if (window.tkn.includes(".") == false) {
                 Discord.experimental.find_module("getToken").getToken();
             }
