@@ -5,7 +5,7 @@ Special thanks to [L](https://github.com/L5050) and [Harry Tom](https://stackove
 
 ## Usage
 ##### NOTE: Check the [Documentation](https://github.com/13-05/discord.js-pure/wiki) for a more detailed walkthrough of this lib's usage!
-### Manually Inject It
+### Run It In the Console
 If you're like most people, you don't want to download anything. Well, you're in luck! Follow the below steps to get this working in the inspect element JavaScript console of most browsers:
 1) Go onto [Discord](https://discord.com/app) in your web browser
 2) Open inspect element and then navigate to the `Console` section.
@@ -17,15 +17,20 @@ If you're like most people, you don't want to download anything. Well, you're in
 5) Paste the following to test it:
 ###### Example Code: 
 ```js
+Discord.Logger.enable();
 let GLOBAL_USER_TOKEN = client.get_token();
 let USERID = await client.get_userid(GLOBAL_USER_TOKEN);
 
+client.on_ready = function() {
+  window.alert("Selfbot is ready!");
+}
+
 client.on_message = function(message, token) {
   let content = message.content.trim(); // sometimes the message content has whitespace at the end, so we just say message.content.trim() is == to message.content
-  if (message.author.id.toString() != USERID) return;
+  if (message.author.id != USERID) return;
   if (content == "ping"){
-    client.send_message("pong!", message.channel_id, token); // i looked at the "message" object and that's the path of a channelid; now it'll respond ez    }
-  }
+    client.send_message("pong!", message.channel_id, token); // i looked at the "message" object and that's the path of a channelid; now it'll respond ez
+    }
 }
 
 client.run(GLOBAL_USER_TOKEN);
@@ -33,9 +38,15 @@ client.run(GLOBAL_USER_TOKEN);
 
 6) Say 'ping' in any channel in Discord, and it should respond with `pong`! If it does, then you did everything right; the library's working! Now, you can get to making your own scripts ;)
 
-### Automatically Inject It (known as a bookmarklet)
-1) Copy the code from [here](https://raw.githubusercontent.com/13-05/discord.js-pure/main/inspect-console/minified.js)
-2) Make a new bookmark with the name as `inject discord.js-pure` and the url as `javascript:PASTETHECODEYOUCOPIEDJUSTNOWRIGHTHERE!!`
-3) Now, save it and you can click it from discord whenever you wanna inject discord.js-pure into the discord webapp!
+### Run It Automatically
+Alright, so this method will automatically boot the selfbot every time you load up [Discord](https://discord.com/app) in your browser. Although, there's one catch: you need an extension. So, if you don't mind using an extension, you're good to go! Just follow the steps below:
+1) Get [ViolentMonkey](https://violentmonkey.github.io/) for your browser
+2) Navigate to the settings page by clicking the gear icon after clicking the logo.
+3) Press the `+` symbol at the top left, and then click `New`
+4) Paste an [example](https://github.com/13-05/discord.js-pure/blob/main/examples/slightly_advanced_selfbot.user.js) and then save the script
+5) Open/reload [Discord](https://discord.com/app) in your browser
+6) If you open the console, you should see messages from the library that look similar to the below:
 
-###### ive been procrasinating on this too much xd
+![image](https://user-images.githubusercontent.com/64506392/158729759-e62f079b-ed43-4d8a-966e-9829da85ed39.png)
+
+7) If you see that, just send a message in any server in the format of `YOURPREFIX.test`, and if it responds, you're good to go! Happy scripting ;)
