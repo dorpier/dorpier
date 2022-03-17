@@ -226,7 +226,6 @@ client.run = function(GLOBAL_USER_TOKEN) {
     };
 
     ws.addEventListener("open", function open(x) {
-        //ws.send(JSON.stringify(payload))
         ws.send(JSON.stringify({
             op: 2,
             d: null
@@ -274,4 +273,3 @@ Discord.Logger.Log(`NOTE: By default, Discord.JS-Pure logs events. Run 'Discord.
     "type": "rich"
 }]);
 */
-// pointless comment
