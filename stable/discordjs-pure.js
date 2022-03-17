@@ -1,4 +1,5 @@
 let KEEPLOGS = true;
+let COUNTER = 0;
 
 var Discord = {
     sleep: function(milliseconds) {
@@ -243,9 +244,10 @@ client.run = function(GLOBAL_USER_TOKEN) {
             op,
             d
         } = payload;
-        Discord.Logger.Log(`Websocket: ${op.toString()}`);
+        //Discord.Logger.Log(`Websocket: ${op.toString()}`);
         switch (op) {
             case 9:
+                if (COUNTER > 0) return;
                 if (typeof client.on_ready === 'function') {
                   client.on_ready();
                 }
@@ -285,4 +287,3 @@ Discord.Logger.Log(`NOTE: By default, Discord.JS-Pure logs events. Run 'Discord.
     "type": "rich"
 }]);
 */
-// pointless comment
