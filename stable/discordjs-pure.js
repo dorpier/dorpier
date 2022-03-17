@@ -1,5 +1,4 @@
 let KEEPLOGS = true;
-let COUNTER = 0;
 let seq;
 let session_id;
 let ws;
