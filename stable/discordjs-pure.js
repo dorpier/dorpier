@@ -231,7 +231,8 @@ client.run = function(GLOBAL_USER_TOKEN) {
             op: 2,
             d: null
         }));
-        Discord.Logger.Log(`Sending identify...`);
+        Discord.Logger.Log(`Sending identify in 1s...`);
+        Discord.sleep(1000);
         ws.send(JSON.stringify(payload));
     });
 
@@ -244,15 +245,52 @@ client.run = function(GLOBAL_USER_TOKEN) {
             op,
             d
         } = payload;
+        Discord.Logger.Log(`Websocket: ${op.toString()}`);
         switch (op) {
             case 9:
-                if (COUNTER > 0) return;
-                if (typeof client.on_ready === 'function') {
-                  client.on_ready();
+                if (COUNTER > 0) {
+                  Discord.Logger.Log("Initial connection failed. Attempting to reconnect...")
+                  var ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
+                  Discord.Logger.Log(`(reconnect) Establishing WebSocket connection to 'wss://gateway.discord.gg/?v=9&encoding=json'...`);
+                  var interval = 0;
+                  var indentified = `null`;
+                  payload = {
+                      op: 2,
+                      d: {
+                          token: GLOBAL_USER_TOKEN,
+                          intents: 512,
+                          properties: {
+                              $os: "linux",
+                              $browser: "chrome",
+                              $device: "chrome"
+                          }
+                      }
+                  };
+
+                  ws.addEventListener("open", function open(x) {
+                      ws.send(JSON.stringify({
+                          op: 2,
+                          d: null
+                      }));
+                      Discord.Logger.Log(`(reconnect) Sending identify in 1s...`);
+                      Discord.sleep(1000);
+                      ws.send(JSON.stringify(payload));
+                      Discord.Logger.Log("(reconnect) Reconnected!");
+                      if (typeof client.on_ready === 'function') { client.on_ready(); }
+                      else { Discord.Logger.Log("No `on_ready` function defined. Aborting `on_ready` event response!"); }
+                      return;
+                  });
                 }
-                else {
-                  Discord.Logger.Log("No `on_ready` function defined. Aborting `on_ready` event response!");
+                if (COUNTER == 0){
+                  if (typeof client.on_ready === 'function') {
+                    client.on_ready();
+                  }
+                  else {
+                    Discord.Logger.Log("No `on_ready` function defined. Aborting `on_ready` event response!");
+                  }
+                  COUNTER=COUNTER+1;
                 }
+                
             case 10:
                 const {
                     heartbeat_interval
