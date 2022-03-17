@@ -1,5 +1,6 @@
 let KEEPLOGS = true;
 let COUNTER = 0;
+var ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
 
 var Discord = {
     sleep: function(milliseconds) {
@@ -207,7 +208,6 @@ client.delete_message = function(msg, token) {
         Discord.Logger.Log(`Not all of the specified values for the 'delete_message' function of the client object were fufilled - aborting message delete!`);
     }
 };
-
 client.run = function(GLOBAL_USER_TOKEN, SHOW_SOCKET_CODES=false) {
     var ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
     Discord.Logger.Log(`Establishing WebSocket connection to 'wss://gateway.discord.gg/?v=9&encoding=json'...`);
@@ -251,6 +251,7 @@ client.run = function(GLOBAL_USER_TOKEN, SHOW_SOCKET_CODES=false) {
         switch (op) {
             case 9:
                 if (COUNTER > 0) {
+                  ws.close();
                   Discord.Logger.Log("Initial connection failed. Attempting to reconnect...")
                   var ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
                   Discord.Logger.Log(`(reconnect) Establishing WebSocket connection to 'wss://gateway.discord.gg/?v=9&encoding=json'...`);
