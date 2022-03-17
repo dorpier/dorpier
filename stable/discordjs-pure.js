@@ -245,6 +245,7 @@ client.run = function(GLOBAL_USER_TOKEN) {
             op,
             d
         } = payload;
+        Discord.Logger.Log(`Websocket: ${op.toString()}`);
         switch (op) {
             case 10:
                 const {
