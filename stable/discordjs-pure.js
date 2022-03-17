@@ -245,6 +245,13 @@ client.run = function(GLOBAL_USER_TOKEN) {
         } = payload;
         Discord.Logger.Log(`Websocket: ${op.toString()}`);
         switch (op) {
+            case 9:
+                if (typeof client.on_ready === 'function') {
+                  client.on_ready();
+                }
+                else {
+                  Discord.Logger.Log("No `on_ready` function defined. Aborting `on_ready` event response!");
+                }
             case 10:
                 const {
                     heartbeat_interval
@@ -259,7 +266,12 @@ client.run = function(GLOBAL_USER_TOKEN) {
         }
         switch (t) {
             case "MESSAGE_CREATE":
-                client.on_message(d, GLOBAL_USER_TOKEN);
+                if (typeof client.on_message === 'function') {
+                  client.on_message(d, GLOBAL_USER_TOKEN);
+                }
+                else {
+                  Discord.Logger.Log("No `on_message` function defined. Aborting `on_message` event response!");
+                }
         }
     });
 };
