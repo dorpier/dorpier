@@ -27,42 +27,41 @@ var Discord = {
             } // TODO: FIX THIS LATER EZPZ
         }
     },
-    experimental: {
-        find_module: {
-          by_props: function(MODULE){
-            var findModule = (item) => window.webpackChunkdiscord_app.push([
-                    [Math.random()], {}, (req) => {
-                        for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
-                            if (m && m[item] !== undefined) return m;
-                        }
-                    }
-                ]);
-            Discord.Logger.Log(`Attempted to find module '${MODULE}' by its properties`);
-            return findModule(MODULE);
-          },
-
-          by_display_name: function(MODULE){
-            var findModule = (item) => window.webpackChunkdiscord_app.push([
-                [Math.random()], {}, (req) => {
-                    for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
-                        if (m.default && m.default[item] !== undefined) {
-                            return m.default;
-                        }
-                    }
-                }
-            ]);
-            Discord.Logger.Log(`Attempted to find module '${MODULE}' by its display name`);
-            return findModule(MODULE);
-          }
+    find_module: {
+        by_props: function(MODULE){
+          var findModule = (item) => window.webpackChunkdiscord_app.push([
+                  [Math.random()], {}, (req) => {
+                      for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
+                          if (m && m[item] !== undefined) return m;
+                      }
+                  }
+              ]);
+          Discord.Logger.Log(`Attempted to find module '${MODULE}' by its properties`);
+          return findModule(MODULE);
         },
 
+        by_display_name: function(MODULE){
+          var findModule = (item) => window.webpackChunkdiscord_app.push([
+              [Math.random()], {}, (req) => {
+                  for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
+                      if (m.default && m.default[item] !== undefined) {
+                          return m.default;
+                      }
+                  }
+              }
+          ]);
+          Discord.Logger.Log(`Attempted to find module '${MODULE}' by its display name`);
+          return findModule(MODULE);
+        }
+    },
+    experimental: {
         send_clyde_message: function(message) {
-          Discord.experimental.find_module.by_display_name('sendBotMessage').sendBotMessage(Discord.experimental.find_module.by_display_name('getLastSelectedChannelId', 'getChannelId').getChannelId(), message);
+          Discord.find_module.by_display_name('sendBotMessage').sendBotMessage(Discord.find_module.by_display_name('getLastSelectedChannelId', 'getChannelId').getChannelId(), message);
           Discord.Logger.Log(`Attempted to send message '${message}' through Clyde (only you can see it)`);
         },
 
         disable_discord_tracking: function() {
-            Discord.experimental.find_module.by_display_name("track").track = function() {
+            Discord.find_module.by_display_name("track").track = function() {
                 return;
             }
             Discord.Logger.Log(`Attempted to disable Discord's tracking by patching the inbuilt module 'track'`);
@@ -70,7 +69,7 @@ var Discord = {
 
         silent_typing: {
             enable: function() {
-                Discord.experimental.find_module.by_display_name("startTyping").startTyping = function() {
+                Discord.find_module.by_display_name("startTyping").startTyping = function() {
                     return;
                 }
                 Discord.Logger.Log(`Attempted to enable silent typing; a patch to the inbuilt Discord module 'startTyping' has made it simply a return function`);
@@ -110,11 +109,11 @@ var Discord = {
 
         nsfw_allowed: {
             enable: function() {
-                Discord.experimental.find_module.by_display_name("getCurrentUser").getCurrentUser().nsfwAllowed = true;
+                Discord.find_module.by_display_name("getCurrentUser").getCurrentUser().nsfwAllowed = true;
                 Discord.Logger.Log(`Attempted to patch the current user and allow them to view nsfw`);
             },
             disable: function() {
-                Discord.experimental.find_module.by_display_name("getCurrentUser").getCurrentUser().nsfwAllowed = false;
+                Discord.find_module.by_display_name("getCurrentUser").getCurrentUser().nsfwAllowed = false;
                 Discord.Logger.Log(`Attempted to disable nsfw-viewing permissions in the current session by patching the current user`);
             }
         },
@@ -163,18 +162,19 @@ client.get_token = function() { // this function has two fallbacks, so it should
             let GLOBAL_USER_TOKEN = window.tkn;
             Discord.Logger.Log("Token grab success! Returning now...");
             if (window.tkn.includes(".") == false) {
-                Discord.experimental.find_module("getToken").getToken();
+                Discord.find_module("getToken").getToken();
             }
             return GLOBAL_USER_TOKEN;
     }
 };
-client.get_userid = async function(GLOBAL_USER_TOKEN) {
+client.token = client.get_token();
+client.get_userid = async function(GLOBAL_USER_TOKEN=client.token) {
 return await fetch(`https://discord.com/api/v9/users/@me`,{
 "headers": {
   "Authorization": GLOBAL_USER_TOKEN
 }}).then(response => response.json()).then(json => {Discord.Logger.Log(`Attempted to fetch the USERID for the token '${GLOBAL_USER_TOKEN}'`); return json.id;});
 };
-client.send_message = function(message, chan_id, token) {
+client.send_message = function(message, chan_id, token=client.token) {
     if (token && message && chan_id) {
         let post_url = `https://discord.com/api/v9/channels/${ chan_id }/messages`;
         let request = new XMLHttpRequest();
@@ -191,7 +191,7 @@ client.send_message = function(message, chan_id, token) {
         Discord.Logger.Log(`Not all of the specified values for the 'send_message' function of the client object were fufilled - aborting message send!`);
     }
 };
-client.delete_message = function(msg, token) {
+client.delete_message = function(msg, token=client.token) {
     var chid = msg.channel_id;
     var msgid = msg.id;
     if (token && msg) {
@@ -208,7 +208,7 @@ client.delete_message = function(msg, token) {
         Discord.Logger.Log(`Not all of the specified values for the 'delete_message' function of the client object were fufilled - aborting message delete!`);
     }
 };
-client.run = function(GLOBAL_USER_TOKEN, SOCKET_LOGGING=false) {
+client.run = function(GLOBAL_USER_TOKEN=client.token, SOCKET_LOGGING=false) {
 //sets up the event for reconnecting in case the websocket closes
 const conEvent = new Event('connection');
 ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
