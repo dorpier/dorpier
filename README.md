@@ -18,7 +18,7 @@ If you're like most people, you don't want to download anything. Well, you're in
 ###### Example Code: 
 ```js
 Discord.Logger.enable();
-let USERID = await client.get_userid(GLOBAL_USER_TOKEN);
+let USERID = await client.get_userid();
 
 client.on_ready = function() {
   window.alert("Selfbot is ready!");
