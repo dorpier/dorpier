@@ -211,8 +211,8 @@ client.delete_message = function(msg, token=client.token) {
 client.run = function(GLOBAL_USER_TOKEN=client.token, SOCKET_LOGGING=false) {
 //sets up the event for reconnecting in case the websocket closes
 const conEvent = new Event('connection');
-ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
-  Discord.Logger.Log(`Establishing WebSocket connection to 'wss://gateway.discord.gg/?v=9&encoding=json'...`);
+ws = new WebSocket("wss://gateway.discord.gg/?encoding=json&v=9&compress=zlib-stream");
+  Discord.Logger.Log(`Establishing WebSocket connection to 'wss://gateway.discord.gg/?encoding=json&v=9&compress=zlib-stream'...`);
     var interval = 0;
     var indentified = `null`;
     payload = {
@@ -233,7 +233,7 @@ ws.addEventListener('close', event => {
 //sets up reconnection variable to change the payload sent later
 recon = true;
 //reopens websocket
-ws = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
+ws = new WebSocket("wss://gateway.discord.gg/?encoding=json&v=9&compress=zlib-stream");
 //reruns the entire connection event, adding the listeners to the new websocket
 document.dispatchEvent(conEvent)
 })
