@@ -29,7 +29,7 @@ client.user = await client.get_current_user(client.token);
 
 
 /* stuff that makes the selfbot more complete (only let it respond to you) */
-let userid = await client.get_userid();
+let USERID = await client.get_userid();
 
 client.on_ready = async function() {
   Discord.Logger.Log(`Selfbot's up and running! Logged in as ${client.user}`);
