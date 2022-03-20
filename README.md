@@ -23,21 +23,27 @@ If you're like most people, you don't want to download anything. Well, you're in
 5) Paste the following to test it:
 ###### Example Code: 
 ```js
-Discord.Logger.enable();
-let USERID = await client.get_userid();
+/* required for the selfbot to run */
+client.token = await client.get_token();
+client.user = await client.get_current_user(client.token);
 
-client.on_ready = function() {
-  window.alert("Selfbot is ready!");
+
+/* stuff that makes the selfbot more complete (only let it respond to you) */
+let userid = await client.get_userid();
+
+client.on_ready = async function() {
+  Discord.Logger.Log(`Selfbot's up and running! Logged in as ${client.user}`);
+  window.alert(`Selfbot's up and running! Logged in as ${client.user}`);
 }
 
-client.on_message = function(message) {
+client.on_message = async function(message) {
   if (message.author.id != USERID) return;
   if (message.content.trim() == "ping"){
-    client.send_message("pong!", message.channel_id);
-    }
+    await client.send_message("pong!", message.channel_id);
+  }
 }
 
-client.run();
+client.run(); /* run the selfbot */
 ```
 
 6) Say 'ping' in any channel in Discord, and it should respond with `pong`! If it does, then you did everything right; the library's working! Now, you can get to making your own scripts ;)
