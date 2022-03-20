@@ -10,23 +10,28 @@
 
 (async function(){ // has to be an async function so we can use the userid-get function
   'use strict';
-  let PREFIX = "YOUR_PREFIX_HERE."; // put your prefix here and whatever but keep the period; it's a separator between the prefix & cmd.
-  Discord.Logger.enable(); // enable logs
-  Discord.experimental.amoled_dark_mode.enable(); // enable pog dark mode
-  let token = client.get_token(); // fetch token
-  let userid = await client.get_userid(token); // grab the userid
+  /* required for the selfbot to run */
+  client.token = await client.get_token();
+  client.user = await client.get_current_user(client.token);
   
-  client.on_ready = function() { // onready event
-    Discord.Logger.Log(`Selfbot is ready! Prefix is '${PREFIX}'`);
+  /* optional stuff that makes it better */
+  let userid = await client.get_userid(); // let the selfbot only work for you
+  let PREFIX = "?"; // put your prefix here and whatever 
+  
+  
+  /* actual events for the bot yea ezpz xd */
+  client.on_ready = async function() { // onready event
+    Discord.Logger.Log(`Logged into ${client.user}! Prefix is ${PREFIX}`);
+    alert(`Logged into ${client.user}! Prefix is ${PREFIX}`);
   }
   
-  client.on_message = function(message, token){ // on_message event
-    if (message.author.id != userid) return; // if the message author is not you, return.
-    if (message.content.trim() == `${PREFIX}test`) { // you have to call message.content.trim() when getting message content because if you don't, there's sometimes whitespace that makes your message checking not work.
-      client.send_message("test success!", message.channel_id, token); // say "test success!" cos why not
+  client.on_message = async function(message){
+    if (message.author.id != userid) return; // if the message author is not you, ignore the command.
+    if (message.content.trim() == `${PREFIX}ping`) { // you have to call message.content.trim() when getting message content because if you don't, there's sometimes whitespace that makes your message checking not work.
+      await client.send_message("pong!", message.channel_id); // reply 'pong!' in that message's channel
     }
   }
   
   
-  client.run(token); // run the selfbot
+  client.run(); // run the selfbot
 })();
