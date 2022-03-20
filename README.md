@@ -11,7 +11,7 @@ Special thanks to [L](https://github.com/L5050) and [Harry Tom](https://stackove
 
 \- is stable: true,
 
-\- NOTE: overhaul coming soon!!
+\- NOTE: overhaul (Discord.JS-Pure_v2) coming soon!!
 
 ## Usage
 ##### NOTE: Check the [Documentation](https://github.com/13-05/discord.js-pure/wiki) for a more detailed walkthrough of this lib's usage!
