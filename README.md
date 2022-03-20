@@ -48,6 +48,8 @@ client.run(); /* run the selfbot */
 
 6) Say 'ping' in any channel in Discord, and it should respond with `pong`! If it does, then you did everything right; the library's working! Now, you can get to making your own scripts ;)
 
+EXTRA: know that the `/* required for the selfbot to run */` part is super serious, without those two lines your selfbot literally will not run.
+
 ### Run It Automatically
 Alright, so this method will automatically boot the selfbot every time you load up [Discord](https://discord.com/app) in your browser. Although, there's one catch: you need an extension. So, if you don't mind using an extension, you're good to go! Just follow the steps below:
 1) Get [ViolentMonkey](https://violentmonkey.github.io/) for your browser
