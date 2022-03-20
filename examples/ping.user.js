@@ -9,16 +9,28 @@
 // @run-at document-start
 // ==/UserScript==
 (async function() {
-    'use strict';
-  Discord.experimental.amoled_dark_mode.enable();
-  let token = client.get_token();
-  var userid = await client.get_userid(token);
-  let PREFIX = prompt("prefix: ");
-  client.on_message=function(message,token){
-    if (message.author.id.toString() != userid) return;
-    if (message.content.trim() == `${PREFIX}ping`){
-      client.send_message("pong!", message.channel_id, token);
+    /* required for the library to run */
+    client.token = await client.get_token();
+    client.user = await client.get_current_user(client.token);
+    
+    
+    /* optional but highly recommended */
+    let USERID = await client.get_userid();
+    
+    
+    /* events */
+    client.on_ready = function() {
+      Discord.Logger.Log(`Selfbot's up and running on ${client.user}`);
+      window.alert(`Selfbot's up and running on ${client.user}`);
+    }
+    
+    client.on_message = function(message) {
+      if (message.author.id != USERID) { return; } // makes it so the selfbot only responds to you
+      
+      if (message.content.trim() == "ping") { // `.trim()` is required due to the fact that discord straps whitespace to content ig
+        await client.send_message("pong!", message.channel_id); // responds to the ping with pong in the message's channelid
       }
-   }
-  client.run(token);
+    }
+    
+    client.run(); // runs ya boy's selfbot
 })();
