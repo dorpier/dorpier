@@ -66,7 +66,7 @@ const Discord = {
         }
     },
     find_module: {
-        by_props: function(MODULE) {
+        by_display_name: function(MODULE) {
             var findModule = (item) => window.webpackChunkdiscord_app.push([
                 [Math.random()], {}, (req) => {
                     for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
@@ -78,7 +78,7 @@ const Discord = {
             return findModule(MODULE);
         },
 
-        by_display_name: function(MODULE) {
+        by_props: function(MODULE) {
             var findModule = (item) => window.webpackChunkdiscord_app.push([
                 [Math.random()], {}, (req) => {
                     for (const m of Object.keys(req.c).map((x) => req.c[x].exports).filter((x) => x)) {
@@ -99,24 +99,24 @@ const Discord = {
                 message = "";
             }
             if (typeof embed === 'undefined') {
-                msg = Discord.find_module.by_props("createBotMessage").createBotMessage(Discord.find_module.by_display_name("getChannelId").getChannelId(), message);
+                msg = Discord.find_module.by_display_name("createBotMessage").createBotMessage(Discord.find_module.by_props("getChannelId").getChannelId(), message);
             } else {
-                msg = Discord.find_module.by_props("createBotMessage").createBotMessage(Discord.find_module.by_display_name("getChannelId").getChannelId(), message, [embed]);
+                msg = Discord.find_module.by_display_name("createBotMessage").createBotMessage(Discord.find_module.by_props("getChannelId").getChannelId(), message, [embed]);
             }
-            msg.author = Discord.find_module.by_display_name("getCurrentUser").getCurrentUser();
+            msg.author = Discord.find_module.by_props("getCurrentUser").getCurrentUser();
             msg.type = 0;
             msg.mention_everyone = false;
-            Discord.find_module.by_display_name("receiveMessage").receiveMessage(msg.channel_id, msg);
+            Discord.find_module.by_props("receiveMessage").receiveMessage(msg.channel_id, msg);
             return true;
         },
         send_clyde_message: function(message) {
-            Discord.find_module.by_display_name('sendBotMessage').sendBotMessage(Discord.find_module.by_display_name('getLastSelectedChannelId', 'getChannelId').getChannelId(), message);
+            Discord.find_module.by_props('sendBotMessage').sendBotMessage(Discord.find_module.by_props('getLastSelectedChannelId', 'getChannelId').getChannelId(), message);
             Discord.Logger.Log(`Attempted to send message '${message}' through Clyde (only you can see it)`);
             return true;
         },
 
         disable_discord_tracking: function() {
-            Discord.find_module.by_display_name("track").track = function() {
+            Discord.find_module.by_props("track").track = function() {
                 return;
             }
             Discord.Logger.Log(`Attempted to disable Discord's tracking by patching the inbuilt module 'track'`);
@@ -125,7 +125,7 @@ const Discord = {
 
         silent_typing: {
             enable: function() {
-                Discord.find_module.by_display_name("startTyping").startTyping = function() {
+                Discord.find_module.by_props("startTyping").startTyping = function() {
                     return;
                 }
                 Discord.Logger.Log(`Attempted to enable silent typing; a patch to the inbuilt Discord module 'startTyping' has made it simply a return function`);
@@ -169,11 +169,11 @@ const Discord = {
 
         nsfw_allowed: {
             enable: function() {
-                Discord.find_module.by_display_name("getCurrentUser").getCurrentUser().nsfwAllowed = true;
+                Discord.find_module.by_props("getCurrentUser").getCurrentUser().nsfwAllowed = true;
                 Discord.Logger.Log(`Attempted to patch the current user and allow them to view nsfw`);
             },
             disable: function() {
-                Discord.find_module.by_display_name("getCurrentUser").getCurrentUser().nsfwAllowed = false;
+                Discord.find_module.by_props("getCurrentUser").getCurrentUser().nsfwAllowed = false;
                 Discord.Logger.Log(`Attempted to disable nsfw-viewing permissions in the current session by patching the current user`);
             }
         },
