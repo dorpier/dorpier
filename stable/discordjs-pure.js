@@ -308,7 +308,6 @@ client.get_token = async function() { // this function has two fallbacks, so it 
                             op: 2,
                             d: {
                                 token: GLOBAL_USER_TOKEN,
-                                intents: 512,
                                 properties: {
                                     $os: "linux",
                                     $browser: "chrome",
