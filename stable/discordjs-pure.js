@@ -1,26 +1,26 @@
 const _LIBDATA_ = { // make library's data a constant value
-  LIBRARY_VERSION: 2.0,
-  IS_LIBRARY_NIGHTLY: false
+    LIBRARY_VERSION: 2.0,
+    IS_LIBRARY_NIGHTLY: false
 };
 
 let KEEPLOGS = true;
 
 function check_injection_status() {
-  console.clear();
-  if (typeof client === "object") {
-     Discord.Logger.Log(`Successfully injected Discord.JS-Pure_v${_LIBDATA_.LIBRARY_VERSION.toString()}!`);
-    if (_LIBDATA_.IS_LIBRARY_NIGHTLY == true) {
-      Discord.Logger.Log("You're running a nightly version of Discord.JS-Pure, so know there may be some issues.");
+    console.clear();
+    if (typeof client === "object") {
+        Discord.Logger.Log(`Successfully injected Discord.JS-Pure_v${_LIBDATA_.LIBRARY_VERSION.toString()}!`);
+        if (_LIBDATA_.IS_LIBRARY_NIGHTLY == true) {
+            Discord.Logger.Log("You're running a nightly version of Discord.JS-Pure, so know there may be some issues.");
+        }
+        Discord.Logger.Log(`NOTE: By default, Discord.JS-Pure logs events. Run 'Discord.Logger.disable();' to disable the logs if they get too intrusive.`);
+        return true;
+    } else {
+        console.log(`Failed to inject Discord.JS-Pure_v${_LIBDATA_.LIBRARY_VERSION.toString()}!`);
+        if (_LIBDATA_.IS_LIBRARY_NIGHTLY == true) {
+            console.log("NOTE: You're running a nightly version of Discord.JS-Pure, so errors are to be expected.")
+        }
+        return false;
     }
-    Discord.Logger.Log(`NOTE: By default, Discord.JS-Pure logs events. Run 'Discord.Logger.disable();' to disable the logs if they get too intrusive.`);
-    return true;
-  } else {
-    console.log(`Failed to inject Discord.JS-Pure_v${_LIBDATA_.LIBRARY_VERSION.toString()}!`);
-    if (_LIBDATA_.IS_LIBRARY_NIGHTLY == true) {
-      console.log("NOTE: You're running a nightly version of Discord.JS-Pure, so errors are to be expected.")
-    }
-    return false;
-  }
 }
 
 let seq;
@@ -28,14 +28,155 @@ let session_id;
 let ws;
 let recon;
 const Discord = {
-    random: function(min, max) { /* Discord.random(minimum_value, maximum_value); */ // lets you get a random value by supplying a minimum & maximum
-      let rand = Math.floor(Math.random() * (max - min)) + min;
-      return rand;
+    portal: {
+        link: function(sending, receiving, hookurl, token, userid) {
+            function send_hook(hook, av, username, content) {
+                let params = {
+                    avatar_url: `${av}`,
+                    username: `${username}`,
+                    content: `${content}`
+                };
+                let req = new XMLHttpRequest();
+                req.open("POST", hook);
+                req.setRequestHeader("Content-Type", "application/json");
+                req.send(JSON.stringify(params));
+            }
+
+            function send_message(message, chanid, token) {
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", `https://discord.com/api/v9/channels/${chanid}/messages`);
+                xhr.setRequestHeader("Content-Type", "application/json"); // just realized that browsers append useragents to all requests, no point to add them here lmfao.
+                xhr.setRequestHeader("Authorization", token);
+                let params = {
+                    content: message
+                };
+                xhr.send(JSON.stringify(params));
+            }
+
+            function portal_transfer(message, token) {
+                if (message.channel_id == sending) {
+                    let name = message.author.username;
+                    send_hook(hookurl, `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}`, name, message.content.trim());
+                }
+                if (message.channel_id == receiving) {
+                    if (message.author.id == userid) {
+                        send_message(message.content.trim(), sending, token);
+                    }
+                }
+            }
+            let UA = Discord.get_rand_useragent();
+            Discord.sleep(3000); // pauses the function for a sec so it can connect better ezpz
+            //sets up the event for reconnecting in case the websocket closes
+            const conEvent = new Event('connection');
+            ws = new WebSocket("wss://gateway.discord.gg/?encoding=json&v=9");
+            Discord.Logger.Log(`Establishing WebSocket connection to 'wss://gateway.discord.gg/?encoding=json&v=9'...`);
+            var interval = 0;
+            var indentified = `null`;
+            payload = {
+                op: 2,
+                d: {
+                    token: token,
+                    properties: {
+                        $os: "linux",
+                        $browser: "chrome",
+                        $device: "chrome"
+                    }
+                }
+            };
+            //all events for websocket goes in this listener so that when we reopen the socket it reassigns the events
+            document.addEventListener('connection', function() {
+                ws.addEventListener('close', event => {
+                    //sets up reconnection variable to change the payload sent later
+                    recon = true;
+                    //reopens websocket
+                    ws = new WebSocket("wss://gateway.discord.gg/?encoding=json&v=9");
+                    //reruns the entire connection event, adding the listeners to the new websocket
+                    document.dispatchEvent(conEvent)
+                })
+                ws.addEventListener("open", function open(x) {
+                    //if the recon is false then it sends a normal connection payload
+                    if (recon != true) {
+                        ws.send(JSON.stringify({
+                            op: 1,
+                            d: null
+                        }))
+                        Discord.sleep(1000)
+                        ws.send(JSON.stringify(payload))
+                    } else {
+                        //if recon is true then it sends the reconnect payload
+                        ws.send(JSON.stringify({
+                            "op": 6,
+                            "d": {
+                                "token": token,
+                                "session_id": session_id,
+                                "seq": seq
+                            }
+                        }))
+                        //turns the recon value false so that the payload doesn't send again
+                        recon = false;
+                    }
+                });
+
+                ws.addEventListener("message", function incoming(data) {
+                    var x = data.data;
+                    var payload = JSON.parse(x);
+                    const {
+                        t,
+                        s,
+                        op,
+                        d
+                    } = payload;
+                    switch (op) {
+                        case 10:
+                            const {
+                                heartbeat_interval
+                            } = d;
+                            setInterval(() => {
+                                ws.send(JSON.stringify({
+                                    op: 1,
+                                    d: d
+                                }))
+                            }, heartbeat_interval);
+                            break;
+                        case 7:
+                            ws.close()
+                            break;
+                    }
+                    switch (t) {
+                        case "MESSAGE_CREATE":
+                            portal_transfer(d, token);
+                            seq = s;
+                            break;
+                        case "READY":
+                            console.clear();
+                            Discord.Logger.Log("Connected to socket");
+                            Discord.Logger.Log("Portal is up and running!");
+                            send_hook(hookurl, "https://cdn.discordapp.com/embed/avatars/0.png", "Discord.JS-Pure Portal Linker", `Portal is up and running! Bridged <#${sending}> (host server) to <#${receiving}> (receiving/webhook server)`);
+                            Discord.Logger.Log(`Portal is up and running! Bridged <#${sending}> (host server) to <#${receiving}> (receiving/webhook server)`);
+                            session_id = d.session_id;
+                            Discord.Logger.Log("Collected sessionId");
+                            break;
+                        default:
+                            seq = s;
+                            break;
+                    }
+                });
+                Discord.sleep(1000); // thing
+                Discord.Logger.Log("Started to log in...")
+            })
+            Discord.sleep(500); // another thing
+            document.dispatchEvent(conEvent);
+        }
+    },
+    random: function(min, max) {
+        /* Discord.random(minimum_value, maximum_value); */ // lets you get a random value by supplying a minimum & maximum
+        let rand = Math.floor(Math.random() * (max - min)) + min;
+        return rand;
     },
     get_rand_useragent: function() { // add useragent getter function so discord thinks we're less sussy ezpz xd
-      let useragents = Array('Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)','Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)', 'Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/125.2 (KHTML, like Gecko) Safari/125.8', 'Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.10 (like Gecko) (Kubuntu)', 'Mozilla/5.0 (Windows; U; Windows XP) Gecko MultiZilla/1.6.1.0a');
-      let chosen_useragent = useragents[Math.floor(Math.random() * useragents.length)];
-      return chosen_useragent.toString();
+        let useragents = Array('Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)', 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)', 'Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/125.2 (KHTML, like Gecko) Safari/125.8', 'Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.10 (like Gecko) (Kubuntu)', 'Mozilla/5.0 (Windows; U; Windows XP) Gecko MultiZilla/1.6.1.0a');
+        let chosen_useragent = useragents[Math.floor(Math.random() * useragents.length)];
+        return chosen_useragent.toString();
     },
     sleep: function(milliseconds) {
         var start = new Date().getTime();
@@ -44,7 +185,7 @@ const Discord = {
                 break;
             }
         }
-        return (new Date().getTime())-start;
+        return (new Date().getTime()) - start;
     },
     Logger: {
         enable: function() {
@@ -59,8 +200,7 @@ const Discord = {
             if (KEEPLOGS == true) {
                 console.log(`%c[discordjs-pure] (LOGGER)%c ${to_log}`, 'color: #9e0700', 'color: #ffffff'); // [discordjs-pure] (LOGGER) is red, the text that's logged is white.
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
         }
