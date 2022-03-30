@@ -28,8 +28,7 @@ If you're like most people, you don't want to download anything. Well, you're in
 ###### Example Code: 
 ```js
 /* required for the selfbot to run */
-client.token = await client.get_token();
-client.user = await client.get_current_user(client.token);
+await Discord.load_required_variables();
 
 
 /* stuff that makes the selfbot more complete (only let it respond to you) */
