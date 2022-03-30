@@ -29,8 +29,8 @@ let ws;
 let recon;
 const Discord = {
     load_required_variables: async function() {
-      client.token = await client.get_token(); // authorization header
-      client.user = await client.get_current_user(client.token); // username#discrim
+        client.token = await client.get_token(); // authorization header
+        client.user = await client.get_current_user(client.token); // username#discrim
     },
     portal: {
         link: function(sending, receiving, hookurl, token, userid) {
@@ -192,6 +192,11 @@ const Discord = {
         return (new Date().getTime()) - start;
     },
     Logger: {
+        Gateway: {
+            Log: function(to_log) {
+                console.log(`%c[discordjs-pure] (GATEWAYSOCKETCONNECTION)%c <~ ${to_log}`, 'color: #9e0700', 'color: #ffffff');
+            }
+        },
         enable: function() {
             KEEPLOGS = true;
             return true;
@@ -503,7 +508,13 @@ client.get_token = async function() { // this function has two fallbacks, so it 
                                     d
                                 } = payload;
                                 if (SOCKET_LOGGING != false) {
-                                    console.log(payload);
+                                    if (typeof payload.t != null) {
+                                        try {
+                                            Discord.Logger.Gateway.Log(`${payload.t} ${JSON.stringify(payload.d, null, 2)}`);
+                                        } catch (err) {
+                                            Discord.Logger.Gateway.Log(`${payload.t} triggered`);
+                                        }
+                                    }
                                 }
                                 switch (op) {
                                     case 10:
