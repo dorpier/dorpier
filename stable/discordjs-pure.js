@@ -28,6 +28,10 @@ let session_id;
 let ws;
 let recon;
 const Discord = {
+    load_required_variables: async function() {
+      client.token = await client.get_token(); // authorization header
+      client.user = await client.get_current_user(client.token); // username#discrim
+    }
     portal: {
         link: function(sending, receiving, hookurl, token, userid) {
             function send_hook(hook, av, username, content) {
