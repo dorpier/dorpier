@@ -1,5 +1,5 @@
 # DISCORD.JS-PURE
-A Discord API wrapper for selfbots, written in pure javascript!
+An asynchronous Discord API wrapper for selfbots, written in pure javascript! ~~One of the only of its kind ;)~~
 
 Special thanks to [L](https://github.com/L5050) and [Harry Tom](https://stackoverflow.com/users/14836368/harry-tom)!
 
