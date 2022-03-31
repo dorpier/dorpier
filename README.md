@@ -64,4 +64,4 @@ Alright, so this method will automatically boot the selfbot every time you load 
 
 ![image](https://user-images.githubusercontent.com/64506392/158729759-e62f079b-ed43-4d8a-966e-9829da85ed39.png)
 
-7) If you see that, just send a message in any server in the format of `?test`, and if it responds, you're good to go! Happy scripting ;)
+7) If you see that, you're good to go! Happy scripting ;)
