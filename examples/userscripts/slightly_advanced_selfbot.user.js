@@ -11,8 +11,7 @@
 (async function(){ // has to be an async function so we can use the userid-get function
   'use strict';
   /* required for the selfbot to run */
-  client.token = await client.get_token();
-  client.user = await client.get_current_user(client.token);
+  await Discord.load_required_variables();
   
   /* optional stuff that makes it better */
   let userid = await client.get_userid(); // let the selfbot only work for you
