@@ -10,8 +10,7 @@
 // ==/UserScript==
 (async function() {
     /* required for the library to run */
-    client.token = await client.get_token();
-    client.user = await client.get_current_user(client.token);
+    await Discord.load_required_variables();
     
     
     /* optional but highly recommended */
