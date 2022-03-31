@@ -192,11 +192,6 @@ const Discord = {
         return (new Date().getTime()) - start;
     },
     Logger: {
-        Gateway: {
-            Log: function(to_log) {
-                console.log(`%c[discordjs-pure] (GATEWAYSOCKETCONNECTION)%c <~ ${to_log}`, 'color: #9e0700', 'color: #ffffff');
-            }
-        },
         enable: function() {
             KEEPLOGS = true;
             return true;
@@ -509,11 +504,7 @@ client.get_token = async function() { // this function has two fallbacks, so it 
                                 } = payload;
                                 if (SOCKET_LOGGING != false) {
                                     if (typeof payload.t != null) {
-                                        try {
-                                            Discord.Logger.Gateway.Log(`${payload.t} ${JSON.stringify(payload.d, null, 2)}`);
-                                        } catch (err) {
-                                            Discord.Logger.Gateway.Log(`${payload.t} triggered`);
-                                        }
+                                      console.log(`%c[discordjs-pure] (GATEWAYSOCKETCONNECTION)%c <~ ${payload.t}`, 'color: #9e0700', 'color: #ffffff', payload.d);
                                     }
                                 }
                                 switch (op) {
