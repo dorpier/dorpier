@@ -58,7 +58,7 @@ Alright, so this method will automatically boot the selfbot every time you load 
 1) Get [ViolentMonkey](https://violentmonkey.github.io/) for your browser
 2) Navigate to the settings page by clicking the gear icon after clicking the logo.
 3) Press the `+` symbol at the top left, and then click `New`
-4) Paste an [example](https://github.com/13-05/discord.js-pure/blob/main/examples/slightly_advanced_selfbot.user.js) and then save the script
+4) Paste an [example](https://github.com/13-05/discord.js-pure/tree/main/examples/userscripts) and then save the script
 5) Open/reload [Discord](https://discord.com/app) in your browser
 6) If you open the console, you should see messages from the library that look similar to the below:
 
