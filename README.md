@@ -5,13 +5,8 @@ Special thanks to [L](https://github.com/L5050) and [Harry Tom](https://stackove
 
 Credit to [Dolfies](https://github.com/dolfies) for Discord API help!
 
-## Misc. Info
-
-\- version: 2,
-
-\- is stable: true,
-
-\- note: normal discord bot support is in the works!
+## Community
+Join the [Telegram](https://t.me/discord_js_pure)!
 
 ## Usage
 ##### NOTE: Check the [Documentation](https://github.com/13-05/discord.js-pure/wiki) for a more detailed walkthrough of this lib's usage!
