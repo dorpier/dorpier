@@ -403,6 +403,11 @@ const Discord = {
     }
 }
 
+class selfbot {
+  constructor() {
+    return 'DEFAULT_SELFBOT_CLASS'; // okay if this works the way i want it to ill be very happy and make out with whoever's reading this code
+  }
+}
 
 class DiscordPureSocketClient {
     constructor(SOCKET_LOGGING = false) {
@@ -493,16 +498,28 @@ class DiscordPureSocketClient {
       });
       return JSON.parse(await req.text()); // returns the guild object
     }
+    raw_socket_interaction = async function(payload, token) {
+      return;
+    }
     run = async function(SOCKET_LOGGING=false) {
         let UA = Discord.get_rand_useragent();
         await Discord.load_required_variables();
         let GLOBAL_USER_TOKEN = CLIENTSOCKETTOKEN;
         this.user = CLIENTSOCKETUSER;
+        this.token = GLOBAL_USER_TOKEN;
+        Discord.sleep(750);
+        let SELFBOT = new selfbot();
+        if (SELFBOT == 'DEFAULT_SELFBOT_CLASS') {
+          Discord.Logger.Log("NOTE: You're using the default selfbot class. Did you forget to equate your class to the required one?");
+        }
+        else {
+          Discord.Logger.Log("Successfully created the selfbot! Starting it now...");
+        }
         Discord.sleep(3000); // pauses the function for a sec so it can connect better ezpz
         //sets up the event for reconnecting in case the websocket closes
         const conEvent = new Event('connection');
-        ws = new WebSocket(`wss://gateway.discord.gg/?encoding=json&v=${9}`);
-        Discord.Logger.Log(`Establishing WebSocket connection to 'wss://gateway.discord.gg/?encoding=json&v=${9}'...`);
+        ws = new WebSocket(`wss://gateway.discord.gg/?encoding=json&v=9`);
+        Discord.Logger.Log(`Establishing WebSocket connection to 'wss://gateway.discord.gg/?encoding=json&v=9'...`);
         var interval = 0;
         var indentified = `null`;
         payload = {
@@ -519,9 +536,9 @@ class DiscordPureSocketClient {
         //all events for websocket goes in this listener so that when we reopen the socket it reassigns the events
         document.addEventListener('connection', function() {
             ws.addEventListener('close', event => {
-                //sets up reconnection variable to change the payload sent later
+                //sets up "reconnect" variable to change the payload sent later
                 recon = true;
-                //reopens websocket
+                //reopens socket
                 ws = new WebSocket("wss://gateway.discord.gg/?encoding=json&v=9");
                 //reruns the entire connection event, adding the listeners to the new websocket
                 document.dispatchEvent(conEvent)
@@ -545,12 +562,12 @@ class DiscordPureSocketClient {
                             "seq": seq
                         }
                     }))
-                    //turns the recon value false so that the payload doesn't send again
+                    //turns the "reconnect" value false so that the payload doesn't send again
                     recon = false;
                 }
             });
 
-            ws.addEventListener("message", function incoming(data) {
+            ws.addEventListener("message", async function incoming(data) {
                 var x = data.data;
                 var payload = JSON.parse(x);
                 const {
@@ -580,11 +597,17 @@ class DiscordPureSocketClient {
                         ws.close()
                         break;
                 }
+                if (typeof SELFBOT.rawSocketInteractor === 'function') {
+                  await SELFBOT.rawSocketInteractor(t);
+                }
+                else {
+                  Discord.rawSocketInteractor = function(t) { return; };
+                }
                 switch (t) {
                     case "MESSAGE_CREATE":
-                        if (typeof client_on_message === 'function') {
+                        if (typeof SELFBOT.on_message === 'function') {
                             /*await*/
-                            client_on_message(d, GLOBAL_USER_TOKEN);
+                            await SELFBOT.on_message(d, GLOBAL_USER_TOKEN);
                         } else {
                             Discord.Logger.Log("No `on_message` function defined. Aborting `on_message` event response!");
                         }
@@ -593,9 +616,9 @@ class DiscordPureSocketClient {
                     case "READY":
                         console.clear();
                         Discord.Logger.Log("Connected to socket");
-                        if (typeof client_on_ready === 'function') {
+                        if (typeof SELFBOT.on_ready === 'function') {
                             /*await*/
-                            client_on_ready();
+                            await SELFBOT.on_ready();
                         } else {
                             Discord.Logger.Log("No `on_ready` function defined. Aborting `on_ready` event response!");
                         }
