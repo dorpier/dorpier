@@ -30,6 +30,39 @@ let session_id;
 let ws;
 let recon;
 const Discord = {
+    patch_module: function(type, module, func_to_patch, callback) { // btw, the 'callback' is the function that you'd like to patch with. ex: a before patch will run the 'callback' function BEFORE the discord-owned webpack module is ran.
+      let originalFunction = module[func_to_patch];
+      /*
+      if (!module[func_to_patch]._ORIGINALFUNCTION) {
+        module[func_to_patch]._ORIGINALFUNCTION=originalFunction;
+      }
+      */ // commenting this out rn, the patch resetter wasnt working.
+      switch(type) {
+        case "before":
+          module[func_to_patch] = function() {
+            callback.apply(this, [...arguments]);
+            return originalFunction.apply(this, arguments);
+          }
+        break;
+
+        case "after":
+          module[func_to_patch] = function() {
+            let result = originalFunction.apply(this, arguments);
+            callback.apply(this, [[...arguments], result]);
+            return result;
+          }
+          break;
+
+        case "instead":
+          module[func_to_patch]=callback;
+          break;
+
+        default:
+          // imagine not specifying your patch type. smh. /j
+          Discord.Logger.Log("Unknown patch. Aborting!");
+          break;
+      }
+    },
     get_token: async function() { // this function has two fallbacks, so it should always work.
         if (window.localStorage != undefined) {
             Discord.Logger.Log(`A local-storage token is present. Attempting to grab it...`);
@@ -274,7 +307,7 @@ const Discord = {
                     }
                 }
             ]);
-            Discord.Logger.Log(`Attempted to find module '${MODULE}' by its properties`);
+            Discord.Logger.Log(`Attempted to find module '${MODULE}' by its display name`);
             return findModule(MODULE);
         },
 
@@ -288,7 +321,7 @@ const Discord = {
                     }
                 }
             ]);
-            Discord.Logger.Log(`Attempted to find module '${MODULE}' by its display name`);
+            Discord.Logger.Log(`Attempted to find module '${MODULE}' by its properties name`);
             return findModule(MODULE);
         }
     },
@@ -316,18 +349,18 @@ const Discord = {
         },
 
         disable_discord_tracking: function() {
-            Discord.find_module.by_props("track").track = function() {
-                return;
-            }
+            Discord.patch_module("instead", Discord.find_module.by_props("track"), "track", function() {
+              return;
+            });
             Discord.Logger.Log(`Attempted to disable Discord's tracking by patching the inbuilt module 'track'`);
             return true;
         },
 
         silent_typing: {
             enable: function() {
-                Discord.find_module.by_props("startTyping").startTyping = function() {
-                    return;
-                }
+                Discord.patch_module("instead", Discord.find_module.by_props("startTyping"), "startTyping", function() {
+                  return;
+                });
                 Discord.Logger.Log(`Attempted to enable silent typing; a patch to the inbuilt Discord module 'startTyping' has made it simply a return function`);
                 return true;
             },
