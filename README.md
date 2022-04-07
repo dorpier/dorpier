@@ -14,7 +14,7 @@ Join the [Telegram](https://t.me/discord_js_pure)!
 If you're like most people, you don't want to download anything. Well, you're in luck! Follow the below steps to get this working in the inspect element JavaScript console of most browsers:
 1) Go onto [Discord](https://discord.com/app) in your web browser
 2) Open inspect element and then navigate to the `Console` section.
-3) Copy the code from [here](https://raw.githubusercontent.com/13-05/discord.js-pure/main/inspect-console/minified.js) and paste it in the console section (it'll warn you, but you can read through the code to be sure it won't do anything bad)
+3) Copy the code from [here](https://raw.githubusercontent.com/13-05/discord.js-pure/main/console/minified.js) and paste it in the console section (it'll warn you, but you can read through the code to be sure it won't do anything bad)
 4) Press enter, and it should say something like this:
 
 ![image of inspect console displaying stuff](https://raw.githubusercontent.com/13-05/discord.js-pure/main/images/image.png)
