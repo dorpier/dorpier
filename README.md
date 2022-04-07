@@ -22,17 +22,17 @@ If you're like most people, you don't want to download anything. Well, you're in
 5) Paste the following to test it:
 ###### Example Code: 
 ```js
-client = new Client
+client = new Client();
 
 client.on("ready", function(d) {
     console.log("Logged in as" + client.user.username + "#" + client.user.discriminator)
-})
+});
 
 client.on("message_create", function(d) {
     if (d.message.content == "ping") {
         client.send_clyde_message("Pong!")
     }
-})
+});
 ```
 
 6) Say 'ping' in any channel in Discord, and it should respond with `pong`! If it does, then you did everything right; the library's working! Now, you can get to making your own scripts ;)
