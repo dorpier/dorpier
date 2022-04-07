@@ -6,6 +6,8 @@ const _LIBDATA_ = { // make library's data a constant value
 let KEEPLOGS = true;
 var CLIENTSOCKETTOKEN;
 var CLIENTSOCKETUSER;
+var CLIENTUSER;
+var CLIENTTOKEN;
 var payload;
 
 function check_injection_status() {
@@ -37,7 +39,7 @@ const Discord = {
             description: description,
             displayDescription: description,
             displayName: commandname,
-            id: (-1 -Discord.find_module.by_display_name("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.length).toString(),
+            id: (-1 - Discord.find_module.by_display_name("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.length).toString(),
             execute: callback,
             name: commandname,
             inputType: 0,
@@ -691,5 +693,59 @@ class DiscordPureSocketClient {
         })
         Discord.sleep(500); // another thing
         document.dispatchEvent(conEvent);
+    }
+}
+
+class DiscordPureClientInteractor {
+    constructor(LOG = false) {
+        this.is_logging_on = LOG;
+    }
+
+    token = CLIENTTOKEN;
+
+    user = CLIENTUSER;
+
+    get_userid = async function() {
+        return Discord.find_module.by_props("getCurrentUser").getCurrentUser().id;
+    }
+
+    send_message = async function(channel_id, message) { // since the inbuilt function for sending a message throws errors when i use it as it should be, im just gonna use this func. basically does the exact same thing.
+        let POST_URL = `https://discord.com/api/${window.GLOBAL_ENV.API_VERSION}/channels/channel_id/messages`;
+        let request = new XMLHttpRequest();
+        request.withCredentials = true;
+        request.open("POST", POST_URL);
+        request.setRequestHeader("Authorization", Discord.find_module.by_props("getToken").getToken());
+        request.setRequestHeader("Content-Type", "application/json");
+        request.send(JSON.stringify({
+            content: message
+        }));
+    }
+
+    run = async function() {
+        /* load required variables */
+        let SELFBOT = new selfbot();
+        CLIENTUSER = `${Discord.find_module.by_props("getCurrentUser").getCurrentUser().username}#${Discord.find_module.by_props("getCurrentUser").getCurrentUser().discriminator}`;
+        CLIENTTOKEN = Discord.find_module.by_props("getToken").getToken();
+        this.token = CLIENTTOKEN;
+        this.user = CLIENTUSER;
+
+        /* hook into Discord's inbuilt websocket events with an interceptor */
+        Discord.find_module.by_display_name("Dispatcher").Dispatcher.prototype.setInterceptor(function(e) {
+            switch (e.type) {
+                case "MESSAGE_CREATE":
+                    if (typeof SELFBOT.on_message === 'function') {
+                        SELFBOT.on_message(e.message);
+                    }
+                    break;
+            }
+        });
+        Discord.Logger.Log("Successfully hooked into the client!");
+        if (typeof SELFBOT.on_ready === 'function') {
+                SELFBOT.on_ready();
+            }
+    }
+    stop_running = async function() {
+      Discord.find_module.by_display_name("Dispatcher").Dispatcher.prototype.setInterceptor(() => {});
+      Discord.Logger.Log("Successfully unhooked from the client!");
     }
 }
