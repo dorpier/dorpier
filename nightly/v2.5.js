@@ -37,7 +37,7 @@ const Discord = {
             description: description,
             displayDescription: description,
             displayName: commandname,
-            id: (Discord.find_module.by_display_name("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.length - 1).toString(),
+            id: (-1 -Discord.find_module.by_display_name("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.length).toString(),
             execute: callback,
             name: commandname,
             inputType: 0,
