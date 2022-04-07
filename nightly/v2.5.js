@@ -7,6 +7,7 @@ let KEEPLOGS = true;
 var CLIENTSOCKETTOKEN;
 var CLIENTSOCKETUSER;
 var payload;
+
 function check_injection_status() {
     console.clear();
     if (typeof client === "object") {
@@ -30,38 +31,60 @@ let session_id;
 let ws;
 let recon;
 const Discord = {
+    make_new_slash_command: function(commandname, description, callback) {
+        Discord.find_module.by_display_name("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.push({
+            applicationId: "-1",
+            description: description,
+            displayDescription: description,
+            displayName: commandname,
+            id: (Discord.find_module.by_display_name("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.length - 1).toString(),
+            execute: callback,
+            name: commandname,
+            inputType: 0,
+            /*options: [{
+                description: description,
+                displayDescription: description,
+                displayName: commandname,
+                name: commandname,
+                type: 3
+            }], */
+            type: 1
+        });
+    },
     patch_module: function(type, module, func_to_patch, callback) { // btw, the 'callback' is the function that you'd like to patch with. ex: a before patch will run the 'callback' function BEFORE the discord-owned webpack module is ran.
-      let originalFunction = module[func_to_patch];
-      /*
-      if (!module[func_to_patch]._ORIGINALFUNCTION) {
-        module[func_to_patch]._ORIGINALFUNCTION=originalFunction;
-      }
-      */ // commenting this out rn, the patch resetter wasnt working.
-      switch(type) {
-        case "before":
-          module[func_to_patch] = function() {
-            callback.apply(this, [...arguments]);
-            return originalFunction.apply(this, arguments);
-          }
-        break;
+        let originalFunction = module[func_to_patch];
+        /*
+        if (!module[func_to_patch]._ORIGINALFUNCTION) {
+          module[func_to_patch]._ORIGINALFUNCTION=originalFunction;
+        }
+        */ // commenting this out rn, the patch resetter wasnt working.
+        switch (type) {
+            case "before":
+                module[func_to_patch] = function() {
+                    callback.apply(this, [...arguments]);
+                    return originalFunction.apply(this, arguments);
+                }
+                break;
 
-        case "after":
-          module[func_to_patch] = function() {
-            let result = originalFunction.apply(this, arguments);
-            callback.apply(this, [[...arguments], result]);
-            return result;
-          }
-          break;
+            case "after":
+                module[func_to_patch] = function() {
+                    let result = originalFunction.apply(this, arguments);
+                    callback.apply(this, [
+                        [...arguments], result
+                    ]);
+                    return result;
+                }
+                break;
 
-        case "instead":
-          module[func_to_patch]=callback;
-          break;
+            case "instead":
+                module[func_to_patch] = callback;
+                break;
 
-        default:
-          // imagine not specifying your patch type. smh. /j
-          Discord.Logger.Log("Unknown patch. Aborting!");
-          break;
-      }
+            default:
+                // imagine not specifying your patch type. smh. /j
+                Discord.Logger.Log("Unknown patch. Aborting!");
+                break;
+        }
     },
     get_token: async function() { // this function has two fallbacks, so it should always work.
         if (window.localStorage != undefined) {
@@ -110,14 +133,14 @@ const Discord = {
                 GLOBAL_USER_TOKEN = Discord.find_module("getToken").getToken();
             }
         }
-                        var resp = await fetch(`https://discord.com/api/v9/users/@me`, {
-                            "headers": {
-                                "Authorization": GLOBAL_USER_TOKEN,
-                                "User-Agent": "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)"
-                            }
-                        });
-                        let json = await resp.json();
-                        CLIENTCURRENTUSER = `${json.username}#${json.discriminator}`;
+        var resp = await fetch(`https://discord.com/api/v9/users/@me`, {
+            "headers": {
+                "Authorization": GLOBAL_USER_TOKEN,
+                "User-Agent": "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)"
+            }
+        });
+        let json = await resp.json();
+        CLIENTCURRENTUSER = `${json.username}#${json.discriminator}`;
         CLIENTSOCKETTOKEN = GLOBAL_USER_TOKEN; // authorization header
         CLIENTSOCKETUSER = CLIENTCURRENTUSER; // username#discrim
     },
@@ -350,7 +373,7 @@ const Discord = {
 
         disable_discord_tracking: function() {
             Discord.patch_module("instead", Discord.find_module.by_props("track"), "track", function() {
-              return;
+                return;
             });
             Discord.Logger.Log(`Attempted to disable Discord's tracking by patching the inbuilt module 'track'`);
             return true;
@@ -359,7 +382,7 @@ const Discord = {
         silent_typing: {
             enable: function() {
                 Discord.patch_module("instead", Discord.find_module.by_props("startTyping"), "startTyping", function() {
-                  return;
+                    return;
                 });
                 Discord.Logger.Log(`Attempted to enable silent typing; a patch to the inbuilt Discord module 'startTyping' has made it simply a return function`);
                 return true;
@@ -437,9 +460,9 @@ const Discord = {
 }
 
 class selfbot {
-  constructor() {
-    return 'DEFAULT_SELFBOT_CLASS'; // okay if this works the way i want it to ill be very happy and make out with whoever's reading this code
-  }
+    constructor() {
+        return 'DEFAULT_SELFBOT_CLASS'; // okay if this works the way i want it to ill be very happy and make out with whoever's reading this code
+    }
 }
 
 class DiscordPureSocketClient {
@@ -514,27 +537,27 @@ class DiscordPureSocketClient {
         return `${json.username}#${json.discriminator}`;
     }
     get_channel = async function(channel_id) {
-      let channel = await fetch(`https://discord.com/api/v9/channels/${channel_id}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': CLIENTSOCKETTOKEN
-        }
-      });
-      return JSON.parse(await channel.text());
+        let channel = await fetch(`https://discord.com/api/v9/channels/${channel_id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': CLIENTSOCKETTOKEN
+            }
+        });
+        return JSON.parse(await channel.text());
     }
     get_guild = async function(guild_id) {
-      let req = await fetch(`https://discord.com/api/v9/guilds/${guild_id}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': CLIENTSOCKETTOKEN
-        }
-      });
-      return JSON.parse(await req.text()); // returns the guild object
+        let req = await fetch(`https://discord.com/api/v9/guilds/${guild_id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': CLIENTSOCKETTOKEN
+            }
+        });
+        return JSON.parse(await req.text()); // returns the guild object
     }
     raw_socket_interaction = async function(payload, token) {
-      return;
+        return;
     }
-    run = async function(SOCKET_LOGGING=false) {
+    run = async function(SOCKET_LOGGING = false) {
         let UA = Discord.get_rand_useragent();
         await Discord.load_required_variables();
         let GLOBAL_USER_TOKEN = CLIENTSOCKETTOKEN;
@@ -543,10 +566,9 @@ class DiscordPureSocketClient {
         Discord.sleep(750);
         let SELFBOT = new selfbot();
         if (SELFBOT == 'DEFAULT_SELFBOT_CLASS') {
-          Discord.Logger.Log("NOTE: You're using the default selfbot class. Did you forget to equate your class to the required one?");
-        }
-        else {
-          Discord.Logger.Log("Successfully created the selfbot! Starting it now...");
+            Discord.Logger.Log("NOTE: You're using the default selfbot class. Did you forget to equate your class to the required one?");
+        } else {
+            Discord.Logger.Log("Successfully created the selfbot! Starting it now...");
         }
         Discord.sleep(3000); // pauses the function for a sec so it can connect better ezpz
         //sets up the event for reconnecting in case the websocket closes
@@ -631,10 +653,11 @@ class DiscordPureSocketClient {
                         break;
                 }
                 if (typeof SELFBOT.rawSocketInteractor === 'function') {
-                  await SELFBOT.rawSocketInteractor(t);
-                }
-                else {
-                  Discord.rawSocketInteractor = function(t) { return; };
+                    await SELFBOT.rawSocketInteractor(t);
+                } else {
+                    Discord.rawSocketInteractor = function(t) {
+                        return;
+                    };
                 }
                 switch (t) {
                     case "MESSAGE_CREATE":
