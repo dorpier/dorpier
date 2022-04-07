@@ -33,6 +33,8 @@ client.on("message_create", function(d) {
         client.send_clyde_message("Pong!")
     }
 });
+
+client.connect();
 ```
 
 6) Say 'ping' in any channel in Discord, and it should respond with `pong`! If it does, then you did everything right; the library's working! Now, you can get to making your own scripts ;)
