@@ -63,6 +63,7 @@ const Discord = {
         switch (type) {
             case "before":
                 module[func_to_patch] = function() {
+                    let originalFunction = module[func_to_patch];
                     callback.apply(this, [...arguments]);
                     return originalFunction.apply(this, arguments);
                 }
@@ -70,6 +71,7 @@ const Discord = {
 
             case "after":
                 module[func_to_patch] = function() {
+                    let originalFunction = module[func_to_patch];
                     let result = originalFunction.apply(this, arguments);
                     callback.apply(this, [
                         [...arguments], result
@@ -79,6 +81,7 @@ const Discord = {
                 break;
 
             case "instead":
+                let originalFunction = module[func_to_patch];
                 module[func_to_patch] = callback;
                 break;
 
