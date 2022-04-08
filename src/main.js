@@ -296,7 +296,6 @@ const Discord = {
         for (var [key, value] of Object.entries(settings)) {
             sets[Utils.camelize(key.replaceAll('_', ' '))] = value;
         }
-        console.log(sets)
         Discord.find_module.by_display_name("setDeveloperOptionSettings").setDeveloperOptionSettings(sets);
     }
 }
