@@ -99,12 +99,14 @@ const Discord = {
         }
     },
 
-    patch_module(type, module, func_to_patch, backup, callback) { // btw, the 'callback' is the function that you'd like to patch with. ex: a before patch will run the 'callback' function BEFORE the discord-owned webpack module is ran.
+    patch_module(type, module, func_to_patch, backup=false, callback) { // btw, the 'callback' is the function that you'd like to patch with. ex: a before patch will run the 'callback' function BEFORE the discord-owned webpack module is ran.
+        let originalFunction = module[func_to_patch];
         if (backup == true) {
             this._original_functions[func_to_patch] = module[func_to_patch];
         }
         switch (type) {
             case "before":
+                let originalFunction = module[func_to_patch];
                 module[func_to_patch] = function() {
                     callback.apply(this, [...arguments]);
                     return originalFunction.apply(this, arguments);
@@ -112,6 +114,7 @@ const Discord = {
                 break;
 
             case "after":
+                let originalFunction = module[func_to_patch];
                 module[func_to_patch] = function() {
                     let result = originalFunction.apply(this, arguments);
                     callback.apply(this, [
@@ -122,6 +125,7 @@ const Discord = {
                 break;
 
             case "instead":
+                let originalFunction = module[func_to_patch];
                 module[func_to_patch] = callback;
                 break;
 
