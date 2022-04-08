@@ -8,11 +8,11 @@ var _KEEPLOGS = true;
 function check_injection_status() {
     console.clear();
     if (typeof client === "object") {
-        Utils.Logger.Log(`Successfully injected Discord.JS-Pure v${__version__.number.toString()}!`);
+        Utils.Logger.log(`Successfully injected Discord.JS-Pure v${__version__.number.toString()}!`);
         if (__version__.nightly == true) {
-            Utils.Logger.Log("You're running a nightly version of Discord.JS-Pure, so know there may be some issues.");
+            Utils.Logger.log("You're running a nightly version of Discord.JS-Pure, so know there may be some issues.");
         }
-        Utils.Logger.Log("NOTE: By default, Discord.JS-Pure logs events. Run 'Utils.Logger.disable();' to disable the logs if they get too intrusive.");
+        Utils.Logger.log("NOTE: By default, Discord.JS-Pure logs events. Run 'Utils.Logger.disable();' to disable the logs if they get too intrusive.");
         return true;
     } else {
         console.log(`Failed to inject Discord.JS-Pure v${__version__.number.toString()}!`);
@@ -34,7 +34,7 @@ const Utils = {
             _KEEPLOGS = false;
             return false;
         },
-        Log(to_log) {
+        log(to_log) {
             if (_KEEPLOGS == true) {
                 console.log(`%c[discordjs-pure] (LOGGER)%c ${to_log}`, 'color: #9e0700', 'color: #ffffff'); // [discordjs-pure] (LOGGER) is red, the text that's logged is white.
                 return true;
@@ -80,7 +80,7 @@ const Discord = {
                     }
                 }
             ]);
-            Utils.Logger.Log(`Attempted to find module '${MODULE}' by its display name`);
+            Utils.Logger.log(`Attempted to find module '${MODULE}' by its display name`);
             return findModule(MODULE);
         },
 
@@ -94,7 +94,7 @@ const Discord = {
                     }
                 }
             ]);
-            Utils.Logger.Log(`Attempted to find module '${MODULE}' by its properties name`);
+            Utils.Logger.log(`Attempted to find module '${MODULE}' by its properties name`);
             return findModule(MODULE);
         }
     },
@@ -131,7 +131,7 @@ const Discord = {
 
             default:
                 // imagine not specifying your patch type. smh. /j
-                Utils.Logger.Log("Unknown patch, aborting!");
+                Utils.Logger.log("Unknown patch, aborting!");
                 break;
         }
     },
@@ -153,10 +153,10 @@ const Discord = {
         let GLOBAL_USER_TOKEN = this.find_module.by_props("getToken").getToken();
         if (GLOBAL_USER_TOKEN.includes(".") == false) {
             if (window.localStorage != undefined) {
-                Utils.Logger.Log("Grabbing token from localStorage...");
+                Utils.Logger.log("Grabbing token from localStorage...");
                 return window.localStorage.getItem('token').replace("\"", "").replace("\"", "");
             } else {
-                Utils.Logger.Log("Grabbing token from popup...");
+                Utils.Logger.log("Grabbing token from popup...");
                 let popup = window.open('');
                 if (!popup) {
                     return alert("[discordjs-pure] The popup required to grab the token was blocked! Allow popups or this won't work. After you allow popups, reload this page and re-paste this script.");
@@ -168,7 +168,7 @@ const Discord = {
                 return window.tkn;
             }
         }
-        Utils.Logger.Log("Grabbing token from client...");
+        Utils.Logger.log("Grabbing token from client...");
         return GLOBAL_USER_TOKEN;
     },
 
@@ -214,7 +214,7 @@ const Discord = {
             Discord.patch_module("instead", Discord.find_module.by_props("track"), "track", true, function() {
                 return;
             });
-            Utils.Logger.Log("Attempted to disable Discord's tracking.");
+            Utils.Logger.log("Attempted to disable Discord's tracking.");
             return true;
         },
         enable: function() {
@@ -222,7 +222,7 @@ const Discord = {
                 return true; // Hasn't been disabled
             }
             Discord.patch_module("instead", Discord.find_module.by_props("track"), "track", false, Discord._original_functions.track);
-            Utils.Logger.Log("Attempted to enable Discord's tracking.");
+            Utils.Logger.log("Attempted to enable Discord's tracking.");
             return true;
         }
     },
@@ -231,7 +231,7 @@ const Discord = {
             Discord.patch_module("instead", Discord.find_module.by_props("startTyping"), "startTyping", true, function() {
                 return;
             });
-            Utils.Logger.Log("Attempted to disable typing notifications.");
+            Utils.Logger.log("Attempted to disable typing notifications.");
             return true;
         },
         enable: function() {
@@ -239,7 +239,7 @@ const Discord = {
                 return true; // Hasn't been disabled
             }
             Discord.patch_module("instead", Discord.find_module.by_props("startTyping"), "startTyping", false, Discord._original_functions.startTyping);
-            Utils.Logger.Log("Attempted to enable typing notifications.");
+            Utils.Logger.log("Attempted to enable typing notifications.");
             return true;
         },
     },
@@ -256,7 +256,7 @@ const Discord = {
                 get: () => true,
                 configurable: true
             });
-            Utils.Logger.Log("Attempted to enable hidden developer options.");
+            Utils.Logger.log("Attempted to enable hidden developer options.");
             return true;
         },
         disable: function() {
@@ -270,7 +270,7 @@ const Discord = {
                 get: () => false,
                 configurable: true
             });
-            Utils.Logger.Log("Attempted to disable hidden developer options.");
+            Utils.Logger.log("Attempted to disable hidden developer options.");
             return false;
         }
     },
@@ -278,11 +278,11 @@ const Discord = {
     nsfw: {
         enable: function() {
             Discord.find_module.by_props("getCurrentUser").getCurrentUser().nsfwAllowed = true;
-            Utils.Logger.Log("Attempted to patch the current user and allow them to view NSFW media.");
+            Utils.Logger.log("Attempted to patch the current user and allow them to view NSFW media.");
         },
         disable: function() {
             Discord.find_module.by_props("getCurrentUser").getCurrentUser().nsfwAllowed = false;
-            Utils.Logger.Log("Attempted to patch the current user and disallow them from viewing NSFW media.");
+            Utils.Logger.log("Attempted to patch the current user and disallow them from viewing NSFW media.");
         }
     },
 
@@ -299,11 +299,11 @@ const Discord = {
             } else {
                 style.appendChild(document.createTextNode(css));
             }
-            Utils.Logger.Log("Attempted to inject an AMOLED dark mode for Discord desktop.");
+            Utils.Logger.log("Attempted to inject an AMOLED dark mode for Discord desktop.");
             return true;
         },
         disable: function() {
-            Utils.Logger.Log("Currently, AMOLED dark mode cannot be disabled automatically. Please reload the page to disable it.");
+            Utils.Logger.log("Currently, AMOLED dark mode cannot be disabled automatically. Please reload the page to disable it.");
             return false;
         }
     }
@@ -335,7 +335,7 @@ class Client {
             try {
                 callback(data);
             } catch (e) {
-                Utils.Logger.Log(`Error in '${event}' callback: '${e}'`);
+                Utils.Logger.log(`Error in '${event}' callback: '${e}'`);
             }
         }
     }
@@ -368,13 +368,13 @@ class Client {
         msg.type = type;
         msg.tts = tts;
         msg.sticker_ids = sticker_ids;
-        Utils.Logger.Log(`Attempted to send message '${content}' with '${embeds}' as '${author.username}' ephemerally.`);
+        Utils.Logger.log(`Attempted to send message '${content}' with '${embeds}' as '${author.username}' ephemerally.`);
         return Discord._send_local_message(msg.channel_id, msg);
     }
 
     send_clyde_message(content) {
         Discord.find_module.by_props('sendBotMessage').sendBotMessage(Discord._get_current_channel_id(), content);
-        Utils.Logger.Log(`Attempted to send message '${content}' through Clyde.`);
+        Utils.Logger.log(`Attempted to send message '${content}' through Clyde.`);
         return true;
     }
 
@@ -412,12 +412,12 @@ class Client {
         Discord.find_module.by_display_name("Dispatcher").Dispatcher.prototype._interceptor = function(e) {
             _parent.emit(e.type.toLowerCase(), e);
         };
-        Utils.Logger.Log("Successfully hooked into the client!");
+        Utils.Logger.log("Successfully hooked into the client!");
     }
 
     disconnect() {
         Discord.find_module.by_display_name("Dispatcher").Dispatcher.prototype._interceptor = undefined;
-        Utils.Logger.Log("Successfully unhooked from the client!");
+        Utils.Logger.log("Successfully unhooked from the client!");
     }
 }
 // e
