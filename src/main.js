@@ -59,6 +59,12 @@ const Utils = {
         }
         return (new Date().getTime()) - start;
     },
+
+    camelize: function(str) {
+        return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
+            return index === 0 ? word.toLowerCase() : word.toUpperCase();
+        }).replace(/\s+/g, '');
+    }
 }
 
 
@@ -283,6 +289,15 @@ const Discord = {
             Utils.Logger.Log("Currently, AMOLED dark mode cannot be disabled automatically. Please reload the page to disable it.");
             return false;
         }
+    },
+
+    change_developer_options: function(settings) {
+        sets = {}
+        for (var [key, value] of Object.entries(settings)) {
+            sets[Utils.camelize(key.replaceAll('_', ' '))] = value;
+        }
+        console.log(sets)
+        Discord.find_module.by_display_name("setDeveloperOptionSettings").setDeveloperOptionSettings(sets);
     }
 }
 
