@@ -16,7 +16,7 @@
 
     /* events */
     client.on('ready', function() {
-        Utils.Logger.Log(`Selfbot's up and running on ${client.user.username}`);
+        Utils.Logger.log(`Selfbot's up and running on ${client.user.username}`);
         window.alert(`Selfbot's up and running on ${client.user.username}`);
     });
 
@@ -25,7 +25,7 @@
         if (message.author.id != USERID) { return; } // makes it so the selfbot only responds to you
 
         if (message.content.trim() == "ping") { // `.trim()` is required due to the fact that discord straps whitespace to content ig
-            await client.send_message(message.channel_id, "pong!"); // responds to the ping with pong in the message's channelid
+            await client.sendMessage(message.channel_id, "pong!"); // responds to the ping with pong in the message's channelid
         }
     });
 

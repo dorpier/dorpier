@@ -3,11 +3,11 @@
 client = new Discord.Client();
 
 client.on('ready', async function() {
-  Utils.Logger.Log(`MessageLogger is loaded and ready! Running on the current account, ${client.user}`);
+    Utils.Logger.log(`MessageLogger is loaded and ready! Running on the current account, ${client.user}`);
 });
 
 client.on('message_create', async function(message) {
-  console.log(`${message.guild_id}/${message.channel_id} ${message.author.username}#${message.author.discriminator}: ${message.content.trim()}`);
+    console.log(`${message.guild_id}/${message.channel_id} ${message.author.username}#${message.author.discriminator}: ${message.content.trim()}`);
 });
 
 client.connect();

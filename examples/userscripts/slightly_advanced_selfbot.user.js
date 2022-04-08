@@ -18,7 +18,7 @@
   
     /* actual events for the bot yea ezpz xd */
     client.on('ready', async function() { // onready event
-        Utils.Logger.Log(`Logged into ${client.user.username}! Prefix is ${PREFIX}`);
+        Utils.Logger.log(`Logged into ${client.user.username}! Prefix is ${PREFIX}`);
         alert(`Logged into ${client.user.username}! Prefix is ${PREFIX}`);
     });
 
@@ -26,7 +26,7 @@
         let message = message.message;
         if (message.author.id != USERID) return; // if the message author is not you, ignore the command.
         if (message.content.trim() == `${PREFIX}ping`) { // you have to call message.content.trim() when getting message content because if you don't, there's sometimes whitespace that makes your message checking not work.
-            await client.send_message(message.channel_id, "pong!"); // reply 'pong!' in that message's channel
+            await client.sendMessage(message.channel_id, "pong!"); // reply 'pong!' in that message's channel
         }
     });
 

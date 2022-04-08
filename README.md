@@ -30,7 +30,7 @@ client.on("ready", function(d) {
 
 client.on("message_create", async function(d) {
     if (d.message.content == "ping") {
-        await client.send_message(undefined, "Pong!")
+        await client.sendMessage(message.channel_id, "Pong!")
     }
 });
 
