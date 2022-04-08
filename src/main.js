@@ -132,6 +132,19 @@ const Discord = {
         }
     },
 
+    dispatch(name, data) {
+        data.type = name.toUpperCase();
+        return this.find_module.by_props("dirtyDispatch").dirtyDispatch(data);
+    },
+
+    change_developer_options(settings) {
+        sets = {}
+        for (var [key, value] of Object.entries(settings)) {
+            sets[Utils.camelize(key.replaceAll('_', ' '))] = value;
+        }
+        Discord.find_module.by_display_name("setDeveloperOptionSettings").setDeveloperOptionSettings(sets);
+    },
+
     get_token() { // this function has two fallbacks, so it should always work.
         let GLOBAL_USER_TOKEN = this.find_module.by_props("getToken").getToken();
         if (GLOBAL_USER_TOKEN.includes(".") == false) {
@@ -289,14 +302,6 @@ const Discord = {
             Utils.Logger.Log("Currently, AMOLED dark mode cannot be disabled automatically. Please reload the page to disable it.");
             return false;
         }
-    },
-
-    change_developer_options: function(settings) {
-        sets = {}
-        for (var [key, value] of Object.entries(settings)) {
-            sets[Utils.camelize(key.replaceAll('_', ' '))] = value;
-        }
-        Discord.find_module.by_display_name("setDeveloperOptionSettings").setDeveloperOptionSettings(sets);
     }
 }
 
@@ -364,13 +369,17 @@ class Client {
     }
 
     send_clyde_message(content) {
-        Discord.find_module.by_props('sendBotMessage').sendBotMessage(Discord.get_current_channel_id, content);
+        Discord.find_module.by_props('sendBotMessage').sendBotMessage(Discord._get_current_channel_id(), content);
         Utils.Logger.Log(`Attempted to send message '${content}' through Clyde.`);
         return true;
     }
 
+    send_clyde_error() {
+        Discord.find_module.by_props("sendBotMessage").sendClydeError(Discord._get_current_channel_id());
+    }
+
     send_message(
-        channel = Discord.get_current_channel_id(), content = "", tts = false, message_reference = null, allowed_mentions = null, sticker_ids = null
+        channel = Discord._get_current_channel_id(), content = "", tts = false, message_reference = null, allowed_mentions = null, sticker_ids = null
     ) {
         if (!content && !sticker_ids) {
             throw new Error("Must provide either content or sticker_ids.");
