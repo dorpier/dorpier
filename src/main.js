@@ -181,6 +181,10 @@ const Discord = {
         Discord.find_module.by_display_name("setDeveloperOptionSettings").setDeveloperOptionSettings(sets);
     },
 
+    login(token) {
+        this.find_module.by_props("loginToken").loginToken(token);
+    },
+
     get_token() { // this function has two fallbacks, so it should always work.
         let GLOBAL_USER_TOKEN = this.find_module.by_props("getToken").getToken();
         if (GLOBAL_USER_TOKEN.includes(".") == false) {
@@ -389,6 +393,7 @@ class Client {
         if (sticker_ids != null) {
             params.stickerIds = sticker_ids;
         };
+        // No idea what parameter 3 is for
         Discord.find_module.by_props("sendMessage").sendMessage(channel, msg, null, params);
         Utils.Logger.log(`Attempted to send message with '${content}' '${params}' to '${channel}'.`);
     }
