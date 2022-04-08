@@ -379,10 +379,13 @@ class Client {
     }
 
     send_message(
-        channel = Discord._get_current_channel_id(), content = "", tts = false, message_reference = null, allowed_mentions = null, sticker_ids = null
+        channel = null, content = "", tts = false, message_reference = null, allowed_mentions = null, sticker_ids = null
     ) {
         if (!content && !sticker_ids) {
             throw new Error("Must provide either content or sticker_ids.");
+        }
+        if (!channel) {
+            channel = Discord._get_current_channel_id();
         }
 
         let params = {}
