@@ -28,18 +28,13 @@ const Utils = {
     Logger: {
         enable() {
             _KEEPLOGS = true;
-            return true;
         },
         disable() {
             _KEEPLOGS = false;
-            return false;
         },
         log(to_log) {
             if (_KEEPLOGS == true) {
                 console.log(`%c[discordjs-pure] (LOGGER)%c ${to_log}`, 'color: #9e0700', 'color: #ffffff'); // [discordjs-pure] (LOGGER) is red, the text that's logged is white.
-                return true;
-            } else {
-                return false;
             }
         }
     },
@@ -70,6 +65,43 @@ const Utils = {
 
 const Discord = {
     _original_functions: {},
+
+    _create_command(name, description, options, type, callback) {
+        options.forEach(option => {
+            option.displayName = option.name;
+            option.displayDescription = option.description;
+        })
+        actual_callback = function(data) {
+            data.forEach(element => {
+                delete element.focused;
+            })
+            callback(data);
+        }
+        this.find_module.by_display_name("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.push({
+            applicationId: "-1",
+            description: description,
+            displayDescription: description,
+            displayName: name,
+            id: Math.random().toString(),
+            execute: actual_callback,
+            name: name,
+            inputType: 0,
+            options: options,
+            type: type
+        });
+    },
+
+    _create_message(content, embeds) {
+        return this.find_module.by_display_name("createBotMessage").createBotMessage(Discord.find_module.by_props("getChannelId").getChannelId(), content, embeds);
+    },
+
+    _send_local_message(channel, message) {
+        return this.find_module.by_props("receiveMessage").receiveMessage(channel, message);
+    },
+
+    _get_current_channel_id() {
+        return this.find_module.by_props("getLastSelectedChannelId", "getChannelId").getChannelId()
+    },
 
     find_module: {
         by_display_name(MODULE) {
@@ -172,50 +204,12 @@ const Discord = {
         return GLOBAL_USER_TOKEN;
     },
 
-    _create_command(name, description, options, type, callback) {
-        options.forEach(option => {
-            option.displayName = option.name;
-            option.displayDescription = option.description;
-        })
-        actual_callback = function(data) {
-            data.forEach(element => {
-                delete element.focused;
-            })
-            callback(data);
-        }
-        this.find_module.by_display_name("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.push({
-            applicationId: "-1",
-            description: description,
-            displayDescription: description,
-            displayName: name,
-            id: Math.random().toString(),
-            execute: actual_callback,
-            name: name,
-            inputType: 0,
-            options: options,
-            type: type
-        });
-    },
-
-    _create_message(content, embeds) {
-        return this.find_module.by_display_name("createBotMessage").createBotMessage(Discord.find_module.by_props("getChannelId").getChannelId(), content, embeds);
-    },
-
-    _send_local_message(channel, message) {
-        return this.find_module.by_props("receiveMessage").receiveMessage(channel, message);
-    },
-
-    _get_current_channel_id() {
-        return this.find_module.by_props("getLastSelectedChannelId", "getChannelId").getChannelId()
-    },
-
     tracking: {
         disable: function() {
             Discord.patch_module("instead", Discord.find_module.by_props("track"), "track", true, function() {
                 return;
             });
             Utils.Logger.log("Attempted to disable Discord's tracking.");
-            return true;
         },
         enable: function() {
             if (Discord._original_functions.track === undefined) {
@@ -223,7 +217,6 @@ const Discord = {
             }
             Discord.patch_module("instead", Discord.find_module.by_props("track"), "track", false, Discord._original_functions.track);
             Utils.Logger.log("Attempted to enable Discord's tracking.");
-            return true;
         }
     },
     typing: {
@@ -232,15 +225,13 @@ const Discord = {
                 return;
             });
             Utils.Logger.log("Attempted to disable typing notifications.");
-            return true;
         },
         enable: function() {
             if (Discord._original_functions.startTyping === undefined) {
-                return true; // Hasn't been disabled
+                return; // Hasn't been disabled
             }
             Discord.patch_module("instead", Discord.find_module.by_props("startTyping"), "startTyping", false, Discord._original_functions.startTyping);
             Utils.Logger.log("Attempted to enable typing notifications.");
-            return true;
         },
     },
 
@@ -257,7 +248,6 @@ const Discord = {
                 configurable: true
             });
             Utils.Logger.log("Attempted to enable hidden developer options.");
-            return true;
         },
         disable: function() {
             Object.defineProperty((window.webpackChunkdiscord_app.push([
@@ -271,7 +261,6 @@ const Discord = {
                 configurable: true
             });
             Utils.Logger.log("Attempted to disable hidden developer options.");
-            return false;
         }
     },
 
@@ -300,11 +289,9 @@ const Discord = {
                 style.appendChild(document.createTextNode(css));
             }
             Utils.Logger.log("Attempted to inject an AMOLED dark mode for Discord desktop.");
-            return true;
         },
         disable: function() {
             Utils.Logger.log("Currently, AMOLED dark mode cannot be disabled automatically. Please reload the page to disable it.");
-            return false;
         }
     }
 }
@@ -327,13 +314,13 @@ class Client {
         this.events[event].push(callback);
     }
 
-    emit(event, data) {
+    async emit(event, data) {
         if (this.events[event] === undefined) {
             return;
         }
         for (let callback of this.events[event]) {
             try {
-                callback(data);
+                await callback(data);
             } catch (e) {
                 Utils.Logger.log(`Error in '${event}' callback: '${e}'`);
             }
@@ -341,11 +328,11 @@ class Client {
     }
 
     get_guild(id) {
-        return Discord.find_module.by_props('getGuild').getGuild(id);
+        return Discord.find_module.by_props("getGuild").getGuild(id);
     }
 
     get_channel(id) {
-        return Discord.find_module.by_props('hasChannel').getChannel(id);
+        return Discord.find_module.by_props("hasChannel").getChannel(id);
     }
 
     create_slash_command(name, description, options = [], callback) {
@@ -353,11 +340,11 @@ class Client {
     }
 
     create_user_command(name, callback) {
-        Discord._create_command(name, '', [], 2, callback);
+        Discord._create_command(name, "", [], 2, callback);
     }
 
     create_message_command(name, callback) {
-        Discord._create_command(name, '', [], 3, callback);
+        Discord._create_command(name, "", [], 3, callback);
     }
 
     send_ephemeral_message(
@@ -375,7 +362,6 @@ class Client {
     send_clyde_message(content) {
         Discord.find_module.by_props('sendBotMessage').sendBotMessage(Discord._get_current_channel_id(), content);
         Utils.Logger.log(`Attempted to send message '${content}' through Clyde.`);
-        return true;
     }
 
     send_clyde_error() {
@@ -387,30 +373,32 @@ class Client {
     ) {
         if (!content && !sticker_ids) {
             throw new Error("Must provide either content or sticker_ids.");
-        }
+        };
         if (!channel) {
             channel = Discord._get_current_channel_id();
-        }
+        };
 
-        let params = {}
+        let msg = {"content": content, "tts": tts};
+        let params = {};
         if (message_reference != null) {
             params.messageReference = message_reference;
-        }
+        };
         if (allowed_mentions != null) {
             params.allowedMentions = allowed_mentions;
-        }
+        };
         if (sticker_ids != null) {
             params.stickerIds = sticker_ids;
-        }
-
-        return Discord.find_module.by_props('sendMessage').sendMessage(channel, {"content": content, "tts": tts}, null, params);
+        };
+        Discord.find_module.by_props("sendMessage").sendMessage(channel, msg, null, params);
+        Utils.Logger.log(`Attempted to send message with '${content}' '${params}' to '${channel}'.`);
     }
 
     connect() {
         // Hook into Discord's inbuilt Dispatcher
-        var _parent = this
+        let state = this;
         Discord.find_module.by_display_name("Dispatcher").Dispatcher.prototype._interceptor = function(e) {
-            _parent.emit(e.type.toLowerCase(), e);
+            let promise = state.emit(e.type.toLowerCase(), e);
+            Promise.resolve(promise);
         };
         Utils.Logger.log("Successfully hooked into the client!");
     }
@@ -420,4 +408,3 @@ class Client {
         Utils.Logger.log("Successfully unhooked from the client!");
     }
 }
-// e

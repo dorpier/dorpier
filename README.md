@@ -28,9 +28,9 @@ client.on("ready", function(d) {
     console.log("Logged in as" + client.user.username + "#" + client.user.discriminator)
 });
 
-client.on("message_create", function(d) {
+client.on("message_create", async function(d) {
     if (d.message.content == "ping") {
-        client.send_clyde_message("Pong!")
+        await client.send_message(undefined, "Pong!")
     }
 });
 
