@@ -3,28 +3,46 @@ const __version__ = { // make library's data a constant value
     nightly: true
 };
 var _KEEPLOGS = true;
-
-
-function checkInjectionStatus() {
-    console.clear();
-    if (typeof Client === "object") {
-        Utils.Logger.log(`Successfully injected Discord.JS-Pure v${__version__.number.toString()}!`);
-        if (__version__.nightly == true) {
-            Utils.Logger.log("You're running a nightly version of Discord.JS-Pure, so know there may be some issues.");
-        }
-        Utils.Logger.log("NOTE: By default, Discord.JS-Pure logs events. Run 'Utils.Logger.disable();' to disable the logs if they get too intrusive.");
-        return true;
-    } else {
-        console.log(`Failed to inject Discord.JS-Pure v${__version__.number.toString()}!`);
-        if (__version__.nightly == true) {
-            console.log("NOTE: You're running a nightly version of Discord.JS-Pure, so errors are to be expected.")
-        }
-        return false;
-    }
-}
-
+var _originalDiscordSentry;
 
 const Utils = {
+    plugins: {
+      _plugins: [],
+      _corePlugins: [{
+        name: "doNotTrack", 
+        start: function() { Discord.patchModule("instead", Discord.findModule.byProps("track"), "track", function() { return; }, "doNotTrack.1"); Discord.patchModule("instead", window, "onerror", function() { return; }, "DoNotTrack.2"); _originalDiscordSentry=window.DiscordSentry; window.DiscordSentry={}; },
+        stop: function() { Discord.unpatchByPatchSignature(Discord.findModule.byProps("track"), "track", "doNotTrack.1"); Discord.unpatchByPatchSignature(window, "onerror", "DoNotTrack.2"); if (typeof _originalDiscordSentry !== 'undefined') { window.DiscordSentry=_originalDiscordSentry; }; }
+      },
+      {
+        name: "silentTyping",
+        start: function() { Discord.patchModule("instead", Discord.findModule.byProps("startTyping"), "startTyping", function() { return; }, "silentTyping"); },
+        stop: function() { Discord.unpatchByPatchSignature(Discord.findModule.byProps("startTyping"), "startTyping", "silentTyping"); },
+      }, {
+        name: "discordDeveloperMode",
+        start: function(){ Object.defineProperty((window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let c in e.c){m.push(e.c[c])}}]),m).find(m=>m?.exports?.default?.isDeveloper!==void 0).exports.default,"isDeveloper",{get:()=>true,configurable:true }); },
+        stop: function(){ Object.defineProperty((window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let c in e.c){m.push(e.c[c])}}]),m).find(m=>m?.exports?.default?.isDeveloper!==void 0).exports.default,"isDeveloper",{get:()=>false,configurable:true }); }
+      }, {
+        name: "allowNsfw",
+        start: function() { Discord.find_module.by_props("getCurrentUser").getCurrentUser().nsfwAllowed = true; },
+        stop: function() { Discord.find_module.by_props("getCurrentUser").getCurrentUser().nsfwAllowed = false; }
+      }],
+      _findPluginByName(name, pluginSet) {
+        for (var i = 0; i < pluginSet.length; i++) {
+          if (pluginSet[i].name == name) {
+            return pluginSet[i]; 
+          }
+        }
+      },
+      start(name) {
+        Utils.plugins._findPluginByName(name, Utils.plugins._plugins).start();
+      },
+      stop(name) {
+        Utils.plugins._findPluginByName(name, Utils.plugins._plugins).stop();
+      },
+      add(json) {
+        Utils.plugins._plugins.push(json);
+      }
+    },
     Logger: {
         enable() {
             _KEEPLOGS = true;
@@ -66,6 +84,8 @@ const Utils = {
 const Discord = {
     _originalFunctions: {},
 
+    _currentPatches: [],
+
     _createCommand(name, description, options, type, callback) {
         options.forEach(option => {
             option.displayName = option.name;
@@ -82,7 +102,7 @@ const Discord = {
             description: description,
             displayDescription: description,
             displayName: name,
-            id: Math.random().toString(),
+            id: `-${this.findModule.byDisplayName("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.length + 1}`,
             execute: actualCallback,
             name: name,
             inputType: 0,
@@ -101,6 +121,39 @@ const Discord = {
 
     _getCurrentChannelID() {
         return this.findModule.byProps("getLastSelectedChannelId", "getChannelId").getChannelId()
+    },
+
+    createSlashCommand(name, description, options = [], callback) {
+        this._createCommand(name, description, options, 1, callback);
+    },
+
+    createUserCommand(name, callback) {
+        this._createCommand(name, "", [], 2, callback);
+    },
+
+    createMessageCommand(name, callback) {
+        this._createCommand(name, "", [], 3, callback);
+    },
+
+    sendEphemeralMessage(
+        content = "", embeds = [], author = Client.user, type = 0, tts = false, stickerIDs = []
+    ) {
+        let msg = this._createMessage(content, embeds);
+        msg.author = author;
+        msg.type = type;
+        msg.tts = tts;
+        msg.sticker_ids = stickerIDs;
+        Utils.Logger.log(`Attempted to send message '${content}' with '${embeds}' as '${author.username}' ephemerally.`);
+        return this._sendLocalMessage(msg.channel_id, msg);
+    },
+
+    sendClydeMessage(content) {
+        this.findModule.byProps('sendBotMessage').sendBotMessage(Discord._getCurrentChannelID(), content);
+        Utils.Logger.log(`Attempted to send message '${content}' through Clyde.`);
+    },
+
+    sendClydeError() {
+        this.findModule.byProps("sendBotMessage").sendClydeError(Discord._getCurrentChannelID());
     },
 
     findModule: {
@@ -131,11 +184,23 @@ const Discord = {
         }
     },
 
-    patchModule(type, module, func, backup=false, callback) { // btw, the 'callback' is the function that you'd like to patch with. ex: a before patch will run the 'callback' function BEFORE the discord-owned webpack module is ran.
+    patchModule(type, module, func, callback, signature) { // btw, the 'callback' is the function that you'd like to patch with. ex: a before patch will run the 'callback' function BEFORE the discord-owned webpack module is ran.
         let originalFunction = module[func];
-        if (backup == true) {
-            this._originalFunctions[func] = module[func];
+        if (!this._originalFunctions[func]) { // for every patch, let's make sure there's a backup. just to be safe.
+             this._originalFunctions[func] = module[func];
         }
+
+      var isPatchInCurrentOnes = false;
+      for (var i = 0; i < this._currentPatches.length; i++) {
+        let patch = this._currentPatches[i];
+        if (patch.signature == signature) {
+          isPatchInCurrentOnes = true
+        }
+      }
+      if (isPatchInCurrentOnes != true) {
+        this._currentPatches.push({signature: signature, patchType: type, patchOn: func, callback: callback});
+      }
+
         switch (type) {
             case "before":
                 originalFunction = module[func];
@@ -168,13 +233,41 @@ const Discord = {
         }
     },
 
+    _unpatchEntireModule(module, func) {
+      module[func] = this._originalFunctions[func]; // let's grab the original function and assign its value to the actual func
+    },
+
+    _removePatchesFromList(func, signature) {
+      for (var i = 0; i < this._currentPatches.length; i++) { // this for loop will remove every patch with the signature that you wanna remove
+        let patch = this._currentPatches[i];
+        if (patch.signature == signature) {
+          this._currentPatches.splice(i,1);
+        }
+      }
+      return;
+    },
+
+    _stepOneOfPatchSignatureUnpatching(module, func, signature) {
+      Discord._unpatchEntireModule(module, func);
+      Discord._removePatchesFromList(func, signature);
+    },
+
+    unpatchByPatchSignature(module, func, signature) {
+      Discord._stepOneOfPatchSignatureUnpatching(module, func, signature);
+      for (var i = 0; i < this._currentPatches.length; i++) { // for every patch in the list of patches, repatch them
+        let patch = this._currentPatches[i];
+
+        Discord.patchModule(patch.patchType, Discord.findModule.byProps(patch.patchOn), patch.patchOn, patch.callback, patch.signature);
+      }
+    },
+
     dispatch(name, data) {
         data.type = name.toUpperCase();
         return this.findModule.byProps("dirtyDispatch").dirtyDispatch(data);
     },
 
     changeDeveloperOptions(settings) {
-        Discord.findModule.byDisplayName("setDeveloperOptionSettings").setDeveloperOptionSettings(settings);
+        this.findModule.byDisplayName("setDeveloperOptionSettings").setDeveloperOptionSettings(settings);
     },
 
     login(token) {
@@ -206,71 +299,43 @@ const Discord = {
 
     tracking: {
         disable: function() {
-            Discord.patchModule("instead", Discord.findModule.byProps("track"), "track", true, function() {
-                return;
-            });
+            Utils.plugins._find_plugin_by_name("doNotTrack", Utils.plugins._corePlugins).start();
             Utils.Logger.log("Attempted to disable Discord's tracking.");
         },
         enable: function() {
-            if (Discord._originalFunctions.track === undefined) {
-                return true; // Hasn't been disabled
-            }
-            Discord.patchModule("instead", Discord.findModule.byProps("track"), "track", false, Discord._originalFunctions.track);
+            Utils.plugins._find_plugin_by_name("doNotTrack", Utils.plugins._corePlugins).stop();
             Utils.Logger.log("Attempted to enable Discord's tracking.");
         }
     },
     typing: {
         disable: function() {
-            Discord.patchModule("instead", Discord.findModule.byProps("startTyping"), "startTyping", true, function() {
-                return;
-            });
+            Utils.plugins._find_plugin_by_name("silentTyping", Utils.plugins._corePlugins).start();
             Utils.Logger.log("Attempted to disable typing notifications.");
         },
         enable: function() {
-            if (Discord._originalFunctions.startTyping === undefined) {
-                return; // Hasn't been disabled
-            }
-            Discord.patchModule("instead", Discord.findModule.byProps("startTyping"), "startTyping", false, Discord._originalFunctions.startTyping);
+            Utils.plugins._find_plugin_by_name("silentTyping", Utils.plugins._corePlugins).stop();
             Utils.Logger.log("Attempted to enable typing notifications.");
         },
     },
 
     developerMode: {
         enable: function() {
-            Object.defineProperty((window.webpackChunkdiscord_app.push([
-                [''], {},
-                e => {
-                    m = [];
-                    for (let c in e.c) m.push(e.c[c])
-                }
-            ]), m).find(m => m?.exports?.default?.isDeveloper !== void 0).exports.default, "isDeveloper", {
-                get: () => true,
-                configurable: true
-            });
+            Utils.plugins._find_plugin_by_name("discordDeveloperMode", Utils.plugins._corePlugins).start();
             Utils.Logger.log("Attempted to enable hidden developer options.");
         },
         disable: function() {
-            Object.defineProperty((window.webpackChunkdiscord_app.push([
-                [''], {},
-                e => {
-                    m = [];
-                    for (let c in e.c) m.push(e.c[c])
-                }
-            ]), m).find(m => m?.exports?.default?.isDeveloper !== void 0).exports.default, "isDeveloper", {
-                get: () => false,
-                configurable: true
-            });
+            Utils.plugins._find_plugin_by_name("discordDeveloperMode", Utils.plugins._corePlugins).stop();
             Utils.Logger.log("Attempted to disable hidden developer options.");
         }
     },
 
     nsfw: {
         enable: function() {
-            Discord.findModule.byProps("getCurrentUser").getCurrentUser().nsfwAllowed = true;
+            Utils.plugins._find_plugin_by_name("allowNsfw", Utils.plugins._corePlugins).start();
             Utils.Logger.log("Attempted to patch the current user and allow them to view NSFW media.");
         },
         disable: function() {
-            Discord.findModule.byProps("getCurrentUser").getCurrentUser().nsfwAllowed = false;
+            Utils.plugins._find_plugin_by_name("allowNsfw", Utils.plugins._corePlugins).stop();
             Utils.Logger.log("Attempted to patch the current user and disallow them from viewing NSFW media.");
         }
     },
@@ -333,39 +398,6 @@ class Client {
 
     getChannel(id) {
         return Discord.findModule.byProps("hasChannel").getChannel(id);
-    }
-
-    createSlashCommand(name, description, options = [], callback) {
-        Discord._createCommand(name, description, options, 1, callback);
-    }
-
-    createUserCommand(name, callback) {
-        Discord._createCommand(name, "", [], 2, callback);
-    }
-
-    createMessageCommand(name, callback) {
-        Discord._createCommand(name, "", [], 3, callback);
-    }
-
-    sendEphemeralMessage(
-        content = "", embeds = [], author = Client.user, type = 0, tts = false, stickerIDs = []
-    ) {
-        let msg = Discord._createMessage(content, embeds);
-        msg.author = author;
-        msg.type = type;
-        msg.tts = tts;
-        msg.sticker_ids = stickerIDs;
-        Utils.Logger.log(`Attempted to send message '${content}' with '${embeds}' as '${author.username}' ephemerally.`);
-        return Discord._sendLocalMessage(msg.channel_id, msg);
-    }
-
-    sendClydeMessage(content) {
-        Discord.findModule.byProps('sendBotMessage').sendBotMessage(Discord._getCurrentChannelID(), content);
-        Utils.Logger.log(`Attempted to send message '${content}' through Clyde.`);
-    }
-
-    sendClydeError() {
-        Discord.findModule.byProps("sendBotMessage").sendClydeError(Discord._getCurrentChannelID());
     }
 
     sendMessage(
