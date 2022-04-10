@@ -10,8 +10,8 @@ const Utils = {
       _plugins: [],
       _corePlugins: [{
         name: "doNotTrack", 
-        start: function() { Discord.patchModule("instead", Discord.findModule.byProps("track"), "track", function() { return; }, "doNotTrack.1"); Discord.patchModule("instead", window, "onerror", function() { return; }, "DoNotTrack.2"); _originalDiscordSentry=window.DiscordSentry; window.DiscordSentry={}; },
-        stop: function() { Discord.unpatchByPatchSignature(Discord.findModule.byProps("track"), "track", "doNotTrack.1"); Discord.unpatchByPatchSignature(window, "onerror", "DoNotTrack.2"); if (typeof _originalDiscordSentry !== 'undefined') { window.DiscordSentry=_originalDiscordSentry; }; }
+        start: function() { Discord.patchModule("instead", Discord.findModule.byProps("track"), "track", function() { return; }, "DoNotTrack.1"); Discord.patchModule("instead", window, "onerror", function() { return; }, "DoNotTrack.2"); _originalDiscordSentry=window.DiscordSentry; window.DiscordSentry={}; },
+        stop: function() { Discord.unpatchByPatchSignature(Discord.findModule.byProps("track"), "track", "DoNotTrack.1"); Discord.unpatchByPatchSignature(window, "onerror", "DoNotTrack.2"); if (typeof _originalDiscordSentry !== 'undefined') { window.DiscordSentry=_originalDiscordSentry; }; }
       },
       {
         name: "silentTyping",
@@ -257,7 +257,7 @@ const Discord = {
       for (var i = 0; i < this._currentPatches.length; i++) { // for every patch in the list of patches, repatch them
         let patch = this._currentPatches[i];
 
-        Discord.patchModule(patch.patchType, Discord.findModule.byProps(patch.patchOn), patch.patchOn, patch.callback, patch.signature);
+        Discord.patchModule(patch.patchType, module, patch.patchOn, patch.callback, patch.signature);
       }
     },
 
