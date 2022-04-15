@@ -131,7 +131,7 @@ Utils = {
 
 
 Discord = {
-    __version__ = {
+    __version__: {
         number: 3.1,
         nightly: true
     },
