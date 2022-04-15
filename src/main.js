@@ -5,7 +5,7 @@ const __version__ = { // make library's data a constant value
 var _KEEPLOGS = true;
 var _originalDiscordSentry;
 
-const Plugins = {
+Plugins = {
   _plugins: [],
   _corePlugins: [{
                 name: "doNotTrack",
@@ -95,7 +95,7 @@ const Plugins = {
         }
 }
 
-const Utils = {
+Utils = {
     Logger: {
         enable() {
             _KEEPLOGS = true;
@@ -134,7 +134,7 @@ const Utils = {
 }
 
 
-const Discord = {
+Discord = {
     _originalFunctions: {},
 
     _currentPatches: [],
