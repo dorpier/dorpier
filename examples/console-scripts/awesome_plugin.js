@@ -1,11 +1,11 @@
 Utils.plugins.add({
     name: "myAwesomePlugin",
-    start: function() {
+    start: function () {
         console.log("Started My Awesome Plugin!");
     },
-    stop: function() {
+    stop: function () {
         console.log("Stopped My Awesome Plugin!");
-    }
+    },
 });
 
 /*
