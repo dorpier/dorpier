@@ -1,7 +1,3 @@
-const __version__ = { // make library's data a constant value
-    number: 3.0,
-    nightly: true
-};
 var _KEEPLOGS = true;
 var _originalDiscordSentry;
 
@@ -135,8 +131,11 @@ Utils = {
 
 
 Discord = {
+    __version__ = {
+        number: 3.1,
+        nightly: true
+    },
     _originalFunctions: {},
-
     _currentPatches: [],
 
     _createCommand(name, description, options, type, callback) {
@@ -450,7 +449,7 @@ Discord = {
 }
 
 
-class Client {
+Client = class Client {
     constructor() {
         this.token = Discord.getToken();
         this.events = {};
