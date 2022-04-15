@@ -85,13 +85,13 @@ const Plugins = {
             }
         },
         start(name) {
-            Utils.plugins._findPluginByName(name, Utils.plugins._plugins).start();
+            Plugins._findPluginByName(name, Plugins._plugins).start();
         },
         stop(name) {
-            Utils.plugins._findPluginByName(name, Utils.plugins._plugins).stop();
+            Plugins._findPluginByName(name, Plugins._plugins).stop();
         },
         add(json) {
-            Utils.plugins._plugins.push(json);
+            Plugins._plugins.push(json);
         }
 }
 
