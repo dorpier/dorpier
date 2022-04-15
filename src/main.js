@@ -5,10 +5,9 @@ const __version__ = { // make library's data a constant value
 var _KEEPLOGS = true;
 var _originalDiscordSentry;
 
-const Utils = {
-    plugins: {
-        _plugins: [],
-        _corePlugins: [{
+const Plugins = {
+  _plugins: [],
+  _corePlugins: [{
                 name: "doNotTrack",
                 start: function() {
                     Discord.patchModule("instead", Discord.findModule.byProps("track"), "track", function() {
@@ -78,7 +77,7 @@ const Utils = {
                 }
             }
         ],
-        _findPluginByName(name, pluginSet) {
+     _findPluginByName(name, pluginSet) {
             for (var i = 0; i < pluginSet.length; i++) {
                 if (pluginSet[i].name == name) {
                     return pluginSet[i];
@@ -94,7 +93,9 @@ const Utils = {
         add(json) {
             Utils.plugins._plugins.push(json);
         }
-    },
+}
+
+const Utils = {
     Logger: {
         enable() {
             _KEEPLOGS = true;
@@ -217,7 +218,6 @@ const Discord = {
                     }
                 }
             ]);
-            Utils.Logger.log(`Attempted to find module '${MODULE}' by its display name`);
             return findModule(MODULE);
         },
 
@@ -231,7 +231,6 @@ const Discord = {
                     }
                 }
             ]);
-            Utils.Logger.log(`Attempted to find module '${MODULE}' by its properties name`);
             return findModule(MODULE);
         }
     },
@@ -388,43 +387,43 @@ const Discord = {
 
     tracking: {
         disable: function() {
-            Utils.plugins._find_plugin_by_name("doNotTrack", Utils.plugins._corePlugins).start();
+            Plugins._findPluginByName("doNotTrack", Plugins._corePlugins).start();
             Utils.Logger.log("Attempted to disable Discord's tracking.");
         },
         enable: function() {
-            Utils.plugins._find_plugin_by_name("doNotTrack", Utils.plugins._corePlugins).stop();
+            Plugins._findPluginByName("doNotTrack", Plugins._corePlugins).stop();
             Utils.Logger.log("Attempted to enable Discord's tracking.");
         }
     },
     typing: {
         disable: function() {
-            Utils.plugins._find_plugin_by_name("silentTyping", Utils.plugins._corePlugins).start();
+            Plugins._findPluginByName("silentTyping", Plugins._corePlugins).start();
             Utils.Logger.log("Attempted to disable typing notifications.");
         },
         enable: function() {
-            Utils.plugins._find_plugin_by_name("silentTyping", Utils.plugins._corePlugins).stop();
+            Plugins._findPluginByName("silentTyping", Plugins._corePlugins).stop();
             Utils.Logger.log("Attempted to enable typing notifications.");
         },
     },
 
     developerMode: {
         enable: function() {
-            Utils.plugins._find_plugin_by_name("discordDeveloperMode", Utils.plugins._corePlugins).start();
+            Plugins._findPluginByName("discordDeveloperMode", Plugins._corePlugins).start();
             Utils.Logger.log("Attempted to enable hidden developer options.");
         },
         disable: function() {
-            Utils.plugins._find_plugin_by_name("discordDeveloperMode", Utils.plugins._corePlugins).stop();
+            Plugins._findPluginByName("discordDeveloperMode", Plugins._corePlugins).stop();
             Utils.Logger.log("Attempted to disable hidden developer options.");
         }
     },
 
     nsfw: {
         enable: function() {
-            Utils.plugins._find_plugin_by_name("allowNsfw", Utils.plugins._corePlugins).start();
+            Plugins._findPluginByName("allowNsfw", Plugins._corePlugins).start();
             Utils.Logger.log("Attempted to patch the current user and allow them to view NSFW media.");
         },
         disable: function() {
-            Utils.plugins._find_plugin_by_name("allowNsfw", Utils.plugins._corePlugins).stop();
+            Plugins._findPluginByName("allowNsfw", Plugins._corePlugins).stop();
             Utils.Logger.log("Attempted to patch the current user and disallow them from viewing NSFW media.");
         }
     },
