@@ -1,20 +1,18 @@
-Utils.plugins.add({
+// Paste in minified library (https://raw.githubusercontent.com/13-05/discord.js-pure/main/minified.js)
+
+// Define plugin
+Plugins.add({
     name: "myAwesomePlugin",
     start: function () {
-        console.log("Started My Awesome Plugin!");
+        console.log("Started awesome plugin :)");
     },
     stop: function () {
-        console.log("Stopped My Awesome Plugin!");
+        console.log("Stopped awesome plugin :(");
     },
 });
 
-/*
+// Start plugin
 Utils.plugins.start("myAwesomePlugin");
 
-- to start a plugin
-*/
-/*
+// Stop plugin
 Utils.plugins.stop("myAwesomePlugin");
-
-- to stop a plugin
-*/

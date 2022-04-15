@@ -3,11 +3,12 @@
 // @match       *://discord.com/*
 // @grant       none
 // @version     1.0
-// @require https://raw.githubusercontent.com/13-05/discord.js-pure/main/nightly/src/main.js
+// @require     https://raw.githubusercontent.com/13-05/discord.js-pure/main/minified.js
 // @author      1305
 // @description A 'ping' selfbot written in the pure javascript version of discord.js!
 // @run-at document-start
 // ==/UserScript==s
+
 (async function () {
     client = new Client();
 

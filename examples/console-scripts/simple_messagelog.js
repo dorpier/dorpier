@@ -1,4 +1,4 @@
-// this example can be pasted in your console after you paste the minified library (https://raw.githubusercontent.com/13-05/discord.js-pure/main/inspect-console/minified.js)
+// Paste in minified library (https://raw.githubusercontent.com/13-05/discord.js-pure/main/minified.js)
 
 client = new Discord.Client();
 
