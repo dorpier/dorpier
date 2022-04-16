@@ -3,7 +3,7 @@ name: Minify
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   minify:
