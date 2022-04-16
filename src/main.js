@@ -345,7 +345,7 @@ Discord = {
 
             default:
                 // imagine not specifying your patch type. smh. /j
-                Utils.Logger.log("Unknown patch, aborting!");
+                Logger.log("Unknown patch, aborting!");
                 break;
         }
     },
@@ -417,13 +417,13 @@ Discord = {
         let token = this.findModule.byProps("getToken").getToken();
         if (token.includes(".") == false) {
             if (window.localStorage != undefined) {
-                Utils.Logger.log("Grabbing token from localStorage...");
+                Logger.log("Grabbing token from localStorage...");
                 return window.localStorage
                     .getItem("token")
                     .replace('"', "")
                     .replace('"', "");
             } else {
-                Utils.Logger.log("Grabbing token from popup...");
+                Logger.log("Grabbing token from popup...");
                 let popup = window.open("");
                 if (!popup) {
                     return alert(
@@ -437,7 +437,7 @@ Discord = {
                 return token;
             }
         }
-        Utils.Logger.log("Grabbing token from client...");
+        Logger.log("Grabbing token from client...");
         return token;
     },
 
@@ -447,14 +447,14 @@ Discord = {
                 "doNotTrack",
                 Plugins._corePlugins,
             ).start();
-            Utils.Logger.log("Attempted to disable Discord's tracking.");
+            Logger.log("Attempted to disable Discord's tracking.");
         },
         enable: function () {
             Plugins._findPluginByName(
                 "doNotTrack",
                 Plugins._corePlugins,
             ).stop();
-            Utils.Logger.log("Attempted to enable Discord's tracking.");
+            Logger.log("Attempted to enable Discord's tracking.");
         },
     },
     typing: {
@@ -463,14 +463,14 @@ Discord = {
                 "silentTyping",
                 Plugins._corePlugins,
             ).start();
-            Utils.Logger.log("Attempted to disable typing notifications.");
+            Logger.log("Attempted to disable typing notifications.");
         },
         enable: function () {
             Plugins._findPluginByName(
                 "silentTyping",
                 Plugins._corePlugins,
             ).stop();
-            Utils.Logger.log("Attempted to enable typing notifications.");
+            Logger.log("Attempted to enable typing notifications.");
         },
     },
 
@@ -480,14 +480,14 @@ Discord = {
                 "discordDeveloperMode",
                 Plugins._corePlugins,
             ).start();
-            Utils.Logger.log("Attempted to enable hidden developer options.");
+            Logger.log("Attempted to enable hidden developer options.");
         },
         disable: function () {
             Plugins._findPluginByName(
                 "discordDeveloperMode",
                 Plugins._corePlugins,
             ).stop();
-            Utils.Logger.log("Attempted to disable hidden developer options.");
+            Logger.log("Attempted to disable hidden developer options.");
         },
     },
 
@@ -497,13 +497,13 @@ Discord = {
                 "allowNsfw",
                 Plugins._corePlugins,
             ).start();
-            Utils.Logger.log(
+            Logger.log(
                 "Attempted to patch the current user and allow them to view NSFW media.",
             );
         },
         disable: function () {
             Plugins._findPluginByName("allowNsfw", Plugins._corePlugins).stop();
-            Utils.Logger.log(
+            Logger.log(
                 "Attempted to patch the current user and disallow them from viewing NSFW media.",
             );
         },
@@ -523,12 +523,12 @@ Discord = {
             } else {
                 style.appendChild(document.createTextNode(css));
             }
-            Utils.Logger.log(
+            Logger.log(
                 "Attempted to inject an AMOLED dark mode for Discord desktop.",
             );
         },
         disable: function () {
-            Utils.Logger.log(
+            Logger.log(
                 "Currently, AMOLED dark mode cannot be disabled automatically. Please reload the page to disable it.",
             );
         },
@@ -561,7 +561,7 @@ Client = class Client {
             try {
                 await callback(data);
             } catch (e) {
-                Utils.Logger.log(`Error in '${event}' callback: '${e}'`);
+                Logger.log(`Error in '${event}' callback: '${e}'`);
             }
         }
     }
@@ -572,6 +572,10 @@ Client = class Client {
 
     getChannel(id) {
         return Discord.findModule.byProps("hasChannel").getChannel(id);
+    }
+
+    getUser(id) {
+      return Discord.findModule.byProps("getUser").getUser(id);
     }
 
     sendMessage(
@@ -593,6 +597,8 @@ Client = class Client {
             content: content,
             tts: tts,
         };
+        msg.invalidEmojis = [];
+        msg.validNonShortcutEmojis = [];
         let params = {};
         if (messageReference != null) {
             params.messageReference = messageReference;
@@ -607,7 +613,7 @@ Client = class Client {
         Discord.findModule
             .byProps("sendMessage")
             .sendMessage(channel, msg, null, params);
-        Utils.Logger.log(
+        Logger.log(
             `Attempted to send message with '${content}' '${params}' to '${channel}'.`,
         );
     }
@@ -637,7 +643,7 @@ Client = class Client {
         msg.type = type;
         msg.tts = tts;
         msg.sticker_ids = stickerIDs;
-        Utils.Logger.log(
+        Logger.log(
             `Attempted to send message '${content}' with '${embeds}' as '${author.username}' ephemerally.`,
         );
         return this._sendLocalMessage(msg.channel_id, msg);
@@ -647,7 +653,7 @@ Client = class Client {
         this.findModule
             .byProps("sendBotMessage")
             .sendBotMessage(Discord._getCurrentChannelID(), content);
-        Utils.Logger.log(
+        Logger.log(
             `Attempted to send message '${content}' through Clyde.`,
         );
     }
@@ -667,13 +673,13 @@ Client = class Client {
             let promise = state.emit(e.type.toLowerCase(), e);
             Promise.resolve(promise);
         };
-        Utils.Logger.log("Successfully hooked into the client!");
+        Logger.log("Successfully hooked into the client!");
     }
 
     disconnect() {
         Discord.findModule.byDisplayName(
             "Dispatcher",
         ).Dispatcher.prototype._interceptor = undefined;
-        Utils.Logger.log("Successfully unhooked from the client!");
+        Logger.log("Successfully unhooked from the client!");
     }
 };
