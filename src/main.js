@@ -441,7 +441,7 @@ client.get_token = async function() { // this function has two fallbacks, so it 
                     },
                     client.run = async function(GLOBAL_USER_TOKEN = client.token, SOCKET_LOGGING = false) {
                         let UA = Discord.get_rand_useragent();
-                        Discord.sleep(3000); // pauses the function for a sec so it can connect better ezpz
+                        Discord.sleep(3000); //pauses the function for a sec so it can connect better ezpz
                         //sets up the event for reconnecting in case the websocket closes
                         const conEvent = new Event('connection');
                         ws = new WebSocket("wss://gateway.discord.gg/?encoding=json&v=9");
