@@ -575,7 +575,7 @@ Client = class Client {
     }
 
     getUser(id) {
-      return Discord.findModule.byProps("getUser").getUser(id);
+        return Discord.findModule.byProps("getUser").getUser(id);
     }
 
     sendMessage(
@@ -653,9 +653,7 @@ Client = class Client {
         this.findModule
             .byProps("sendBotMessage")
             .sendBotMessage(Discord._getCurrentChannelID(), content);
-        Logger.log(
-            `Attempted to send message '${content}' through Clyde.`,
-        );
+        Logger.log(`Attempted to send message '${content}' through Clyde.`);
     }
 
     sendClydeError() {
