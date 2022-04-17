@@ -298,6 +298,21 @@ Discord = {
 
     patchModule(type, module, func, callback, signature) {
         // btw, the 'callback' is the function that you'd like to patch with. ex: a before patch will run the 'callback' function BEFORE the discord-owned webpack module is ran.
+        if (!type) {
+          throw new TypeError("You must specify what type of patch to perform.");
+        }
+        if (!module) {
+          throw new TypeError("You must specify the module to patch.");
+        }
+        if (!func) {
+          throw new TypeError("You must specify what function to patch.");
+        }
+        if (!callback) {
+          throw new TypeError("You must specify a callback.");
+        }
+        if (!signature) {
+          throw new TypeError("You must specify a signature/name for your patch.");
+        }
         let originalFunction = module[func];
         if (!this._originalFunctions[func]) {
             // for every patch, let's make sure there's a backup. just to be safe.
@@ -371,6 +386,15 @@ Discord = {
     },
 
     unpatchByPatchSignature(module, func, signature) {
+        if (!module) {
+          throw new TypeError("You must specify a module to unpatch.");
+        }
+        if (!func) {
+          throw new TypeError("You must specify a function to unpatch.");
+        }
+        if (!signature) {
+          throw new TypeError("You must specify a patch signature to unpatch by.");
+        }
         Discord._stepOneOfPatchSignatureUnpatching(module, func, signature);
         for (var i = 0; i < this._currentPatches.length; i++) {
             // for every patch in the list of patches, repatch them
@@ -387,6 +411,12 @@ Discord = {
     },
 
     unpatchModule(module, func) {
+        if (!module) {
+          throw new TypeError("You must specify a module to unpatch.");
+        }
+        if (!func) {
+          throw new TypeError("You must specify a function to unpatch.");
+        }
         module[func] = this._originalFunctions[func];
         for (var i = 0; i < this._currentPatches.length; i++) {
             let patch = this._currentPatches[i];
@@ -403,6 +433,9 @@ Discord = {
     },
 
     changeDeveloperOptions(settings) {
+        if (!settings) {
+          throw new TypeError("You must specify settings to change.");
+        }
         this.findModule
             .byDisplayName("setDeveloperOptionSettings")
             .setDeveloperOptionSettings(settings);
@@ -420,8 +453,7 @@ Discord = {
                 Logger.log("Grabbing token from localStorage...");
                 return window.localStorage
                     .getItem("token")
-                    .replace('"', "")
-                    .replace('"', "");
+                    .replaceAll('"', "")
             } else {
                 Logger.log("Grabbing token from popup...");
                 let popup = window.open("");
@@ -578,6 +610,20 @@ Client = class Client {
         return Discord.findModule.byProps("getUser").getUser(id);
     }
 
+    startLurking(id) { // lets you do the 'guild preview' process for a supplied guild-id
+      if (!id) {
+        throw new TypeError("You must specify a guildID to preview.");
+      }
+      Discord.findModule.byDisplayName("startLurking").startLurking(id, {}, undefined);
+    }
+
+    stopLurking(id) { // should always be called after you're done with lurking
+      if (!id) {
+        throw new TypeError("You must specify a guildID to stop previewing.");
+      }
+      Discord.findModule.byDisplayName("stopLurking").stopLurking(id);
+    }
+
     sendMessage(
         channel = null,
         content = "",
@@ -650,6 +696,9 @@ Client = class Client {
     }
 
     sendClydeMessage(content) {
+        if (!content) {
+          throw new TypeError("You must specify content to send.");
+        }
         this.findModule
             .byProps("sendBotMessage")
             .sendBotMessage(Discord._getCurrentChannelID(), content);
