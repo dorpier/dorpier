@@ -182,7 +182,7 @@ Plugins = {
 Discord = {
     __version__: {
         number: 3.1,
-        nightly: true,
+        nightly: false,
     },
     _originalFunctions: {},
     _currentPatches: [],
