@@ -22,36 +22,27 @@ If you're like most people, you don't want to download anything. Well, you're in
 5) Paste the following to test it:
 ###### Example Code: 
 ```js
-/* required for the selfbot to run */
-await Discord.load_required_variables();
+client = new Client();
 
+client.on("ready", function(d) {
+    console.log("Logged in as" + client.user.username + "#" + client.user.discriminator)
+});
 
-/* stuff that makes the selfbot more complete (only let it respond to you) */
-let USERID = await client.get_userid();
+client.on("message_create", async function(d) {
+    if (d.message.content == "ping") {
+        await client.sendMessage(message.channel_id, "Pong!")
+    }
+});
 
-client.on_ready = async function() {
-  Discord.Logger.Log(`Selfbot's up and running! Logged in as ${client.user}`);
-  window.alert(`Selfbot's up and running! Logged in as ${client.user}`);
-}
-
-client.on_message = async function(message) {
-  if (message.author.id != USERID) return;
-  if (message.content.trim() == "ping"){
-    await client.send_message("pong!", message.channel_id);
-  }
-}
-
-client.run(); /* run the selfbot */
+client.connect();
 ```
 
-6) Say 'ping' in any channel in Discord, and it should respond with `pong`! If it does, then you did everything right; the library's working! Now, you can get to making your own scripts ;)
-
-EXTRA: know that the `/* required for the selfbot to run */` part is super serious, without those two lines your selfbot literally will not run.
+6) Say `ping` in any channel in Discord, and it should respond with `pong`! If it does, then you did everything right; the library's working! Now, you can get to making your own scripts ;)
 
 ### Run It Automatically
 Alright, so this method will automatically boot the selfbot every time you load up [Discord](https://discord.com/app) in your browser. Although, there's one catch: you need an extension. So, if you don't mind using an extension, you're good to go! Just follow the steps below:
 1) Get [ViolentMonkey](https://violentmonkey.github.io/) for your browser
-2) Navigate to the settings page by clicking the gear icon after clicking the logo.
+2) Navigate to the settings page by clicking the gear icon after clicking the logo
 3) Press the `+` symbol at the top left, and then click `New`
 4) Paste an [example](https://github.com/13-05/discord.js-pure/tree/main/examples/userscripts) and then save the script
 5) Open/reload [Discord](https://discord.com/app) in your browser
