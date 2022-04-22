@@ -29,15 +29,16 @@ client.on("ready", function(d) {
 });
 
 client.on("message_create", async function(d) {
-    if (d.message.content == "ping") {
-        await client.sendMessage(message.channel_id, "Pong!")
+    let message = d.message;
+    if (message.content == "ping") {
+        await client.sendMessage(message.channel_id, "Pong");
     }
 });
 
 client.connect();
 ```
 
-6) Say `ping` in any channel in Discord, and it should respond with `pong`! If it does, then you did everything right; the library's working! Now, you can get to making your own scripts ;)
+6) Say `ping` in any channel in Discord, and it should respond with `Pong`! If it does, then you did everything right; the library's working! Now, you can get to making your own scripts ;)
 
 ### Run It Automatically
 Alright, so this method will automatically boot the selfbot every time you load up [Discord](https://discord.com/app) in your browser. Although, there's one catch: you need an extension. So, if you don't mind using an extension, you're good to go! Just follow the steps below:
