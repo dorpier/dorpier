@@ -111,13 +111,13 @@ Plugins = {
         {
             name: "allowNsfw",
             start: function () {
-                Discord.find_module
-                    .by_props("getCurrentUser")
+                Discord.findModule
+                    .byProps("getCurrentUser")
                     .getCurrentUser().nsfwAllowed = true;
             },
             stop: function () {
-                Discord.find_module
-                    .by_props("getCurrentUser")
+                Discord.findModule
+                    .byProps("getCurrentUser")
                     .getCurrentUser().nsfwAllowed = false;
             },
         },
