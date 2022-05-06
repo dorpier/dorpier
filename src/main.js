@@ -1,4 +1,4 @@
-​Plugins = {
+Plugins = {
     _plugins: [],
     _corePlugins: [{
             name: "doNotTrack",
