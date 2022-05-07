@@ -3,7 +3,7 @@ An asynchronous Discord API wrapper for selfbots, written in pure javascript! ~~
 
 Special thanks to [L](https://github.com/L5050) and [Harry Tom](https://stackoverflow.com/users/14836368/harry-tom)!
 
-Credit to [Dolfies](https://github.com/dolfies) for Discord API help!
+Credit to [Dolfies](https://github.com/dolfies) for Discord API and core Discord.JS-Pure API development help!
 
 ## Community
 Join my [Discord](https://dsc.gg/unwelcome)!
