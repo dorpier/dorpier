@@ -179,7 +179,7 @@ Plugins = {
 Discord = {
     __version__: {
         number: 3.1,
-        nightly: false,
+        nightly: true,
     },
 
     _originalFunctions: {},
@@ -267,6 +267,270 @@ Discord = {
         window.webpackChunkdiscord_app.pop();
         return webp;
     },
+
+    showToast(message, type) {
+      if (!type) {
+        let type = 0;
+      }
+      Discord.findModule.byDisplayName("showToast").showToast({message: message, type: type});
+    },
+
+    async createPromptModal(title, defaultValue = "") {
+    const cache = () => {
+        let webp = window.webpackChunkdiscord_app.push([
+            [Symbol()], {},
+            _ => _.c
+        ]);
+        window.webpackChunkdiscord_app.pop();
+        return webp;
+    }
+    const TextInput = () => {
+        let m = [];
+        ((n) => {
+            m.push(
+                ...Object.values(cache()).filter(
+                    (m) =>
+                    m?.exports &&
+                    ((m?.exports?.default &&
+                            Object.keys(m.exports.default).some((k) =>
+                                k.toLowerCase().includes(n),
+                            )) ||
+                        (m.exports?.default?.prototype &&
+                            Object.keys(
+                                m.exports.default.prototype,
+                            ).some((k) =>
+                                k.toLowerCase().includes(n),
+                            )) ||
+                        Object.keys(m.exports).some((k) =>
+                            k.toLowerCase().includes(n),
+                        )),
+                ),
+            );
+        })("textinput");
+        m.forEach((f) =>
+            m.push(
+                typeof f?.exports?.default === "undefined" ?
+                f?.exports :
+                f?.exports?.default,
+            ),
+        );
+        for (var i = 0; i < m.length; i++) {
+            m.forEach((f, i) =>
+                typeof f?.id === "undefined" ? (m = m) : m.splice(i, 1),
+            );
+        }
+        return [...m][3];
+    };
+    let ConfirmationModal = () => {
+        let m = [];
+        ((n) => {
+            m.push(
+                ...Object.values(cache()).filter(
+                    (m) =>
+                    m?.exports &&
+                    ((m?.exports?.default &&
+                            Object.keys(m.exports.default).some((k) =>
+                                k.toLowerCase().includes(n),
+                            )) ||
+                        (m.exports?.default?.prototype &&
+                            Object.keys(
+                                m.exports.default.prototype,
+                            ).some((k) =>
+                                k.toLowerCase().includes(n),
+                            )) ||
+                        Object.keys(m.exports).some((k) =>
+                            k.toLowerCase().includes(n),
+                        )),
+                ),
+            );
+        })("confirmmodal");
+        m.forEach((f) =>
+            m.push(
+                typeof f?.exports?.default === "undefined" ?
+                f?.exports :
+                f?.exports?.default,
+            ),
+        );
+        for (var i = 0; i < m.length; i++) {
+            m.forEach((f, i) =>
+                typeof f?.id === "undefined" ? (m = m) : m.splice(i, 1),
+            );
+        }
+        return [...m][0];
+    };
+    let Button = () => {
+        for (const m of Object.keys(cache())
+                .map((x) => cache()[x].exports)
+                .filter((x) => x)) {
+            if (m.default && m.default["ButtonColors"] !== undefined) {
+                return m.default;
+            }
+        }
+    }
+    let Messages = () => {
+        for (const m of Object.keys(cache())
+                .map((x) => cache()[x].exports)
+                .filter((x) => x)) {
+            if (m && m["COMMANDS"] !== undefined) return m;
+        }
+    }
+    let openModal = () => {
+        for (const m of Object.keys(cache())
+                .map((x) => cache()[x].exports)
+                .filter((x) => x)) {
+            if (m && m["openModal", "closeModal"] !== undefined) return m.openModal;
+        }
+    }
+    let React = () => {
+        for (const m of Object.keys(cache())
+                .map((x) => cache()[x].exports)
+                .filter((x) => x)) {
+            if (m && m["createElement"] !== undefined) return m;
+        }
+    }
+    let toReturn = "";
+
+    return new Promise((resolve) => {
+        openModal()(props => {
+            if (props.transitionState === 3) resolve(null)
+            return React().createElement(ConfirmationModal(), Object.assign({
+                header: title,
+                confirmButtonColor: Button().ButtonColors.BRAND,
+                confirmText: Messages().OKAY,
+                cancelText: Messages().CANCEL,
+                onConfirm: () => resolve(toReturn),
+                onCancel: () => resolve(null),
+                children: React().createElement(React().memo(() => {
+                    const [value, setValue] = React().useState(defaultValue)
+                    return React().createElement(TextInput(), {
+                        value: value,
+                        onInput: ({
+                            target
+                        }) => {
+                            setValue(target.value)
+                            toReturn = target.value
+                        }
+                    })
+                }))
+            }, props))
+        })
+    })
+},
+
+    async createAlertModal(title, descr) {
+    const cache = () => {
+        let webp = window.webpackChunkdiscord_app.push([
+            [Symbol()], {},
+            _ => _.c
+        ]);
+        window.webpackChunkdiscord_app.pop();
+        return webp;
+    }
+    let ConfirmationModal = () => {
+        let m = [];
+        ((n) => {
+            m.push(
+                ...Object.values(cache()).filter(
+                    (m) =>
+                    m?.exports &&
+                    ((m?.exports?.default &&
+                            Object.keys(m.exports.default).some((k) =>
+                                k.toLowerCase().includes(n),
+                            )) ||
+                        (m.exports?.default?.prototype &&
+                            Object.keys(
+                                m.exports.default.prototype,
+                            ).some((k) =>
+                                k.toLowerCase().includes(n),
+                            )) ||
+                        Object.keys(m.exports).some((k) =>
+                            k.toLowerCase().includes(n),
+                        )),
+                ),
+            );
+        })("confirmmodal");
+        m.forEach((f) =>
+            m.push(
+                typeof f?.exports?.default === "undefined" ?
+                f?.exports :
+                f?.exports?.default,
+            ),
+        );
+        for (var i = 0; i < m.length; i++) {
+            m.forEach((f, i) =>
+                typeof f?.id === "undefined" ? (m = m) : m.splice(i, 1),
+            );
+        }
+        return [...m][0];
+    };
+    let Button = () => {
+        for (const m of Object.keys(cache())
+                .map((x) => cache()[x].exports)
+                .filter((x) => x)) {
+            if (m.default && m.default["ButtonColors"] !== undefined) {
+                return m.default;
+            }
+        }
+    }
+    let Messages = () => {
+        for (const m of Object.keys(cache())
+                .map((x) => cache()[x].exports)
+                .filter((x) => x)) {
+            if (m && m["COMMANDS"] !== undefined) return m;
+        }
+    }
+    let openModal = () => {
+        for (const m of Object.keys(cache())
+                .map((x) => cache()[x].exports)
+                .filter((x) => x)) {
+            if (m && m["openModal", "closeModal"] !== undefined) return m.openModal;
+        }
+    }
+    let React = () => {
+        for (const m of Object.keys(cache())
+                .map((x) => cache()[x].exports)
+                .filter((x) => x)) {
+            if (m && m["createElement"] !== undefined) return m;
+        }
+    }
+    let Markdown = () => {
+      modules = [];
+filter = m=>m.default?.displayName==="Markdown" && m.default.rules;
+        for (let item in cache()) {
+            if (Object.hasOwnProperty.call(cache(), item)) {
+                let element = cache()[item].exports;
+                if (!element) continue;
+                if (filter(element)) modules.push(element);
+            }
+        }
+      return modules[0].default;
+    }
+    let Alert = () => {
+      modules = [];
+filter = m=>m.default?.displayName==="Alert";
+        for (let item in cache()) {
+            if (Object.hasOwnProperty.call(cache(), item)) {
+                let element = cache()[item].exports;
+                if (!element) continue;
+                if (filter(element)) modules.push(element);
+            }
+        }
+      return modules[0].default;
+    }
+    return new Promise((resolve) => {
+        openModal()(props => {
+            if (props.transitionState === 3) resolve(null)
+            return React().createElement(ConfirmationModal(), Object.assign({
+                header: title,
+                confirmButtonColor: Button().ButtonColors.BRAND,
+                confirmText: Messages().OKAY,
+                cancelText: Messages().CANCEL,
+                onConfirm: () => resolve(true),
+                onCancel: () => resolve(false)
+            }, props), React().createElement(Markdown(), {}, descr));
+        });
+    });
+},
 
     findModule: {
         byDisplayName(MODULE) {
@@ -738,21 +1002,21 @@ Client = class Client {
     }
 
     createSlashCommand(name, description, options = [], callback) {
-        this._createCommand(name, description, options, 1, callback);
+        Discord._createCommand(name, description, options, 1, callback);
     }
 
     createUserCommand(name, callback) {
-        this._createCommand(name, "", [], 2, callback);
+        Discord._createCommand(name, "", [], 2, callback);
     }
 
     createMessageCommand(name, callback) {
-        this._createCommand(name, "", [], 3, callback);
+        Discord._createCommand(name, "", [], 3, callback);
     }
 
     sendEphemeralMessage(
         content = "",
         embeds = [],
-        author = Client.user,
+        author = new Client().user,
         type = 0,
         tts = false,
         stickerIDs = [],
@@ -765,21 +1029,21 @@ Client = class Client {
         Logger.log(
             `Attempted to send message '${content}' with '${embeds}' as '${author.username}' ephemerally.`,
         );
-        return this._sendLocalMessage(msg.channel_id, msg);
+        return Discord._sendLocalMessage(msg.channel_id, msg);
     }
 
     sendClydeMessage(content) {
         if (!content) {
             throw new TypeError("You must specify content to send.");
         }
-        this.findModule
+        Discord.findModule
             .byProps("sendBotMessage")
             .sendBotMessage(Discord._getCurrentChannelID(), content);
         Logger.log(`Attempted to send message '${content}' through Clyde.`);
     }
 
     sendClydeError() {
-        this.findModule
+        Discord.findModule
             .byProps("sendBotMessage")
             .sendClydeError(Discord._getCurrentChannelID());
     }
@@ -803,3 +1067,13 @@ Client = class Client {
         Logger.log("Successfully unhooked from the client!");
     }
 };
+
+(async function() {
+  try {
+    Discord.showToast("Successfully injected Discord.JS-Pure! Run /help for more information.", 1);
+    Discord._createCommand("help", "A command to give info about Discord.JS-Pure!", [], 1, async function() { Discord.findModule.byProps("sendBotMessage").sendBotMessage(Discord.findModule.byProps("getLastSelectedChannelId").getChannelId(), "", [{"title":"Discord.JS-Pure Changelog", "description":`**Current Version Information**:\n> `number`: ${Discord.__version__.number}\n> `nightly release`: ${Discord.__version__.nightly}\n**Added**:\n> `Modals`, `Toasts`, `React` interaction API (`Discord.React` getter), startup checking and notifications of Discord.JS-Pure injection status have been added back, with much better and smoother functionality.\n\n**Removed**:\n> N/A.\n\n**Changed**:\n> Lots of internal functions as they weren't bound to the correct objects intially, as well as many module finding functions due to the fact they previously had memory leaks.\n\n**Underlying issues**:\n> *(issues are insignificant mostly, so this is just a list of TODOs/what's to come in the near future)* Many internal `findModule`/`getModule` functions aren't operating correctly (at least, not as every client mod has them operate), injection into Discord too early into the pageload process can lead to issues, docs aren't currently up-to-date.`, "color":"11111111111111111111111", "type":"rich"}]); });
+  }
+  catch(e) {
+    window.alert("Failed to inject Discord.JS-Pure! Be sure you're not attempting to inject before the page loads, as that has proven to lead to some issues. If you aren't, open up a github issue. ( https://github.com/13-05/discord.js-pure/issues/new )");
+  }
+})();
