@@ -178,7 +178,7 @@ Plugins = {
 
 Discord = {
     __version__: {
-        number: 3.1,
+        number: 3.5,
         nightly: true,
     },
 
@@ -1071,7 +1071,7 @@ Client = class Client {
 (async function() {
   try {
     Discord.showToast("Successfully injected Discord.JS-Pure! Run /help for more information.", 1);
-    Discord._createCommand("help", "A command to give info about Discord.JS-Pure!", [], 1, async function() { Discord.findModule.byProps("sendBotMessage").sendBotMessage(Discord.findModule.byProps("getLastSelectedChannelId").getChannelId(), "", [{"title":"Discord.JS-Pure Changelog", "description":`**Current Version Information**:\n> `number`: ${Discord.__version__.number}\n> `nightly release`: ${Discord.__version__.nightly}\n**Added**:\n> `Modals`, `Toasts`, `React` interaction API (`Discord.React` getter), startup checking and notifications of Discord.JS-Pure injection status have been added back, with much better and smoother functionality.\n\n**Removed**:\n> N/A.\n\n**Changed**:\n> Lots of internal functions as they weren't bound to the correct objects intially, as well as many module finding functions due to the fact they previously had memory leaks.\n\n**Underlying issues**:\n> *(issues are insignificant mostly, so this is just a list of TODOs/what's to come in the near future)* Many internal `findModule`/`getModule` functions aren't operating correctly (at least, not as every client mod has them operate), injection into Discord too early into the pageload process can lead to issues, docs aren't currently up-to-date.`, "color":"11111111111111111111111", "type":"rich"}]); });
+    Discord._createCommand("help", "A command to give info about Discord.JS-Pure!", [], 1, async function() { Discord.findModule.byProps("sendBotMessage").sendBotMessage(Discord.findModule.byProps("getLastSelectedChannelId").getChannelId(), "", [{"title":"Discord.JS-Pure Changelog", "description":`**Current Version Information**:\n> \`number\`: ${Discord.__version__.number}\n> \`nightly release\`: ${Discord.__version__.nightly}\n**Added**:\n> \`Modals\`, \`Toasts\`, \`React\` interaction API (\`Discord.React\` getter), startup checking and notifications of Discord.JS-Pure injection status have been added back, with much better and smoother functionality.\n\n**Removed**:\n> N/A.\n\n**Changed**:\n> Lots of internal functions as they weren't bound to the correct objects intially, as well as many module finding functions due to the fact they previously had memory leaks.\n\n**Underlying issues**:\n> *(issues are insignificant mostly, so this is just a list of TODOs/what's to come in the near future)* Many internal \`findModule\`/\`getModule\` functions aren't operating correctly (at least, not as every client mod has them operate), injection into Discord too early into the pageload process can lead to issues, docs aren't currently up-to-date.`, "color":"11111111111111111111111", "type":"rich"}]); });
   }
   catch(e) {
     window.alert("Failed to inject Discord.JS-Pure! Be sure you're not attempting to inject before the page loads, as that has proven to lead to some issues. If you aren't, open up a github issue. ( https://github.com/13-05/discord.js-pure/issues/new )");
