@@ -408,7 +408,7 @@ Discord = {
         }
         return undefined;
     },
-    findModuless(n, b) {
+    findModules(n, b) {
         (d = typeof b === "undefined" ? true : b), (n = n.toLowerCase()), (m = []);
         m.push(...Object.values(Discord._cachedWebpack).filter((m) => m?.exports && ((m?.exports?.default && Object.keys(m.exports.default).some((key) => key.toLowerCase().includes(n), )) || (m.exports?.default?.prototype && Object.keys(m.exports.default.prototype, ).some((key) => key.toLowerCase().includes(n), )) || Object.keys(m.exports).some((key) => key.toLowerCase().includes(n), )), ), );
         if (d) {
