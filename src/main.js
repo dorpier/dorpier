@@ -3,18 +3,18 @@ Plugins = {
     _corePlugins: [{
         name: "doNotTrack",
         start: function() {
-            Discord.patchModule("instead", Discord.findModule.byProps("track"), "track", function() {
-                return
-            }, "DoNotTrack.1", );
+            Discord.patchModule("instead", Discord.getModule("track"), "track", function() {
+                return;
+            }, "DoNotTrack.1");
             Discord.patchModule("instead", window, "onerror", function() {
-                return
-            }, "DoNotTrack.2", );
+                return;
+            }, "DoNotTrack.2");
             Discord._originalFunctions._DiscordSentry = window.DiscordSentry;
-            window.DiscordSentry = {}
+            window.DiscordSentry = {};
         },
         stop: function() {
-            Discord.unpatchByPatchSignature(Discord.findModule.byProps("track"), "track", "DoNotTrack.1", );
-            Discord.unpatchByPatchSignature(window, "onerror", "DoNotTrack.2", );
+            Discord.unpatchByPatchSignature(Discord.getModule("track"), "track", "DoNotTrack.1");
+            Discord.unpatchByPatchSignature(window, "onerror", "DoNotTrack.2");
             if (typeof _originalDiscordSentry !== "undefined") {
                 window.DiscordSentry = _originalDiscordSentry
             }
@@ -22,12 +22,12 @@ Plugins = {
     }, {
         name: "silentTyping",
         start: function() {
-            Discord.patchModule("instead", Discord.findModule.byProps("startTyping"), "startTyping", function() {
-                return
-            }, "silentTyping", )
+            Discord.patchModule("instead", Discord.getModule("startTyping"), "startTyping", function() {
+                return;
+            }, "silentTyping")
         },
         stop: function() {
-            Discord.unpatchByPatchSignature(Discord.findModule.byProps("startTyping"), "startTyping", "silentTyping", )
+            Discord.unpatchByPatchSignature(Discord.getModule("startTyping"), "startTyping", "silentTyping")
         }
     }, {
         name: "discordDeveloperMode",
@@ -42,7 +42,8 @@ Plugins = {
             ]), m).find((m) => m?.exports?.default?.isDeveloper !== void 0).exports.default, "isDeveloper", {
                 get: () => true,
                 configurable: true
-            }, )
+            });
+            window.webpackChunkdiscord_app.pop();
         },
         stop: function() {
             Object.defineProperty((window.webpackChunkdiscord_app.push([
@@ -55,15 +56,16 @@ Plugins = {
             ]), m).find((m) => m?.exports?.default?.isDeveloper !== void 0).exports.default, "isDeveloper", {
                 get: () => false,
                 configurable: true
-            }, )
+            });
+            window.webpackChunkdiscord_app.pop();
         }
     }, {
         name: "allowNsfw",
         start: function() {
-            Discord.findModule.byProps("getCurrentUser").getCurrentUser().nsfwAllowed = true
+            Discord.getModule("getCurrentUser").getCurrentUser().nsfwAllowed = true;
         },
         stop: function() {
-            Discord.findModule.byProps("getCurrentUser").getCurrentUser().nsfwAllowed = false
+            Discord.getModule("getCurrentUser").getCurrentUser().nsfwAllowed = false;
         }
     }],
     _findPluginByName(name, pluginSet) {
@@ -74,10 +76,10 @@ Plugins = {
         }
     },
     start(name) {
-        Plugins._findPluginByName(name, Plugins._plugins).start()
+        Plugins._findPluginByName(name, Plugins._plugins).start();
     },
     stop(name) {
-        Plugins._findPluginByName(name, Plugins._plugins).stop()
+        Plugins._findPluginByName(name, Plugins._plugins).stop();
     },
     add(json) {
         Plugins._plugins.push(json)
@@ -86,14 +88,14 @@ Plugins = {
 (Logger = {
     _log: true,
     enable() {
-        this._log = true
+        this._log = true;
     },
     disable() {
-        this._log = false
+        this._log = false;
     },
-    log(toLog) {
+    log(message) {
         if (this._log == true) {
-            console.log(`%c[discordjs-pure] (LOGGER)%c ${ toLog }`, "color: #9e0700", "color: #ffffff", );
+            console.log(`%c[discordjs-pure] (LOGGER)%c ${message}`, "color: #9e0700", "color: #ffffff", );
         }
     }
 }), (Utils = {
@@ -150,12 +152,12 @@ Discord = {
             });
             callback(data)
         };
-        this.findModule.byDisplayName("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.push({
+        this.getModule("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.push({
             applicationId: "-1",
             description: description,
             displayDescription: description,
             displayName: name,
-            id: `-${this.findModule.byDisplayName("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.length+1}`,
+            id: `-${this.getModule("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS.length + 1}`,
             execute: actualCallback,
             name: name,
             inputType: 0,
@@ -164,13 +166,13 @@ Discord = {
         })
     },
     _createMessage(content, embeds) {
-        return this.findModule.byDisplayName("createBotMessage").createBotMessage(this.getCurrentChannelID(), content, embeds)
+        return this.getModule("createBotMessage").createBotMessage(this.getCurrentChannelID(), content, embeds)
     },
     _sendLocalMessage(channel, message) {
-        return this.findModule.byProps("receiveMessage").receiveMessage(channel, message)
+        return this.getModule("receiveMessage").receiveMessage(channel, message)
     },
     _getCurrentChannelID() {
-        return this.findModule.byProps("getLastSelectedChannelId", "getChannelId").getChannelId()
+        return this.getModule("getLastSelectedChannelId", "getChannelId").getChannelId()
     },
     get _cachedWebpack() {
         let webp = window.webpackChunkdiscord_app.push([
@@ -184,7 +186,7 @@ Discord = {
         if (!type) {
             let type = 0
         }
-        Discord.findModule.byDisplayName("showToast").showToast({
+        Discord.getModule("showToast").showToast({
             message: message,
             type: type
         })
@@ -373,27 +375,53 @@ Discord = {
             })
         })
     },
+    getModule(n, f = true) { // whether to return the first module
+        let x = false;
+        let mod;
+        window.webpackChunkdiscord_app.push([
+            [Math.random()], {}, (e) => {
+                mod = mod || Object.values(e.c).find(m => m?.exports?.default?.[n]);
+            }
+        ]);
+        window.webpackChunkdiscord_app.pop();
+        if (typeof mod === "undefined") {
+            window.webpackChunkdiscord_app.push([
+                [Math.random()], {}, (e) => {
+                    mod = mod || Object.values(e.c).find(m => m?.exports?.[n]);
+                }
+            ]);
+            window.webpackChunkdiscord_app.pop();
+        }
+        if (typeof mod === "undefined") {
+            x = true;
+            if (f == true) {
+                mod = mod || (typeof Discord.findAllModules(m => m?.default?.displayName === n) !== "undefined") ? Discord.findAllModules(m => m?.default?.displayName === n)?.[0] : Discord.findAllModules(m => m?.displayName === n)?.[0];
+            } else {
+                mod = mod || (typeof Discord.findAllModules(m => m?.default?.displayName === n) !== "undefined") ? Discord.findAllModules(m => m?.default?.displayName === n) : Discord.findAllModules(m => m?.displayName === n);
+            }
+        }
+
+        if (x == false) {
+            return (typeof mod.exports.default !== "undefined") ? mod.exports.default : mod.exports;
+        } else if (x == true) {
+            return (typeof mod.default !== "undefined") ? mod.default : mod;
+        }
+        return undefined;
+    },
     findModule: {
-        byDisplayName(MODULE) {
+        _byDisplayName_DEPRECATED(MODULE) {
             for (const m of Object.keys(Discord._cachedWebpack).map((x) => Discord._cachedWebpack[x].exports).filter((x) => x)) {
                 if (m && m[MODULE] !== undefined) {
                     return m
                 }
             }
         },
-        byProps(MODULE) {
+        _byProps_DEPRECATED(MODULE) {
             for (const m of Object.keys(Discord._cachedWebpack).map((x) => Discord._cachedWebpack[x].exports).filter((x) => x)) {
                 if (m.default && m.default[MODULE] !== undefined) {
                     return m.default
                 }
             }
-        },
-        async asFunction(n, fa) {
-            var o;
-            var f;
-            o = o || Object.values(Discord._cachedWebpack).find((m) => m?.exports?.default && m.exports.default[n], );
-            typeof o?.exports?.default[n] !== "undefined" ? (f = o?.exports?.default[n]) : (f = o?.exports[n]);
-            return await f.apply(this, fa)
         },
         fuzzy(n, b) {
             (d = typeof b === "undefined" ? true : b), (n = n.toLowerCase()), (m = []);
@@ -535,19 +563,19 @@ Discord = {
     },
     dispatch(name, data) {
         data.type = name.toUpperCase();
-        return this.findModule.byProps("dirtyDispatch").dirtyDispatch(data)
+        return this.getModule("dirtyDispatch").dirtyDispatch(data)
     },
     changeDeveloperOptions(settings) {
         if (!settings) {
             throw new TypeError("You must specify settings to change.")
         }
-        this.findModule.byDisplayName("setDeveloperOptionSettings").setDeveloperOptionSettings(settings)
+        this.getModule("setDeveloperOptionSettings").setDeveloperOptionSettings(settings)
     },
     login(token) {
-        this.findModule.byProps("loginToken").loginToken(token)
+        this.getModule("loginToken").loginToken(token)
     },
     getToken() {
-        let token = this.findModule.byProps("getToken").getToken();
+        let token = this.getModule("getToken").getToken();
         if (token.includes(".") == false) {
             if (window.localStorage != undefined) {
                 Logger.log("Grabbing token from localStorage...");
@@ -569,35 +597,35 @@ Discord = {
         return token
     },
     get React() {
-        return this.findModule.byDisplayName("createElement")
+        return this.getModule("createElement")
     },
     tracking: {
         disable: function() {
-            Plugins._findPluginByName("doNotTrack", Plugins._corePlugins, ).start();
+            Plugins._findPluginByName("doNotTrack", Plugins._corePlugins).start();
             Logger.log("Attempted to disable Discord's tracking.")
         },
         enable: function() {
-            Plugins._findPluginByName("doNotTrack", Plugins._corePlugins, ).stop();
+            Plugins._findPluginByName("doNotTrack", Plugins._corePlugins).stop();
             Logger.log("Attempted to enable Discord's tracking.")
         }
     },
     typing: {
         disable: function() {
-            Plugins._findPluginByName("silentTyping", Plugins._corePlugins, ).start();
+            Plugins._findPluginByName("silentTyping", Plugins._corePlugins).start();
             Logger.log("Attempted to disable typing notifications.")
         },
         enable: function() {
-            Plugins._findPluginByName("silentTyping", Plugins._corePlugins, ).stop();
+            Plugins._findPluginByName("silentTyping", Plugins._corePlugins).stop();
             Logger.log("Attempted to enable typing notifications.")
         }
     },
     developerMode: {
         enable: function() {
-            Plugins._findPluginByName("discordDeveloperMode", Plugins._corePlugins, ).start();
+            Plugins._findPluginByName("discordDeveloperMode", Plugins._corePlugins).start();
             Logger.log("Attempted to enable hidden developer options.")
         },
         disable: function() {
-            Plugins._findPluginByName("discordDeveloperMode", Plugins._corePlugins, ).stop();
+            Plugins._findPluginByName("discordDeveloperMode", Plugins._corePlugins).stop();
             Logger.log("Attempted to disable hidden developer options.")
         }
     },
@@ -626,7 +654,7 @@ Discord = {
             Logger.log("Attempted to inject an AMOLED dark mode for Discord desktop.", )
         },
         disable: function() {
-            Logger.log("Currently, AMOLED dark mode cannot be disabled automatically. Please reload the page to disable it.", )
+            Logger.log("Currently, AMOLED dark mode cannot be disabled automatically. Please reload the page to disable it.");
         }
     }
 };
@@ -636,7 +664,7 @@ Client = class Client {
         this.events = {}
     }
     get user() {
-        return Discord.findModule.byProps("getCurrentUser").getCurrentUser()
+        return Discord.getModule("getCurrentUser").getCurrentUser();
     }
     on(event, callback) {
         if (this.events[event] === undefined) {
@@ -652,37 +680,37 @@ Client = class Client {
             try {
                 await callback(data)
             } catch (e) {
-                Logger.log(`Error in '${ event }' callback: '${ e }'`)
+                Logger.log(`Error in '${event}', callback: '${e}'`);
             }
         }
     }
     getGuild(id) {
-        return Discord.findModule.byProps("getGuild").getGuild(id)
+        return Discord.getModule("getGuild").getGuild(id)
     }
     getChannel(id) {
-        return Discord.findModule.byProps("hasChannel").getChannel(id)
+        return Discord.getModule("hasChannel").getChannel(id)
     }
     getUser(id) {
-        return Discord.findModule.byProps("getUser").getUser(id)
+        return Discord.getModule("getUser").getUser(id)
     }
     startLurking(id) {
         if (!id) {
             throw new TypeError("You must specify a guildID to preview.")
         }
-        Discord.findModule.byDisplayName("startLurking").startLurking(id, {}, undefined)
+        Discord.getModule("startLurking").startLurking(id, {}, undefined)
     }
     stopLurking(id) {
         if (!id) {
             throw new TypeError("You must specify a guildID to stop previewing.", )
         }
-        Discord.findModule.byDisplayName("stopLurking").stopLurking(id)
+        Discord.getModule("stopLurking").stopLurking(id)
     }
     sendMessage(channel = null, content = "", tts = false, messageReference = null, allowedMentions = null, stickerIDs = null, ) {
         if (!content && !stickerIDs) {
             throw new Error("Must provide either content or stickerIDs.")
         }
         if (!channel) {
-            channel = Discord._getCurrentChannelID()
+            channel = Discord._getCurrentChannelID();
         }
         let msg = {
             content: content,
@@ -700,8 +728,8 @@ Client = class Client {
         if (stickerIDs != null) {
             params.stickerIds = stickerIDs
         }
-        Discord.findModule.byProps("sendMessage").sendMessage(channel, msg, null, params);
-        Logger.log(`Attempted to send message with '${ content }' '${ params }' to '${ channel }'.`, )
+        Discord.getModule("sendMessage").sendMessage(channel, msg, null, params);
+        Logger.log(`Attempted to send message with '${content}' '${params}' to '${channel}'.`, )
     }
     createSlashCommand(name, description, options = [], callback) {
         Discord._createCommand(name, description, options, 1, callback)
@@ -718,44 +746,27 @@ Client = class Client {
         msg.type = type;
         msg.tts = tts;
         msg.sticker_ids = stickerIDs;
-        Logger.log(`Attempted to send message '${ content }' with '${ embeds }' as '${author.username }' ephemerally.`, );
-        return Discord._sendLocalMessage(msg.channel_id, msg)
+        return Discord._sendLocalMessage(msg.channel_id, msg);
     }
     sendClydeMessage(content) {
         if (!content) {
-            throw new TypeError("You must specify content to send.")
+            throw new TypeError("You must specify content to send.");
         }
-        Discord.findModule.byProps("sendBotMessage").sendBotMessage(Discord._getCurrentChannelID(), content);
-        Logger.log(`Attempted to send message '${ content }' through Clyde.`)
+        Discord.getModule("sendBotMessage").sendBotMessage(Discord._getCurrentChannelID(), content);
     }
     sendClydeError() {
-        Discord.findModule.byProps("sendBotMessage").sendClydeError(Discord._getCurrentChannelID())
+        Discord.getModule("sendBotMessage").sendClydeError(Discord._getCurrentChannelID())
     }
     connect() {
         let state = this;
-        Discord.findModule.byDisplayName("Dispatcher", ).Dispatcher.prototype._interceptor = function(e) {
+        Discord.getModule("Dispatcher").Dispatcher.prototype._interceptor = function(e) {
             let promise = state.emit(e.type.toLowerCase(), e);
             Promise.resolve(promise)
         };
-        Logger.log("Successfully hooked into the client!")
+        Logger.log("Successfully hooked into the client!");
     }
     disconnect() {
-        Discord.findModule.byDisplayName("Dispatcher", ).Dispatcher.prototype._interceptor = undefined;
-        Logger.log("Successfully unhooked from the client!")
+        Discord.getModule("Dispatcher").Dispatcher.prototype._interceptor = undefined;
+        Logger.log("Successfully unhooked from the client!");
     }
 };
-(async function() {
-    try {
-        Discord.showToast("Successfully injected Discord.JS-Pure! Run /help for more information.", 1);
-        Discord._createCommand("help", "A command to give info about Discord.JS-Pure!", [], 1, async function() {
-            Discord.findModule.byProps("sendBotMessage").sendBotMessage(Discord.findModule.byProps("getLastSelectedChannelId").getChannelId(), "", [{
-                "title": "Discord.JS-Pure Changelog",
-                "description": `**Current Version Information**:\n> \`number\`: ${Discord.__version__.number }\n> \`nightly release\`: ${Discord.__version__.nightly }\n**Added**:\n> \`Modals\`, \`Toasts\`, \`React\` interaction API (\`Discord.React\` getter), startup checking and notifications of Discord.JS-Pure injection status have been added back, with much better and smoother functionality.\n\n**Removed**:\n> N/A.\n\n**Changed**:\n> Lots of internal functions as they weren't bound to the correct objects intially, as well as many module finding functions due to the fact they previously had memory leaks.\n\n**Underlying issues**:\n> *(issues are insignificant mostly, so this is just a list of TODOs/what's to come in the near future)* Many internal \`findModule\`/\`getModule\` functions aren't operating correctly (at least, not as every client mod has them operate), injection into Discord too early into the pageload process can lead to issues, docs aren't currently up-to-date.`,
-                "color": "11111111111111111111111",
-                "type": "rich"
-            }])
-        })
-    } catch (e) {
-        window.alert("Failed to inject Discord.JS-Pure! Be sure you're not attempting to inject before the page loads, as that has proven to lead to some issues. If you aren't, open up a github issue. ( https://github.com/13-05/discord.js-pure/issues/new )")
-    }
-})();
