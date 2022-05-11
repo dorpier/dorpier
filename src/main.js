@@ -408,7 +408,7 @@ Discord = {
         }
         return undefined;
     },
-    findModule(n, b) {
+    findModuless(n, b) {
         (d = typeof b === "undefined" ? true : b), (n = n.toLowerCase()), (m = []);
         m.push(...Object.values(Discord._cachedWebpack).filter((m) => m?.exports && ((m?.exports?.default && Object.keys(m.exports.default).some((key) => key.toLowerCase().includes(n), )) || (m.exports?.default?.prototype && Object.keys(m.exports.default.prototype, ).some((key) => key.toLowerCase().includes(n), )) || Object.keys(m.exports).some((key) => key.toLowerCase().includes(n), )), ), );
         if (d) {
@@ -416,9 +416,9 @@ Discord = {
             for (var i = 0; i < m.length; i += 1) {
                 m.forEach((f, i) => typeof f?.id === "undefined" ? (m = m) : m.splice(i, 1), )
             }
-            return [...m]
+            return [...m];
         } else {
-            return [...m]
+            return [...m];
         }
     },
     findAllModules(filter = (m) => m) {
