@@ -408,33 +408,17 @@ Discord = {
         }
         return undefined;
     },
-    findModule: {
-        _byDisplayName_DEPRECATED(MODULE) {
-            for (const m of Object.keys(Discord._cachedWebpack).map((x) => Discord._cachedWebpack[x].exports).filter((x) => x)) {
-                if (m && m[MODULE] !== undefined) {
-                    return m
-                }
+    findModule(n, b) {
+        (d = typeof b === "undefined" ? true : b), (n = n.toLowerCase()), (m = []);
+        m.push(...Object.values(Discord._cachedWebpack).filter((m) => m?.exports && ((m?.exports?.default && Object.keys(m.exports.default).some((key) => key.toLowerCase().includes(n), )) || (m.exports?.default?.prototype && Object.keys(m.exports.default.prototype, ).some((key) => key.toLowerCase().includes(n), )) || Object.keys(m.exports).some((key) => key.toLowerCase().includes(n), )), ), );
+        if (d) {
+            m.forEach((f) => m.push(typeof f?.exports?.default === "undefined" ? f?.exports : f?.exports?.default, ), );
+            for (var i = 0; i < m.length; i += 1) {
+                m.forEach((f, i) => typeof f?.id === "undefined" ? (m = m) : m.splice(i, 1), )
             }
-        },
-        _byProps_DEPRECATED(MODULE) {
-            for (const m of Object.keys(Discord._cachedWebpack).map((x) => Discord._cachedWebpack[x].exports).filter((x) => x)) {
-                if (m.default && m.default[MODULE] !== undefined) {
-                    return m.default
-                }
-            }
-        },
-        fuzzy(n, b) {
-            (d = typeof b === "undefined" ? true : b), (n = n.toLowerCase()), (m = []);
-            m.push(...Object.values(Discord._cachedWebpack).filter((m) => m?.exports && ((m?.exports?.default && Object.keys(m.exports.default).some((key) => key.toLowerCase().includes(n), )) || (m.exports?.default?.prototype && Object.keys(m.exports.default.prototype, ).some((key) => key.toLowerCase().includes(n), )) || Object.keys(m.exports).some((key) => key.toLowerCase().includes(n), )), ), );
-            if (d) {
-                m.forEach((f) => m.push(typeof f?.exports?.default === "undefined" ? f?.exports : f?.exports?.default, ), );
-                for (var i = 0; i < m.length; i += 1) {
-                    m.forEach((f, i) => typeof f?.id === "undefined" ? (m = m) : m.splice(i, 1), )
-                }
-                return [...m]
-            } else {
-                return [...m]
-            }
+            return [...m]
+        } else {
+            return [...m]
         }
     },
     findAllModules(filter = (m) => m) {
@@ -532,18 +516,18 @@ Discord = {
     },
     unpatchByPatchSignature(module, func, signature) {
         if (!module) {
-            throw new TypeError("You must specify a module to unpatch.")
+            throw new TypeError("You must specify a module to unpatch.");
         }
         if (!func) {
-            throw new TypeError("You must specify a function to unpatch.")
+            throw new TypeError("You must specify a function to unpatch.");
         }
         if (!signature) {
-            throw new TypeError("You must specify a patch signature to unpatch by.", )
+            throw new TypeError("You must specify a patch signature to unpatch by.");
         }
         Discord._stepOneOfPatchSignatureUnpatching(module, func, signature);
         for (var i = 0; i < this._currentPatches.length; i += 1) {
             let patch = this._currentPatches[i];
-            Discord.patchModule(patch.patchType, module, patch.patchOn, patch.callback, patch.signature, )
+            Discord.patchModule(patch.patchType, module, patch.patchOn, patch.callback, patch.signature);
         }
     },
     unpatchModule(module, func) {
