@@ -5,9 +5,6 @@ Special thanks to [L](https://github.com/L5050) and [Harry Tom](https://stackove
 
 Credit to [Dolfies](https://github.com/dolfies) for Discord API and core Discord.JS-Pure API development help!
 
-## Community
-Join my [Discord](https://dsc.gg/unwelcome)!
-
 ## Usage
 ##### ~~NOTE: Check the [Documentation](https://github.com/13-05/discord.js-pure/wiki) for a more detailed walkthrough of this lib's usage!~~ So, uh, docs are mostly a WIP rn after the past few overhauls and the ones to come. Just... read the [examples](https://github.com/13-05/discord.js-pure/tree/main/examples/console-scripts).
 ### Run It In the Console
