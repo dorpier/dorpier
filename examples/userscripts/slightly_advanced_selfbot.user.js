@@ -2,7 +2,7 @@
 // @name        PURE_SB
 // @match       https://discord.com/*
 // @grant       none
-// @require     https://raw.githubusercontent.com/13-05/discord.js-pure/main/minified.js
+// @require https://raw.githubusercontent.com/13-05/discord.js-pure/main/src/main.js
 // @version     1.0
 // @author      1305
 // @description An example selfbot for Discord.JS-Pure...
