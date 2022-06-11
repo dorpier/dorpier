@@ -191,6 +191,11 @@ Discord = {
         options.forEach((option) => {
             option.displayName = option.name;
             option.displayDescription = option.description;
+            if (option.choices) {
+                option.choices.forEach((choice) => {
+                    choice.displayName = choice.name;
+                });
+            }
         });
         actualCallback = function (data) {
             data.forEach((element) => {
@@ -202,17 +207,14 @@ Discord = {
             .byDisplayName("BUILT_IN_COMMANDS")
             .BUILT_IN_COMMANDS.push({
                 applicationId: "-1",
-                description: description,
-                displayDescription: description,
+                description: description || "",
+                displayDescription: description || "",
                 displayName: name,
-                id: `-${
-                    this.findModule.byDisplayName("BUILT_IN_COMMANDS")
-                        .BUILT_IN_COMMANDS.length + 1
-                }`,
+                id: Symbol(name),
                 execute: actualCallback,
                 name: name,
                 inputType: 0,
-                options: options,
+                options: options || [],
                 type: type,
             });
     },
@@ -269,31 +271,32 @@ Discord = {
                 ]);
             return findModule(MODULE);
         },
-    },
 
-    findAllModules(filter = (m) => m) {
-        if (!window.webpackExports) {
-            window.webpackExports = !webpackChunkdiscord_app.webpackExports
-                ? webpackChunkdiscord_app.push([
-                      [Math.random()],
-                      {},
-                      (exports) => {
-                          webpackChunkdiscord_app.pop();
-                          webpackChunkdiscord_app.webpackExports = exports;
-                          return exports;
-                      },
-                  ])
-                : webpackChunkdiscord_app.webpackExports;
-        }
-        let modules = [];
-        for (let item in webpackExports.c) {
-            if (Object.hasOwnProperty.call(webpackExports.c, item)) {
-                let element = webpackExports.c[item].exports;
-                if (!element) continue;
-                if (filter(element)) modules.push(element);
+        byFilter(filter = (m) => m) {
+            if (!window.webpackExports) {
+                window.webpackExports = !webpackChunkdiscord_app.webpackExports
+                    ? webpackChunkdiscord_app.push([
+                        [Math.random()],
+                        {},
+                        (exports) => {
+                            webpackChunkdiscord_app.pop();
+                            webpackChunkdiscord_app.webpackExports = exports;
+                            return exports;
+                        },
+                    ])
+                    : webpackChunkdiscord_app.webpackExports;
             }
-        }
-        return modules;
+            let modules = [];
+            for (let item in webpackExports.c) {
+                if (Object.hasOwnProperty.call(webpackExports.c, item)) {
+                    let element = webpackExports.c[item].exports;
+                    if (!element) continue;
+                    if (filter(element)) modules.push(element);
+                }
+            }
+            return modules;
+        },
+
     },
 
     patchModule(type, module, func, callback, signature) {
@@ -439,9 +442,6 @@ Discord = {
     },
 
     changeDeveloperOptions(settings) {
-        if (!settings) {
-            throw new TypeError("You must specify settings to change.");
-        }
         this.findModule
             .byDisplayName("setDeveloperOptionSettings")
             .setDeveloperOptionSettings(settings);
@@ -675,48 +675,48 @@ Client = class Client {
     }
 
     createSlashCommand(name, description, options = [], callback) {
-        this._createCommand(name, description, options, 1, callback);
+        Discord._createCommand(name, description, options, 1, callback);
     }
 
     createUserCommand(name, callback) {
-        this._createCommand(name, "", [], 2, callback);
+        Discord._createCommand(name, "", [], 2, callback);
     }
 
     createMessageCommand(name, callback) {
-        this._createCommand(name, "", [], 3, callback);
+        Discord._createCommand(name, "", [], 3, callback);
     }
 
     sendEphemeralMessage(
         content = "",
         embeds = [],
-        author = Client.user,
+        author,
         type = 0,
         tts = false,
         stickerIDs = [],
     ) {
-        let msg = this._createMessage(content, embeds);
-        msg.author = author;
+        let msg = Discord._createMessage(content, embeds);
+        msg.author = author || this.user;
         msg.type = type;
         msg.tts = tts;
         msg.sticker_ids = stickerIDs;
         Logger.log(
             `Attempted to send message '${content}' with '${embeds}' as '${author.username}' ephemerally.`,
         );
-        return this._sendLocalMessage(msg.channel_id, msg);
+        return Discord._sendLocalMessage(msg.channel_id, msg);
     }
 
     sendClydeMessage(content) {
         if (!content) {
             throw new TypeError("You must specify content to send.");
         }
-        this.findModule
+        Discord.findModule
             .byProps("sendBotMessage")
             .sendBotMessage(Discord._getCurrentChannelID(), content);
         Logger.log(`Attempted to send message '${content}' through Clyde.`);
     }
 
     sendClydeError() {
-        this.findModule
+        Discord.findModule
             .byProps("sendBotMessage")
             .sendClydeError(Discord._getCurrentChannelID());
     }
