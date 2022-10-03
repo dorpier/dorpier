@@ -125,7 +125,9 @@ Discord = {
                 (e) => {
                     mod =
                         mod ||
-                        Object.values(e.c).find((m) => m?.exports?.default?.[n]);
+                        Object.values(e.c).find(
+                            (m) => m?.exports?.default?.[n],
+                        );
                 },
             ]);
             window.webpackChunkdiscord_app.pop();
@@ -135,7 +137,8 @@ Discord = {
                     {},
                     (e) => {
                         mod =
-                            mod || Object.values(e.c).find((m) => m?.exports?.[n]);
+                            mod ||
+                            Object.values(e.c).find((m) => m?.exports?.[n]);
                     },
                 ]);
                 window.webpackChunkdiscord_app.pop();
@@ -149,11 +152,11 @@ Discord = {
                             (m) => m?.default?.displayName === n,
                         ) !== "undefined"
                             ? Discord.findAllModules(
-                                (m) => m?.default?.displayName === n,
-                            )?.[0]
+                                  (m) => m?.default?.displayName === n,
+                              )?.[0]
                             : Discord.findAllModules(
-                                (m) => m?.displayName === n,
-                            )?.[0];
+                                  (m) => m?.displayName === n,
+                              )?.[0];
                 } else {
                     mod =
                         mod ||
@@ -161,9 +164,11 @@ Discord = {
                             (m) => m?.default?.displayName === n,
                         ) !== "undefined"
                             ? Discord.findAllModules(
-                                (m) => m?.default?.displayName === n,
-                            )
-                            : Discord.findAllModules((m) => m?.displayName === n);
+                                  (m) => m?.default?.displayName === n,
+                              )
+                            : Discord.findAllModules(
+                                  (m) => m?.displayName === n,
+                              );
                 }
             }
 
@@ -232,7 +237,6 @@ Discord = {
             }
             return modules;
         },
-
     },
 
     // Patches
@@ -243,7 +247,9 @@ Discord = {
 
         _patchModule(type, module, func, callback, signature) {
             if (!type) {
-                throw new TypeError("Must specify what type of patch to perform");
+                throw new TypeError(
+                    "Must specify what type of patch to perform",
+                );
             }
             if (!module) {
                 throw new TypeError("Must specify the module to patch");
@@ -336,7 +342,7 @@ Discord = {
             if (!func) {
                 throw new TypeError("You must specify a function to unpatch");
             }
-    
+
             if (typeof signature === "undefined") {
                 module[func] = this._originalFunctions[func];
                 for (var i = 0; i < this._currentPatches.length; i += 1) {
