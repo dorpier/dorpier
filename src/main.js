@@ -20,7 +20,7 @@ Discord = {
         log(message) {
             if (this._log) {
                 console.log(
-                    `%c[discord.pure]%c ${message}`,
+                    `%c[dorpier]%c ${message}`,
                     "color: #9e0700",
                     "color: #ffffff",
                 );
