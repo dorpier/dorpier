@@ -481,7 +481,11 @@ Dorpier = {
     _createMessage(channel, content, embeds) {
         return this.webpack
             .getModule("createBotMessage")
-            .createBotMessage(channel || this._getCurrentChannelID(), content, embeds);
+            .createBotMessage(
+                channel || this._getCurrentChannelID(),
+                content,
+                embeds,
+            );
     },
 
     _sendLocalMessage(channel, message) {
@@ -636,14 +640,19 @@ class Client {
                 this.events[event] = [];
             }
             this.events[event].push(callback);
-            return () => this.events[event].splice(this.events[event].indexOf(callback), 1);
+            return () =>
+                this.events[event].splice(
+                    this.events[event].indexOf(callback),
+                    1,
+                );
         } else {
-            const wrapper = async function(event) {
+            const wrapper = async function (event) {
                 if (this._connected) await callback(event);
-            }.bind(this)
+            }.bind(this);
 
             Dorpier.dispatcher.subscribe(event.toUpperCase(), wrapper);
-            return () => Dorpier.dispatcher.unsubscribe(event.toUpperCase(), wrapper);
+            return () =>
+                Dorpier.dispatcher.unsubscribe(event.toUpperCase(), wrapper);
         }
     }
 
