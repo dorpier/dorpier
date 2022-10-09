@@ -17,7 +17,9 @@ fetch(
   .then((data) => new Function(data)());
 ```
 4) Press enter, and you should see something like this:
+
 ![Screenshot of Developer Tools](/images/loaded.png)
+5. If you do, congrats! Dorpier has been injected.
 
 ### Use TamperMonkey/GreaseMonkey
 Simply import from the URL `https://raw.githubusercontent.com/dorpier/dorpier/master/src/main.js`!
