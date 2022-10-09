@@ -23,7 +23,7 @@ fetch(
 5. If you do, congrats! Dorpier has been injected.
 
 ### Use TamperMonkey/GreaseMonkey
-Simply import from the URL `https://raw.githubusercontent.com/dorpier/dorpier/master/src/main.js`!
+Simply import from the URL `https://raw.githubusercontent.com/dorpier/dorpier/master/src/main.js`.
 
 
 
