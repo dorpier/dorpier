@@ -1,33 +1,41 @@
 # DORPIER
 A script-based, developer experience focused client mod for Discord!
 
-## Usage
-### Run It In the Console
-If you're like most people, you don't want to download anything. Well, you're in luck! Follow the below steps to get this working in the inspect element JavaScript console of most browsers:
-1) Go onto [Discord](https://discord.com/app) in your web browser
-2) Open inspect element and then navigate to the `Console` section.
-3) Copy the code from [here](https://raw.githubusercontent.com/dorpier/dorpier/main/console/minified.js) and paste it in the console section (it'll warn you, but you can read through the code to be sure it won't do anything bad)
-4) Press enter, and it should say something like this:
+## Installation
+As of now, we don't have an extension or injector ready.
 
-![image of inspect console displaying stuff](https://raw.githubusercontent.com/dorpier/dorpier/main/images/image.png)
+If you want to use Dorpier right now, you have two options:
 
-5) Paste the following to test it:
-###### Example Code: 
+### Inject manually
+1) Open Developer Tools on the webapp or desktop client.
+3) Input the following:
+```js
+fetch(
+  "https://raw.githubusercontent.com/dorpier/dorpier/master/src/main.js"
+)
+  .then((response) => response.text())
+  .then((data) => new Function(data)());
+```
+4) Press enter, and you should see something like this:
+![Screenshot of Developer Tools](/images/loaded.png)
+
+### Use TamperMonkey/GreaseMonkey
+Simply import from the URL `https://raw.githubusercontent.com/dorpier/dorpier/master/src/main.js`!
+
+
+
+## Example
+Run this script after injection.
 ```js
 client = new Client();
 
-client.on("ready", function(d) {
-    console.log("Logged in as" + client.user.username + "#" + client.user.discriminator)
-});
-
 client.on("message_create", async function(d) {
     let message = d.message;
-    if (message.content == "ping") {
-        await client.sendMessage(message.channel_id, "Pong");
+    if (message.content == "!ping" && message.author.id === client.user.id) {
+        await client.sendEphemeralMessage(message.channel_id, "Pong!");
     }
 });
 
 client.connect();
 ```
-
-6) Say `ping` in any channel in Discord, and it should respond with `Pong`! If it does, then you did everything right; the library's working! Now, you can get to making your own scripts.
+Say `ping` in any channel in Discord, and it should respond with `pong`! If it does, then you did everything right; Dorpier is working! Now, you can get to making your own scripts.
