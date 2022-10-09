@@ -478,10 +478,10 @@ Dorpier = {
         });
     },
 
-    _createMessage(content, embeds) {
+    _createMessage(channel, content, embeds) {
         return this.webpack
             .getModule("createBotMessage")
-            .createBotMessage(this._getCurrentChannelID(), content, embeds);
+            .createBotMessage(channel || this._getCurrentChannelID(), content, embeds);
     },
 
     _sendLocalMessage(channel, message) {
@@ -796,7 +796,8 @@ class Client {
     }
 
     sendEphemeralMessage(
-        content,
+        channel,
+        content = "",
         embeds,
         {
             author,
@@ -807,7 +808,7 @@ class Client {
             allowedMentions,
         },
     ) {
-        let msg = Dorpier._createMessage(content, embeds);
+        let msg = Dorpier._createMessage(channel, content, embeds);
         msg.author = author || this.user;
         msg.type = type;
         msg.tts = tts;
