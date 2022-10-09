@@ -202,9 +202,7 @@ Dorpier = {
             return this._findAndScope((m) => this._props(m, props), true);
         },
 
-        getModule(...args) {
-
-        },
+        getModule(...args) {},
     },
 
     // Patches
@@ -352,13 +350,12 @@ Dorpier = {
         icon = "https://cdn.discordapp.com/embed/avatars/0.png",
         { sound = "message1", volume = 0.4 },
     ) {
-        Dorpier.webpack.getModule("showNotification").showNotification(
-            icon,
-            title,
-            body,
-            null,
-            { sound: sound, volume: volume },
-        );
+        Dorpier.webpack
+            .getModule("showNotification")
+            .showNotification(icon, title, body, null, {
+                sound: sound,
+                volume: volume,
+            });
     },
 
     playSound(sound = "message1", volume = 0.4) {
@@ -417,7 +414,8 @@ Dorpier = {
 
     _createCommand(name, description, options, type, callback, inputType = 0) {
         this.logger.log(`Registering command ${name}...`);
-        const commands = this.webpack.getModule("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS;
+        const commands =
+            this.webpack.getModule("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS;
         options.forEach((option) => {
             option.displayName = option.name;
             option.displayDescription = option.description;
@@ -448,18 +446,15 @@ Dorpier = {
     },
 
     _createMessage(content, embeds) {
-        return this.webpack.getModule("createBotMessage").createBotMessage(
-            this._getCurrentChannelID(),
-            content,
-            embeds,
-        );
+        return this.webpack
+            .getModule("createBotMessage")
+            .createBotMessage(this._getCurrentChannelID(), content, embeds);
     },
 
     _sendLocalMessage(channel, message) {
-        return this.webpack.getModule("receiveMessage").receiveMessage(
-            channel,
-            message,
-        );
+        return this.webpack
+            .getModule("receiveMessage")
+            .receiveMessage(channel, message);
     },
 
     dispatch(name, data) {
@@ -474,15 +469,15 @@ Dorpier = {
     },
 
     editDeveloperOptions(settings) {
-        this.webpack.getModule("setDeveloperOptionSettings").setDeveloperOptionSettings(
-            settings,
-        );
+        this.webpack
+            .getModule("setDeveloperOptionSettings")
+            .setDeveloperOptionSettings(settings);
     },
 
     toggleGuildFolder(id) {
-        Dorpier.webpack.getModule("toggleGuildFolderExpand").toggleGuildFolderExpand(
-            id,
-        );
+        Dorpier.webpack
+            .getModule("toggleGuildFolderExpand")
+            .toggleGuildFolderExpand(id);
     },
 
     login(token) {
@@ -495,7 +490,9 @@ Dorpier = {
     },
 
     _getCurrentChannelID() {
-        return this.webpack.getModule("getLastSelectedChannelId").getChannelId();
+        return this.webpack
+            .getModule("getLastSelectedChannelId")
+            .getChannelId();
     },
 
     _getCurrentGuildID() {
@@ -503,13 +500,15 @@ Dorpier = {
     },
 
     get currentChannel() {
-        return this.webpack.getModule("hasChannel").getChannel(
-            this._getCurrentChannelID(),
-        );
+        return this.webpack
+            .getModule("hasChannel")
+            .getChannel(this._getCurrentChannelID());
     },
 
     get currentGuild() {
-        return this.webpack.getModule("getGuild").getGuild(this._getCurrentGuildID());
+        return this.webpack
+            .getModule("getGuild")
+            .getGuild(this._getCurrentGuildID());
     },
 
     createSlashCommand(name, description, options = [], callback) {
@@ -538,23 +537,24 @@ Dorpier = {
             return Dorpier.webpack.getModule("transitionTo").forward();
         },
         guild(id) {
-            return Dorpier.webpack.getModule("transitionToGuild").transitionToGuild(id);
+            return Dorpier.webpack
+                .getModule("transitionToGuild")
+                .transitionToGuild(id);
         },
         channel(id) {
-            return Dorpier.webpack.getModule("transitionToChannel").transitionToChannel(
-                id,
-            );
+            return Dorpier.webpack
+                .getModule("transitionToChannel")
+                .transitionToChannel(id);
         },
         thread(id) {
-            return Dorpier.webpack.getModule("transitionToThread").transitionToThread(
-                id,
-            );
+            return Dorpier.webpack
+                .getModule("transitionToThread")
+                .transitionToThread(id);
         },
         message(channelID, id) {
-            return Dorpier.webpack.getModule("transitionToMessage").transitionToMessage(
-                channelID,
-                id,
-            );
+            return Dorpier.webpack
+                .getModule("transitionToMessage")
+                .transitionToMessage(channelID, id);
         },
     },
 };
@@ -619,9 +619,9 @@ class Client {
     }
 
     get privateChannels() {
-        return Dorpier.webpack.getModule(
-            "getMutablePrivateChannels",
-        ).getSortedPrivateChannels();
+        return Dorpier.webpack
+            .getModule("getMutablePrivateChannels")
+            .getSortedPrivateChannels();
     }
 
     getGuild(id) {
@@ -636,9 +636,9 @@ class Client {
 
     getGuildChannels(guildID) {
         return Object.values(
-            Dorpier.webpack.getModule(
-                "getMutableGuildChannelsForGuild",
-            ).getMutableGuildChannelsForGuild(guildID),
+            Dorpier.webpack
+                .getModule("getMutableGuildChannelsForGuild")
+                .getMutableGuildChannelsForGuild(guildID),
         );
     }
 
@@ -647,17 +647,21 @@ class Client {
     }
 
     getChannelThreads(channelID) {
-        return Dorpier.webpack.getModule(
-            "getAllThreadsForParent",
-        ).getAllThreadsForParent(channelID);
+        return Dorpier.webpack
+            .getModule("getAllThreadsForParent")
+            .getAllThreadsForParent(channelID);
     }
 
     createDM(id) {
-        existing = Dorpier.webpack.getModule("getDMFromUserId").getDMFromUserId(id);
+        existing = Dorpier.webpack
+            .getModule("getDMFromUserId")
+            .getDMFromUserId(id);
         if (existing) {
             return this.getChannel(existing);
         }
-        return Dorpier.webpack.getModule("openPrivateChannel").openPrivateChannel(id);
+        return Dorpier.webpack
+            .getModule("openPrivateChannel")
+            .openPrivateChannel(id);
     }
 
     getUser(id) {
@@ -677,18 +681,13 @@ class Client {
         { query = "", limit = 10, presences = true, userIDs = [] },
     ) {
         if (userIDs) {
-            return Dorpier.webpack.getModule("requestMembers").requestMembersById(
-                ids,
-                userIDs,
-                presences,
-            );
+            return Dorpier.webpack
+                .getModule("requestMembers")
+                .requestMembersById(ids, userIDs, presences);
         } else {
-            return Dorpier.webpack.getModule("requestMembers").requestMembers(
-                ids,
-                query,
-                limit,
-                presences,
-            );
+            return Dorpier.webpack
+                .getModule("requestMembers")
+                .requestMembers(ids, query, limit, presences);
         }
     }
 
@@ -728,12 +727,9 @@ class Client {
         if (stickerIDs != null) {
             params.stickerIds = stickerIDs;
         }
-        return Dorpier.webpack.getModule("sendMessage").sendMessage(
-            channel,
-            msg,
-            null,
-            params,
-        );
+        return Dorpier.webpack
+            .getModule("sendMessage")
+            .sendMessage(channel, msg, null, params);
     }
 
     sendEphemeralMessage(
@@ -759,26 +755,26 @@ class Client {
     }
 
     sendClydeMessage(content, embeds) {
-        return Dorpier.webpack.getModule("sendBotMessage").sendBotMessage(
-            Dorpier._getCurrentChannelID(),
-            content,
-            embeds,
-        );
+        return Dorpier.webpack
+            .getModule("sendBotMessage")
+            .sendBotMessage(Dorpier._getCurrentChannelID(), content, embeds);
     }
 
     sendClydeError() {
-        return Dorpier.webpack.getModule("sendBotMessage").sendClydeError(
-            Dorpier.getCurrentChannelID(),
-        );
+        return Dorpier.webpack
+            .getModule("sendBotMessage")
+            .sendClydeError(Dorpier.getCurrentChannelID());
     }
 
     acceptInvite(invite, transition = true) {
         if (transition) {
-            return Dorpier.webpack.getModule(
-                "acceptInvite",
-            ).acceptInviteAndTransitionToInviteChannel(invite);
+            return Dorpier.webpack
+                .getModule("acceptInvite")
+                .acceptInviteAndTransitionToInviteChannel(invite);
         } else {
-            return Dorpier.webpack.getModule("acceptInvite").acceptInvite(invite);
+            return Dorpier.webpack
+                .getModule("acceptInvite")
+                .acceptInvite(invite);
         }
     }
 }
