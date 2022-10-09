@@ -1,4 +1,4 @@
-Discord = {
+Dorpier = {
     __version__: {
         number: 4.0,
         nightly: true,
@@ -49,65 +49,43 @@ Discord = {
 
         // Discord classes
         get Datetime() {
-            return Discord.getModule("dateFormat");
+            return Dorpier.webpack.getModule("dateFormat");
         },
 
         get HLJS() {
-            return Discord.getModule("highlight");
+            return Dorpier.webpack.getModule("highlight");
         },
 
         get Markdown() {
-            return Discord.getModule("parseBlock");
+            return Dorpier.webpack.getModule("parseBlock");
         },
 
         get Path() {
-            return Discord.getModule("createPath");
+            return Dorpier.webpack.getModule("createPath");
         },
 
         get String() {
-            return Discord.getModule("toASCII");
+            return Dorpier.webpack.getModule("toASCII");
         },
 
         get Timestamp() {
-            return Discord.getModule("fromTimestamp");
+            return Dorpier.webpack.getModule("fromTimestamp");
         },
 
         get Timezone() {
-            return Discord.getModule("parseZone")();
+            return Dorpier.webpack.getModule("parseZone")();
         },
 
         get URL() {
-            return Discord.getModule("Url");
+            return Dorpier.webpack.getModule("Url");
         },
     },
 
     // Webpack
 
     webpack: {
-        get modules() {
-            (e = webpackChunkdiscord_app.push([
-                [Symbol()],
-                {},
-                (e) => {
-                    webpackChunkdiscord_app.pop();
-                    return e;
-                },
-            ])),
-                (m = []);
-            for (let i in e.c) {
-                if (Object.hasOwnProperty.call(e.c, i)) {
-                    let o = e.c[i].exports;
-                    if (!o) {
-                        continue;
-                    }
-                    m.push(o);
-                }
-            }
-            return m;
-        },
-
         get _cached() {
-            let webp = window.webpackChunkdiscord_app.push([
+            const webp = window.webpackChunkdiscord_app.push([
                 [Symbol()],
                 {},
                 (_) => _.c,
@@ -116,126 +94,116 @@ Discord = {
             return webp;
         },
 
-        getModule(n, first = true) {
-            let x = false;
-            let mod;
-            window.webpackChunkdiscord_app.push([
-                [Symbol()],
-                {},
-                (e) => {
-                    mod =
-                        mod ||
-                        Object.values(e.c).find(
-                            (m) => m?.exports?.default?.[n],
-                        );
-                },
-            ]);
-            window.webpackChunkdiscord_app.pop();
-            if (typeof mod === "undefined") {
-                window.webpackChunkdiscord_app.push([
-                    [Math.random()],
-                    {},
-                    (e) => {
-                        mod =
-                            mod ||
-                            Object.values(e.c).find((m) => m?.exports?.[n]);
-                    },
-                ]);
-                window.webpackChunkdiscord_app.pop();
-            }
-            if (typeof mod === "undefined") {
-                x = true;
-                if (first == true) {
-                    mod =
-                        mod ||
-                        typeof Discord.findAllModules(
-                            (m) => m?.default?.displayName === n,
-                        ) !== "undefined"
-                            ? Discord.findAllModules(
-                                  (m) => m?.default?.displayName === n,
-                              )?.[0]
-                            : Discord.findAllModules(
-                                  (m) => m?.displayName === n,
-                              )?.[0];
-                } else {
-                    mod =
-                        mod ||
-                        typeof Discord.findAllModules(
-                            (m) => m?.default?.displayName === n,
-                        ) !== "undefined"
-                            ? Discord.findAllModules(
-                                  (m) => m?.default?.displayName === n,
-                              )
-                            : Discord.findAllModules(
-                                  (m) => m?.displayName === n,
-                              );
+        get modules() {
+            const ret = [];
+            for (const module of Object.values(this._cached)) {
+                if (module.exports && module.exports !== window) {
+                    ret.push(module.exports);
                 }
             }
-
-            if (x == false) {
-                return typeof mod.exports.default !== "undefined"
-                    ? mod.exports.default
-                    : mod.exports;
-            } else if (x == true) {
-                return typeof mod.default !== "undefined" ? mod.default : mod;
-            }
-            return undefined;
+            return ret;
         },
 
-        findModules(n, b) {
-            (d = typeof b === "undefined" ? true : b),
-                (n = n.toLowerCase()),
-                (m = []);
-            m.push(
-                ...Object.values(this._cached).filter(
-                    (m) =>
-                        m?.exports &&
-                        ((m?.exports?.default &&
-                            Object.keys(m.exports.default).some((key) =>
-                                key.toLowerCase().includes(n),
-                            )) ||
-                            (m.exports?.default?.prototype &&
-                                Object.keys(m.exports.default.prototype).some(
-                                    (key) => key.toLowerCase().includes(n),
-                                )) ||
-                            Object.keys(m.exports).some((key) =>
-                                key.toLowerCase().includes(n),
-                            )),
-                ),
+        find(filter) {
+            return this.modules.find(filter);
+        },
+
+        findAll(filter) {
+            return this.modules.filter(filter);
+        },
+
+        _findAndScope(filter, all = false) {
+            const func = all ? "findAll" : "find";
+            var results = all ? [] : null;
+
+            const modules = this[func](function (module) {
+                const res = filter(module);
+                if (res) {
+                    all ? results.push(res) : (results = res);
+                }
+                return res;
+            });
+
+            return all
+                ? results.map((res, index) =>
+                      typeof res === "string"
+                          ? modules[index][res]
+                          : modules[index],
+                  )
+                : typeof results === "string"
+                ? modules[results]
+                : modules;
+        },
+
+        findByID(id) {
+            return this._cached[id]?.exports;
+        },
+
+        _displayName(exports, name) {
+            if (exports?.displayName === name) {
+                return true;
+            }
+
+            for (const i of Object.getOwnPropertyNames(exports)) {
+                if (exports[i]?.displayName === name) {
+                    return i;
+                }
+            }
+        },
+
+        findByDisplayName(displayName) {
+            return this._findAndScope((m) => this._displayName(m, displayName));
+        },
+
+        findByDisplayNameAll(displayName) {
+            return this._findAndScope(
+                (m) => this._displayName(m, displayName),
+                true,
             );
-            if (d) {
-                m.forEach((f) =>
-                    m.push(
-                        typeof f?.exports?.default === "undefined"
-                            ? f?.exports
-                            : f?.exports?.default,
-                    ),
-                );
-                for (var i = 0; i < m.length; i += 1) {
-                    m.forEach((f, i) =>
-                        typeof f?.id === "undefined" ? (m = m) : m.splice(i, 1),
-                    );
-                }
-                return [...m];
-            } else {
-                return [...m];
-            }
         },
 
-        findAllModules(filter = (m) => m) {
-            let modules = [];
-            for (let item in this._cached) {
-                if (Object.hasOwnProperty.call(this._cached, item)) {
-                    let element = this._cached[item].exports;
-                    if (!element) {
+        _props(exports, props) {
+            var ret = null;
+            for (const prop of props) {
+                if (exports && typeof exports === "object" && prop in exports) {
+                    continue;
+                }
+
+                let res = null;
+                for (const i of Object.getOwnPropertyNames(exports)) {
+                    if (i !== "default" && i.length > 3) {
                         continue;
                     }
-                    if (filter(element)) {
-                        modules.push(element);
+
+                    const object = exports[i];
+                    if (
+                        object &&
+                        typeof object === "object" &&
+                        prop in object
+                    ) {
+                        res = i;
+                        break;
                     }
                 }
+
+                if (!res) {
+                    return;
+                }
+                ret = res;
             }
-            return modules;
+            return ret || true;
+        },
+
+        findByProps(...props) {
+            return this._findAndScope((m) => this._props(m, props));
+        },
+
+        findByPropsAll(...props) {
+            return this._findAndScope((m) => this._props(m, props), true);
+        },
+
+        getModule(...args) {
+
         },
     },
 
@@ -324,15 +292,15 @@ Discord = {
         },
 
         before: (module, func, callback, signature) => {
-            Discord._patchModule("before", module, func, callback, signature);
+            Dorpier._patchModule("before", module, func, callback, signature);
         },
 
         instead: (module, func, callback, signature) => {
-            Discord._patchModule("instead", module, func, callback, signature);
+            Dorpier._patchModule("instead", module, func, callback, signature);
         },
 
         after: (module, func, callback, signature) => {
-            Discord._patchModule("after", module, func, callback, signature);
+            Dorpier._patchModule("after", module, func, callback, signature);
         },
 
         unpatch(module, func, signature) {
@@ -352,11 +320,11 @@ Discord = {
                     }
                 }
             } else {
-                Discord._unpatchEntireModule(module, func);
-                Discord._removePatchesFromList(signature);
+                Dorpier._unpatchEntireModule(module, func);
+                Dorpier._removePatchesFromList(signature);
                 for (var i = 0; i < this._currentPatches.length; i += 1) {
                     let patch = this._currentPatches[i];
-                    Discord.patchModule(
+                    Dorpier.patchModule(
                         patch.patchType,
                         module,
                         patch.patchOn,
@@ -372,7 +340,7 @@ Discord = {
 
     showToast(message, type) {
         // type = {normal: 0, success: 1, error: 2}
-        Discord.getModule("showToast").showToast({
+        Dorpier.webpack.getModule("showToast").showToast({
             message: message,
             type: type || 0,
         });
@@ -384,7 +352,7 @@ Discord = {
         icon = "https://cdn.discordapp.com/embed/avatars/0.png",
         { sound = "message1", volume = 0.4 },
     ) {
-        Discord.getModule("showNotification").showNotification(
+        Dorpier.webpack.getModule("showNotification").showNotification(
             icon,
             title,
             body,
@@ -394,62 +362,62 @@ Discord = {
     },
 
     playSound(sound = "message1", volume = 0.4) {
-        Discord.getModule("playSound").playSound(sound, volume);
+        Dorpier.webpack.getModule("playSound").playSound(sound, volume);
     },
 
     // Constants
 
     get App() {
-        return this.getModule("os");
+        return this.webpack.getModule("os");
     },
 
     get Constants() {
-        return this.getModule("ACTIVITY_PLATFORM_TYPES");
+        return this.webpack.getModule("ACTIVITY_PLATFORM_TYPES");
     },
 
     get Electron() {
-        return this.getModule("os");
+        return this.webpack.getModule("os");
     },
 
     get React() {
-        return this.getModule("createElement");
+        return this.webpack.getModule("createElement");
     },
 
     get ReactDOM() {
-        return this.getModule("render");
+        return this.webpack.getModule("render");
     },
 
     get Strings() {
-        return this.getModule("DISCORD_DESC_SHORT");
+        return this.webpack.getModule("DISCORD_DESC_SHORT");
     },
 
     // Helpers
 
     get Analytics() {
-        return this.getModule("AnalyticEventConfigs");
+        return this.webpack.getModule("AnalyticEventConfigs");
     },
 
     get Dispatcher() {
-        return this.getModule("getUser")._dispatcher;
+        return this.webpack.getModule("isDispatching");
     },
 
     get Experiments() {
-        return this.getModule("ExperimentStore");
+        return this.webpack.getModule("ExperimentStore");
     },
 
     get HTTP() {
-        return this.getModule("getAPIBaseURL");
+        return this.webpack.getModule("getAPIBaseURL");
     },
 
     get Router() {
-        return this.getModule("Router");
+        return this.webpack.getModule("Router");
     },
 
     // Other
 
     _createCommand(name, description, options, type, callback, inputType = 0) {
-        console.log(`Registering command ${name}...`);
-        const commands = this.getModule("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS;
+        this.logger.log(`Registering command ${name}...`);
+        const commands = this.webpack.getModule("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS;
         options.forEach((option) => {
             option.displayName = option.name;
             option.displayDescription = option.description;
@@ -480,7 +448,7 @@ Discord = {
     },
 
     _createMessage(content, embeds) {
-        return this.getModule("createBotMessage").createBotMessage(
+        return this.webpack.getModule("createBotMessage").createBotMessage(
             this._getCurrentChannelID(),
             content,
             embeds,
@@ -488,14 +456,14 @@ Discord = {
     },
 
     _sendLocalMessage(channel, message) {
-        return this.getModule("receiveMessage").receiveMessage(
+        return this.webpack.getModule("receiveMessage").receiveMessage(
             channel,
             message,
         );
     },
 
     dispatch(name, data) {
-        Logger.log(`DirtyDispatching ${name.toUpperCase()}...`);
+        this.logger.log(`DirtyDispatching ${name.toUpperCase()}...`);
         dispatcher = this.Dispatcher;
         data.type = name.toUpperCase();
         if (dispatcher.isDispatching()) {
@@ -506,42 +474,42 @@ Discord = {
     },
 
     editDeveloperOptions(settings) {
-        this.getModule("setDeveloperOptionSettings").setDeveloperOptionSettings(
+        this.webpack.getModule("setDeveloperOptionSettings").setDeveloperOptionSettings(
             settings,
         );
     },
 
     toggleGuildFolder(id) {
-        Discord.getModule("toggleGuildFolderExpand").toggleGuildFolderExpand(
+        Dorpier.webpack.getModule("toggleGuildFolderExpand").toggleGuildFolderExpand(
             id,
         );
     },
 
     login(token) {
-        Logger.log(`Logging in with token ${token}...`);
-        this.getModule("loginToken").loginToken(token);
+        this.logger.log(`Logging in with token ${token}...`);
+        this.webpack.getModule("loginToken").loginToken(token);
     },
 
     getToken(id) {
-        return (token = this.getModule("hideToken").getToken(id));
+        return (token = this.webpack.getModule("hideToken").getToken(id));
     },
 
     _getCurrentChannelID() {
-        return this.getModule("getLastSelectedChannelId").getChannelId();
+        return this.webpack.getModule("getLastSelectedChannelId").getChannelId();
     },
 
     _getCurrentGuildID() {
-        return this.getModule("getLastSelectedGuildId").getGuildId();
+        return this.webpack.getModule("getLastSelectedGuildId").getGuildId();
     },
 
     get currentChannel() {
-        return this.getModule("hasChannel").getChannel(
+        return this.webpack.getModule("hasChannel").getChannel(
             this._getCurrentChannelID(),
         );
     },
 
     get currentGuild() {
-        return this.getModule("getGuild").getGuild(this._getCurrentGuildID());
+        return this.webpack.getModule("getGuild").getGuild(this._getCurrentGuildID());
     },
 
     createSlashCommand(name, description, options = [], callback) {
@@ -549,41 +517,41 @@ Discord = {
     },
 
     //    createUserCommand(name, callback) {
-    //        Discord._createCommand(name, "", [], 2, callback);
+    //        Dorpier._createCommand(name, "", [], 2, callback);
     //    }
 
     //    createMessageCommand(name, callback) {
-    //        Discord._createCommand(name, "", [], 3, callback);
+    //        Dorpier._createCommand(name, "", [], 3, callback);
     //    }
 
     transitionTo: {
         get history() {
-            return this.getModule("transitionTo").getHistory();
+            return this.webpack.getModule("transitionTo").getHistory();
         },
         route(path) {
-            return Discord.getModule("transitionTo").transitionTo(path);
+            return Dorpier.webpack.getModule("transitionTo").transitionTo(path);
         },
         back() {
-            return Discord.getModule("transitionTo").back();
+            return Dorpier.webpack.getModule("transitionTo").back();
         },
         forward() {
-            return Discord.getModule("transitionTo").forward();
+            return Dorpier.webpack.getModule("transitionTo").forward();
         },
         guild(id) {
-            return Discord.getModule("transitionToGuild").transitionToGuild(id);
+            return Dorpier.webpack.getModule("transitionToGuild").transitionToGuild(id);
         },
         channel(id) {
-            return Discord.getModule("transitionToChannel").transitionToChannel(
+            return Dorpier.webpack.getModule("transitionToChannel").transitionToChannel(
                 id,
             );
         },
         thread(id) {
-            return Discord.getModule("transitionToThread").transitionToThread(
+            return Dorpier.webpack.getModule("transitionToThread").transitionToThread(
                 id,
             );
         },
         message(channelID, id) {
-            return Discord.getModule("transitionToMessage").transitionToMessage(
+            return Dorpier.webpack.getModule("transitionToMessage").transitionToMessage(
                 channelID,
                 id,
             );
@@ -598,16 +566,16 @@ class Client {
 
     connect() {
         let state = this;
-        Discord.Dispatcher._interceptor = function (e) {
+        Dorpier.Dispatcher._interceptor = function (e) {
             let promise = state.emit(e.type.toLowerCase(), e);
             Promise.resolve(promise);
         };
-        Discord.logger.log("Successfully hooked into the client!");
+        Dorpier.logger.log("Successfully hooked into the client!");
     }
 
     disconnect() {
-        Discord.Dispatcher._interceptor = undefined;
-        Discord.logger.log("Successfully unhooked from the client!");
+        Dorpier.Dispatcher._interceptor = undefined;
+        Dorpier.logger.log("Successfully unhooked from the client!");
     }
 
     on(event, callback) {
@@ -625,83 +593,83 @@ class Client {
             try {
                 await callback(data);
             } catch (e) {
-                Logger.log(`Error in '${event}', callback: '${e}'`);
+                Dorpier.logger.log(`Error in '${event}', callback: '${e}'`);
             }
         }
     }
 
     get sessionID() {
-        return Discord.getModule("getSessionId").getSessionId();
+        return Dorpier.webpack.getModule("getSessionId").getSessionId();
     }
 
     get fingerprint() {
-        return Discord.getModule("getFingerprint").getFingerprint();
+        return Dorpier.webpack.getModule("getFingerprint").getFingerprint();
     }
 
     get user() {
-        return Discord.getModule("getCurrentUser").getCurrentUser();
+        return Dorpier.webpack.getModule("getCurrentUser").getCurrentUser();
     }
 
     get guilds() {
-        return Discord.getModule("getGuilds").getGuilds();
+        return Dorpier.webpack.getModule("getGuilds").getGuilds();
     }
 
     get sortedGuilds() {
-        return Discord.getModule("getSortedGuilds").getSortedGuilds();
+        return Dorpier.webpack.getModule("getSortedGuilds").getSortedGuilds();
     }
 
     get privateChannels() {
-        return Discord.getModule(
+        return Dorpier.webpack.getModule(
             "getMutablePrivateChannels",
         ).getSortedPrivateChannels();
     }
 
     getGuild(id) {
-        return Discord.getModule("getGuild").getGuild(id);
+        return Dorpier.webpack.getModule("getGuild").getGuild(id);
     }
 
     joinGuild(id, lurking = false) {
-        return Discord.getModule("joinGuild").joinGuild(id, {
+        return Dorpier.webpack.getModule("joinGuild").joinGuild(id, {
             lurker: lurking,
         });
     }
 
     getGuildChannels(guildID) {
         return Object.values(
-            Discord.getModule(
+            Dorpier.webpack.getModule(
                 "getMutableGuildChannelsForGuild",
             ).getMutableGuildChannelsForGuild(guildID),
         );
     }
 
     getChannel(id) {
-        return Discord.getModule("hasChannel").getChannel(id);
+        return Dorpier.webpack.getModule("hasChannel").getChannel(id);
     }
 
     getChannelThreads(channelID) {
-        return Discord.getModule(
+        return Dorpier.webpack.getModule(
             "getAllThreadsForParent",
         ).getAllThreadsForParent(channelID);
     }
 
     createDM(id) {
-        existing = Discord.getModule("getDMFromUserId").getDMFromUserId(id);
+        existing = Dorpier.webpack.getModule("getDMFromUserId").getDMFromUserId(id);
         if (existing) {
             return this.getChannel(existing);
         }
-        return Discord.getModule("openPrivateChannel").openPrivateChannel(id);
+        return Dorpier.webpack.getModule("openPrivateChannel").openPrivateChannel(id);
     }
 
     getUser(id) {
-        return Discord.getModule("getUser").getUser(id);
+        return Dorpier.webpack.getModule("getUser").getUser(id);
     }
 
     getGuildMember(guildID, id) {
-        return Discord.getModule("getMember").getMember(guildID, id);
+        return Dorpier.webpack.getModule("getMember").getMember(guildID, id);
     }
 
     getGuildMembers(guildID) {
-        return Discord.getModule("getMembers").getMembers(guildID);
+        return Dorpier.webpack.getModule("getMembers").getMembers(guildID);
     }
 
     requestGuildMembers(
@@ -709,13 +677,13 @@ class Client {
         { query = "", limit = 10, presences = true, userIDs = [] },
     ) {
         if (userIDs) {
-            return Discord.getModule("requestMembers").requestMembersById(
+            return Dorpier.webpack.getModule("requestMembers").requestMembersById(
                 ids,
                 userIDs,
                 presences,
             );
         } else {
-            return Discord.getModule("requestMembers").requestMembers(
+            return Dorpier.webpack.getModule("requestMembers").requestMembers(
                 ids,
                 query,
                 limit,
@@ -725,7 +693,7 @@ class Client {
     }
 
     getChannelMessages(channelID) {
-        return Discord.getModule("getMessages").getMessages(channelID);
+        return Dorpier.webpack.getModule("getMessages").getMessages(channelID);
     }
 
     sendMessage(
@@ -742,7 +710,7 @@ class Client {
             throw new TypeError("Must provide either content or stickerIDs");
         }
         if (!channel) {
-            channel = Discord._getCurrentChannelID();
+            channel = Dorpier._getCurrentChannelID();
         }
         let msg = {
             content: content,
@@ -760,7 +728,7 @@ class Client {
         if (stickerIDs != null) {
             params.stickerIds = stickerIDs;
         }
-        return Discord.getModule("sendMessage").sendMessage(
+        return Dorpier.webpack.getModule("sendMessage").sendMessage(
             channel,
             msg,
             null,
@@ -780,37 +748,37 @@ class Client {
             allowedMentions,
         },
     ) {
-        let msg = Discord._createMessage(content, embeds);
+        let msg = Dorpier._createMessage(content, embeds);
         msg.author = author || this.user;
         msg.type = type;
         msg.tts = tts;
         msg.sticker_ids = stickerIDs;
         msg.message_reference = messageReference;
         msg.allowed_mentions = allowedMentions;
-        return Discord._sendLocalMessage(msg.channel_id, msg);
+        return Dorpier._sendLocalMessage(msg.channel_id, msg);
     }
 
     sendClydeMessage(content, embeds) {
-        return Discord.getModule("sendBotMessage").sendBotMessage(
-            Discord._getCurrentChannelID(),
+        return Dorpier.webpack.getModule("sendBotMessage").sendBotMessage(
+            Dorpier._getCurrentChannelID(),
             content,
             embeds,
         );
     }
 
     sendClydeError() {
-        return Discord.getModule("sendBotMessage").sendClydeError(
-            Discord.getCurrentChannelID(),
+        return Dorpier.webpack.getModule("sendBotMessage").sendClydeError(
+            Dorpier.getCurrentChannelID(),
         );
     }
 
     acceptInvite(invite, transition = true) {
         if (transition) {
-            return Discord.getModule(
+            return Dorpier.webpack.getModule(
                 "acceptInvite",
             ).acceptInviteAndTransitionToInviteChannel(invite);
         } else {
-            return Discord.getModule("acceptInvite").acceptInvite(invite);
+            return Dorpier.webpack.getModule("acceptInvite").acceptInvite(invite);
         }
     }
 }
