@@ -636,15 +636,14 @@ class Client {
                 this.events[event] = [];
             }
             this.events[event].push(callback);
+            return () => this.events[event].splice(this.events[event].indexOf(callback), 1);
         } else {
-            async function wrapper(event) {
+            const wrapper = async function(event) {
                 if (this._connected) await callback(event);
-            }
+            }.bind(this)
 
             Dorpier.dispatcher.subscribe(event.toUpperCase(), wrapper);
-            return function () {
-                Dorpier.dispatcher.unsubscribe(event.toUpperCase(), wrapper);
-            };
+            return () => Dorpier.dispatcher.unsubscribe(event.toUpperCase(), wrapper);
         }
     }
 
