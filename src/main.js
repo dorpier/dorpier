@@ -612,10 +612,13 @@ class Client {
             }.bind(this),
             "__dorpier_internal_client_hook",
         );
+        this._connected = true;
         Dorpier.logger.info("Successfully hooked into the client!");
     }
 
     disconnect() {
+        Dorpier.patcher.unpatch(Dorpier.socket, "_handleDispatchWithoutQueueing", "__dorpier_internal_client_hook");
+        this._connected = false;
         Dorpier.logger.info("Successfully unhooked from the client!");
     }
 
