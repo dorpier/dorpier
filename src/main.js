@@ -136,6 +136,7 @@ Dorpier = {
         },
 
         findByID(id) {
+            id = parseInt(id);
             return this._cached[id]?.exports;
         },
 
@@ -202,7 +203,32 @@ Dorpier = {
             return this._findAndScope((m) => this._props(m, props), true);
         },
 
-        getModule(...args) {},
+        _getModule(args, all = false) {
+            if (args.length > 1) {
+                return this.findByProps(...args);
+            }
+            else {
+                const arg = args[0];
+                switch (typeof arg) {
+                    case "function":
+                        return all ? this.findAll(arg) : this.find(arg);
+                    case "number":
+                        return this.findByID(arg);
+                    case "object" && Array.isArray(arg):
+                        return all ? this.findByPropsAll(...arg) : this.findByProps(...arg);
+                    default:
+                        return this._findAndScope((m) => this._displayName(m, arg) || this._props(m, [arg]), all);
+                }
+            }
+        },
+
+        getModule(...args) {
+            return this._getModule(args);
+        },
+
+        getModules(...args) {
+            return this._getModule(args, true);
+        },
     },
 
     // Patches
@@ -486,7 +512,7 @@ Dorpier = {
     },
 
     getToken(id) {
-        return (token = this.webpack.getModule("hideToken").getToken(id));
+        return this.webpack.getModule("hideToken").getToken(id);
     },
 
     _getCurrentChannelID() {
@@ -558,6 +584,7 @@ Dorpier = {
         },
     },
 };
+
 
 class Client {
     constructor() {
