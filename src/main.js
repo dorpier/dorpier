@@ -206,8 +206,7 @@ Dorpier = {
         _getModule(args, all = false) {
             if (args.length > 1) {
                 return this.findByProps(...args);
-            }
-            else {
+            } else {
                 const arg = args[0];
                 switch (typeof arg) {
                     case "function":
@@ -215,9 +214,16 @@ Dorpier = {
                     case "number":
                         return this.findByID(arg);
                     case "object" && Array.isArray(arg):
-                        return all ? this.findByPropsAll(...arg) : this.findByProps(...arg);
+                        return all
+                            ? this.findByPropsAll(...arg)
+                            : this.findByProps(...arg);
                     default:
-                        return this._findAndScope((m) => this._displayName(m, arg) || this._props(m, [arg]), all);
+                        return this._findAndScope(
+                            (m) =>
+                                this._displayName(m, arg) ||
+                                this._props(m, [arg]),
+                            all,
+                        );
                 }
             }
         },
@@ -584,7 +590,6 @@ Dorpier = {
         },
     },
 };
-
 
 class Client {
     constructor() {
