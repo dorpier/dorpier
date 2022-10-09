@@ -617,7 +617,11 @@ class Client {
     }
 
     disconnect() {
-        Dorpier.patcher.unpatch(Dorpier.socket, "_handleDispatchWithoutQueueing", "__dorpier_internal_client_hook");
+        Dorpier.patcher.unpatch(
+            Dorpier.socket,
+            "_handleDispatchWithoutQueueing",
+            "__dorpier_internal_client_hook",
+        );
         this._connected = false;
         Dorpier.logger.info("Successfully unhooked from the client!");
     }
