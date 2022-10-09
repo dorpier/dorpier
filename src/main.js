@@ -301,15 +301,15 @@ Dorpier = {
             return;
         },
 
-        before: (module, func, callback, signature) => {
+        before(module, func, callback, signature) {
             this._patchModule("before", module, func, callback, signature);
         },
 
-        instead: (module, func, callback, signature) => {
+        instead(module, func, callback, signature) {
             this._patchModule("instead", module, func, callback, signature);
         },
 
-        after: (module, func, callback, signature) => {
+        after(module, func, callback, signature) {
             this._patchModule("after", module, func, callback, signature);
         },
 
@@ -333,7 +333,7 @@ Dorpier = {
                 this._unpatchEntireModule(module, func);
                 this._removePatchesFromList(signature);
                 for (patch of this._currentPatches) {
-                    this.patchModule(
+                    this._patchModule(
                         patch.patchType,
                         module,
                         patch.patchOn,
@@ -539,9 +539,14 @@ Dorpier = {
     },
 
     get currentGuild() {
-        return this.webpack
-            .getModule("getGuild")
-            .getGuild(this._getCurrentGuildID());
+        try {
+            return this.webpack
+                .getModule("getGuild")
+                .getGuild(this._getCurrentGuildID());
+        } catch (e) {
+            // If we're not in a guild it throws
+            return null;
+        }
     },
 
     createSlashCommand(name, description, options = [], callback) {
@@ -603,8 +608,7 @@ class Client {
     }
 
     connect() {
-        Dorpier.patcher._patchModule(
-            "after",
+        Dorpier.patcher.after(
             Dorpier.socket,
             "_handleDispatchWithoutQueueing",
             async function (args, _) {
