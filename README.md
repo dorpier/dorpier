@@ -19,6 +19,7 @@ fetch(
 4) Press enter, and you should see something like this:
 
 ![Screenshot of Developer Tools](/images/loaded.png)
+
 5. If you do, congrats! Dorpier has been injected.
 
 ### Use TamperMonkey/GreaseMonkey
