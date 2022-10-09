@@ -492,7 +492,7 @@ Dorpier = {
 
     dispatch(name, data) {
         this.logger.debug(`DirtyDispatching ${name.toUpperCase()}...`);
-        dispatcher = this.Dispatcher;
+        dispatcher = this.dispatcher;
         data.type = name.toUpperCase();
         if (dispatcher.isDispatching()) {
             setImmediate(dispatcher.dispatch.bind(dispatcher, data));
@@ -641,9 +641,9 @@ class Client {
                 if (this._connected) await callback(event);
             }
 
-            Dorpier.Dispatcher.subscribe(event.toUpperCase(), wrapper);
+            Dorpier.dispatcher.subscribe(event.toUpperCase(), wrapper);
             return function () {
-                Dorpier.Dispatcher.unsubscribe(event.toUpperCase(), wrapper);
+                Dorpier.dispatcher.unsubscribe(event.toUpperCase(), wrapper);
             };
         }
     }
