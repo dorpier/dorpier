@@ -4,30 +4,6 @@ Dorpier = {
         nightly: true,
     },
 
-    // Logger
-
-    logger: {
-        _log: true,
-
-        enable() {
-            this._log = true;
-        },
-
-        disable() {
-            this._log = false;
-        },
-
-        log(message) {
-            if (this._log) {
-                console.log(
-                    `%c[dorpier]%c ${message}`,
-                    "color: #9e0700",
-                    "color: #ffffff",
-                );
-            }
-        },
-    },
-
     // Utilities
 
     utils: {
@@ -48,37 +24,43 @@ Dorpier = {
         },
 
         // Discord classes
-        get Datetime() {
+        get datetime() {
             return Dorpier.webpack.getModule("dateFormat");
         },
 
-        get HLJS() {
+        get hljs() {
             return Dorpier.webpack.getModule("highlight");
         },
 
-        get Markdown() {
+        get markdown() {
             return Dorpier.webpack.getModule("parseBlock");
         },
 
-        get Path() {
+        get path() {
             return Dorpier.webpack.getModule("createPath");
         },
 
-        get String() {
+        get string() {
             return Dorpier.webpack.getModule("toASCII");
         },
 
-        get Timestamp() {
+        get timestamp() {
             return Dorpier.webpack.getModule("fromTimestamp");
         },
 
-        get Timezone() {
+        get timezone() {
             return Dorpier.webpack.getModule("parseZone")();
         },
 
         get URL() {
             return Dorpier.webpack.getModule("Url");
         },
+    },
+
+    get logger() {
+        return new (this.webpack.getModule("logger").logger.constructor)(
+            "dorpier",
+        );
     },
 
     // Webpack
@@ -261,18 +243,15 @@ Dorpier = {
             if (!signature) {
                 throw new TypeError("Must specify a signature for your patch");
             }
-            let originalFunction = module[func];
+            var originalFunction = module[func];
             if (!this._originalFunctions[func]) {
                 this._originalFunctions[func] = module[func];
             }
-            var isPatchInCurrentOnes = false;
-            for (var i = 0; i < this._currentPatches.length; i += 1) {
-                let patch = this._currentPatches[i];
-                if (patch.signature == signature) {
-                    isPatchInCurrentOnes = true;
-                }
-            }
-            if (isPatchInCurrentOnes != true) {
+
+            const isPatchInCurrentOnes = this._currentPatches.find(
+                (patch) => patch.signature === signature,
+            );
+            if (!isPatchInCurrentOnes) {
                 this._currentPatches.push({
                     signature: signature,
                     patchType: type,
@@ -280,6 +259,7 @@ Dorpier = {
                     callback: callback,
                 });
             }
+
             switch (type) {
                 case "before":
                     originalFunction = module[func];
@@ -322,15 +302,15 @@ Dorpier = {
         },
 
         before: (module, func, callback, signature) => {
-            Dorpier._patchModule("before", module, func, callback, signature);
+            this._patchModule("before", module, func, callback, signature);
         },
 
         instead: (module, func, callback, signature) => {
-            Dorpier._patchModule("instead", module, func, callback, signature);
+            this._patchModule("instead", module, func, callback, signature);
         },
 
         after: (module, func, callback, signature) => {
-            Dorpier._patchModule("after", module, func, callback, signature);
+            this._patchModule("after", module, func, callback, signature);
         },
 
         unpatch(module, func, signature) {
@@ -350,11 +330,10 @@ Dorpier = {
                     }
                 }
             } else {
-                Dorpier._unpatchEntireModule(module, func);
-                Dorpier._removePatchesFromList(signature);
-                for (var i = 0; i < this._currentPatches.length; i += 1) {
-                    let patch = this._currentPatches[i];
-                    Dorpier.patchModule(
+                this._unpatchEntireModule(module, func);
+                this._removePatchesFromList(signature);
+                for (patch of this._currentPatches) {
+                    this.patchModule(
                         patch.patchType,
                         module,
                         patch.patchOn,
@@ -396,50 +375,72 @@ Dorpier = {
 
     // Constants
 
-    get App() {
+    get app() {
         return this.webpack.getModule("os");
     },
 
-    get Constants() {
+    get constants() {
         return this.webpack.getModule("ACTIVITY_PLATFORM_TYPES");
     },
 
-    get Electron() {
+    get electron() {
         return this.webpack.getModule("os");
     },
 
-    get React() {
+    get react() {
         return this.webpack.getModule("createElement");
     },
 
-    get ReactDOM() {
+    get reactDOM() {
         return this.webpack.getModule("render");
     },
 
-    get Strings() {
+    get strings() {
         return this.webpack.getModule("DISCORD_DESC_SHORT");
     },
 
     // Helpers
 
-    get Analytics() {
+    get analytics() {
         return this.webpack.getModule("AnalyticEventConfigs");
     },
 
-    get Dispatcher() {
+    get dispatcher() {
         return this.webpack.getModule("isDispatching");
     },
 
-    get Experiments() {
-        return this.webpack.getModule("ExperimentStore");
+    get http() {
+        // Thank you splatterxl
+        return Object.fromEntries(
+            Object.entries(this.webpack.getModule("getAPIBaseURL")).map(
+                ([e, t]) => {
+                    return "function" == typeof t
+                        ? [
+                              e,
+                              ((r = t),
+                              (...e) =>
+                                  new Promise(async (t, a) => {
+                                      try {
+                                          await r(...e, (...e) => {
+                                              t(1 === e?.length ? e[0] : e);
+                                          });
+                                      } catch (e) {
+                                          a(e);
+                                      }
+                                  })),
+                          ]
+                        : [e, t];
+                },
+            ),
+        );
     },
 
-    get HTTP() {
-        return this.webpack.getModule("getAPIBaseURL");
-    },
-
-    get Router() {
+    get router() {
         return this.webpack.getModule("Router");
+    },
+
+    get socket() {
+        return this.webpack.getModule("getSocket").getSocket();
     },
 
     // Other
@@ -490,7 +491,7 @@ Dorpier = {
     },
 
     dispatch(name, data) {
-        this.logger.log(`DirtyDispatching ${name.toUpperCase()}...`);
+        this.logger.debug(`DirtyDispatching ${name.toUpperCase()}...`);
         dispatcher = this.Dispatcher;
         data.type = name.toUpperCase();
         if (dispatcher.isDispatching()) {
@@ -512,7 +513,7 @@ Dorpier = {
             .toggleGuildFolderExpand(id);
     },
 
-    login(token) {
+    loginToken(token) {
         this.logger.log(`Logging in with token ${token}...`);
         this.webpack.getModule("loginToken").loginToken(token);
     },
@@ -557,7 +558,7 @@ Dorpier = {
 
     transitionTo: {
         get history() {
-            return this.webpack.getModule("transitionTo").getHistory();
+            return Dorpier.webpack.getModule("transitionTo").getHistory();
         },
         route(path) {
             return Dorpier.webpack.getModule("transitionTo").transitionTo(path);
@@ -594,27 +595,46 @@ Dorpier = {
 class Client {
     constructor() {
         this.events = {};
+        this._connected = false;
+    }
+
+    get connected() {
+        return this._connected;
     }
 
     connect() {
-        let state = this;
-        Dorpier.Dispatcher._interceptor = function (e) {
-            let promise = state.emit(e.type.toLowerCase(), e);
-            Promise.resolve(promise);
-        };
-        Dorpier.logger.log("Successfully hooked into the client!");
+        Dorpier.patcher._patchModule(
+            "after",
+            Dorpier.socket,
+            "_handleDispatchWithoutQueueing",
+            async function (args, _) {
+                await this.emit(args[1].toLowerCase(), args[0]);
+            }.bind(this),
+            "__dorpier_internal_client_hook",
+        );
+        Dorpier.logger.info("Successfully hooked into the client!");
     }
 
     disconnect() {
-        Dorpier.Dispatcher._interceptor = undefined;
-        Dorpier.logger.log("Successfully unhooked from the client!");
+        Dorpier.logger.info("Successfully unhooked from the client!");
     }
 
-    on(event, callback) {
-        if (this.events[event] === undefined) {
-            this.events[event] = [];
+    on(event, callback, raw = false) {
+        if (raw) {
+            if (this.events[event] === undefined) {
+                this.events[event] = [];
+            }
+            this.events[event].push(callback);
+        } else {
+            async function wrapper(event) {
+                if (this._connected) await callback(event);
+            }
+
+            Dorpier.Dispatcher.subscribe(event.toUpperCase(), wrapper);
+            return function () {
+                Dorpier.Dispatcher.unsubscribe(event.toUpperCase(), wrapper);
+            };
         }
-        this.events[event].push(callback);
     }
 
     async emit(event, data) {
@@ -625,7 +645,7 @@ class Client {
             try {
                 await callback(data);
             } catch (e) {
-                Dorpier.logger.log(`Error in '${event}', callback: '${e}'`);
+                Dorpier.logger.error(`Error in '${event}', callback: '${e}'`);
             }
         }
     }
@@ -646,7 +666,7 @@ class Client {
         return Dorpier.webpack.getModule("getGuilds").getGuilds();
     }
 
-    get sortedGuilds() {
+    get guildFolders() {
         return Dorpier.webpack.getModule("getSortedGuilds").getSortedGuilds();
     }
 
@@ -795,7 +815,7 @@ class Client {
     sendClydeError() {
         return Dorpier.webpack
             .getModule("sendBotMessage")
-            .sendClydeError(Dorpier.getCurrentChannelID());
+            .sendClydeError(Dorpier._getCurrentChannelID());
     }
 
     acceptInvite(invite, transition = true) {
