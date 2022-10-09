@@ -837,3 +837,5 @@ class Client {
         }
     }
 }
+
+Dorpier.logger.info("Loaded successfully!");
