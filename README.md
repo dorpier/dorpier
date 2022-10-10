@@ -1,5 +1,5 @@
 # DORPIER
-A script-based, developer experience focused client mod for Discord!
+Dorpier is a work-in-progress script-based, developer experience focused Discord client mod!
 
 ## Installation
 As of now, we don't have an extension or injector ready.
@@ -7,6 +7,8 @@ As of now, we don't have an extension or injector ready.
 If you want to use Dorpier right now, you have two options:
 
 ### Inject manually
+Note that CSP has to be disabled for this to work.
+
 1) Open Developer Tools on the webapp or desktop client.
 3) Input the following:
 ```js
@@ -24,8 +26,6 @@ fetch(
 
 ### Use TamperMonkey/GreaseMonkey
 Simply import from the URL `https://raw.githubusercontent.com/dorpier/dorpier/master/src/main.js`.
-
-
 
 ## Example
 Run this script after injection.
