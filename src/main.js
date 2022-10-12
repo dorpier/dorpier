@@ -544,7 +544,7 @@ Dorpier = {
 
     get currentGuild() {
         return this.webpack
-            .getModule('getGuild', 'getGuilds')
+            .getModule("getGuild", "getGuilds")
             .getGuild(this._getCurrentGuildID());
     },
 
@@ -691,7 +691,7 @@ class Client {
     }
 
     getGuild(id) {
-        return Dorpier.webpack.getModule('getGuild', 'getGuilds').getGuild(id);
+        return Dorpier.webpack.getModule("getGuild", "getGuilds").getGuild(id);
     }
 
     joinGuild(id, lurking = false) {
