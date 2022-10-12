@@ -25,7 +25,7 @@ Dorpier = {
 
         // Discord classes
         get datetime() {
-            return Dorpier.webpack.getModule("dateFormat");
+            return Dorpier.webpack.getModule("parseZone");
         },
 
         get hljs() {
@@ -36,20 +36,12 @@ Dorpier = {
             return Dorpier.webpack.getModule("parseBlock");
         },
 
-        get path() {
-            return Dorpier.webpack.getModule("createPath");
-        },
-
         get string() {
             return Dorpier.webpack.getModule("toASCII");
         },
 
         get timestamp() {
             return Dorpier.webpack.getModule("fromTimestamp");
-        },
-
-        get timezone() {
-            return Dorpier.webpack.getModule("parseZone")();
         },
 
         get URL() {
