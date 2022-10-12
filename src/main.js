@@ -543,14 +543,9 @@ Dorpier = {
     },
 
     get currentGuild() {
-        try {
-            return this.webpack
-                .getModule("getGuild")
-                .getGuild(this._getCurrentGuildID());
-        } catch (e) {
-            // If we're not in a guild it throws
-            return null;
-        }
+        return this.webpack
+            .getModule('getGuild', 'getGuilds')
+            .getGuild(this._getCurrentGuildID());
     },
 
     createSlashCommand(name, description, options = [], callback) {
@@ -696,7 +691,7 @@ class Client {
     }
 
     getGuild(id) {
-        return Dorpier.webpack.getModule("getGuild").getGuild(id);
+        return Dorpier.webpack.getModule('getGuild', 'getGuilds').getGuild(id);
     }
 
     joinGuild(id, lurking = false) {
