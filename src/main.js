@@ -213,12 +213,15 @@ Dorpier = {
             if (typeof code === "string") {
                 const originalCode = code;
                 code = {
-                    test: (e) => (e.includes ? e.includes(originalCode) : false),
+                    test: (e) =>
+                        e.includes ? e.includes(originalCode) : false,
                 };
             }
 
             const { m, c } = this._cached;
-            const modules = Object.entries(m).filter(([, module]) => code.test(module.toString()));
+            const modules = Object.entries(m).filter(([, module]) =>
+                code.test(module.toString()),
+            );
             if (all) {
                 const ret = [];
                 for (const [id] of modules) {
