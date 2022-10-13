@@ -187,6 +187,8 @@ Dorpier = {
 
                 if (arg instanceof RegExp) {
                     return this._byCode(arg, all);
+                } else if (Array.isArray(arg)) {
+                    return (all ? this.findByPropsAll : this.findByProps)(...arg);
                 }
 
                 switch (typeof arg) {
@@ -194,10 +196,6 @@ Dorpier = {
                         return (all ? this.findAll : this.find)(arg);
                     case "number":
                         return this.findByID(arg);
-                    case "object" && Array.isArray(arg):
-                        return all
-                            ? this.findByPropsAll(...arg)
-                            : this.findByProps(...arg);
                     default:
                         return this._findAndScope(
                             (m) =>
