@@ -232,7 +232,8 @@ Dorpier = {
                 }
                 return ret;
             } else {
-                return c[modules.find(([id]) => c[id]?.exports)?.id || null]?.exports;
+                return c[modules.find(([id]) => c[id]?.exports)?.id || null]
+                    ?.exports;
             }
         },
 
