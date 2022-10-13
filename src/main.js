@@ -62,7 +62,7 @@ Dorpier = {
             const webp = window.webpackChunkdiscord_app.push([
                 [Symbol()],
                 {},
-                (_) => _.c,
+                (_) => _,
             ]);
             window.webpackChunkdiscord_app.pop();
             return webp;
@@ -70,7 +70,7 @@ Dorpier = {
 
         get modules() {
             const ret = [];
-            for (const module of Object.values(this._cached)) {
+            for (const module of Object.values(this._cached.c)) {
                 if (module.exports && module.exports !== window) {
                     ret.push(module.exports);
                 }
@@ -111,10 +111,10 @@ Dorpier = {
 
         findByID(id) {
             id = parseInt(id);
-            return this._cached[id]?.exports;
+            return this._cached.c[id]?.exports;
         },
 
-        _displayName(exports, name) {
+        _byDisplayName(exports, name) {
             if (exports?.displayName === name) {
                 return true;
             }
@@ -127,17 +127,19 @@ Dorpier = {
         },
 
         findByDisplayName(displayName) {
-            return this._findAndScope((m) => this._displayName(m, displayName));
+            return this._findAndScope((m) =>
+                this._byDisplayName(m, displayName),
+            );
         },
 
         findByDisplayNameAll(displayName) {
             return this._findAndScope(
-                (m) => this._displayName(m, displayName),
+                (m) => this._byDisplayName(m, displayName),
                 true,
             );
         },
 
-        _props(exports, props) {
+        _byProps(exports, props) {
             var ret = null;
             for (const prop of props) {
                 if (exports && typeof exports === "object" && prop in exports) {
@@ -170,11 +172,11 @@ Dorpier = {
         },
 
         findByProps(...props) {
-            return this._findAndScope((m) => this._props(m, props));
+            return this._findAndScope((m) => this._byProps(m, props));
         },
 
         findByPropsAll(...props) {
-            return this._findAndScope((m) => this._props(m, props), true);
+            return this._findAndScope((m) => this._byProps(m, props), true);
         },
 
         _getModule(args, all = false) {
@@ -182,9 +184,14 @@ Dorpier = {
                 return this.findByProps(...args);
             } else {
                 const arg = args[0];
+
+                if (arg instanceof RegExp) {
+                    return this._byCode(arg, all);
+                }
+
                 switch (typeof arg) {
                     case "function":
-                        return all ? this.findAll(arg) : this.find(arg);
+                        return (all ? this.findAll : this.find)(arg);
                     case "number":
                         return this.findByID(arg);
                     case "object" && Array.isArray(arg):
@@ -194,12 +201,44 @@ Dorpier = {
                     default:
                         return this._findAndScope(
                             (m) =>
-                                this._displayName(m, arg) ||
-                                this._props(m, [arg]),
-                            all,
+                                this._byDisplayName(m, arg) ||
+                                this._byProps(m, [arg]) ||
+                                all,
                         );
                 }
             }
+        },
+
+        _byCode(code, all = false) {
+            if (typeof code === "string") {
+                const originalCode = code;
+                code = {
+                    test: (e) => (e.includes ? e.includes(originalCode) : false),
+                };
+            }
+
+            const { m, c } = this._cached;
+            const modules = Object.entries(m).filter(([, module]) => code.test(module.toString()));
+            if (all) {
+                const ret = [];
+                for (const [id] of modules) {
+                    const exports = c[id]?.exports;
+                    if (exports) {
+                        ret.push(exports);
+                    }
+                }
+                return ret;
+            } else {
+                return c[modules.find(([id]) => c[id]?.exports).id]?.exports;
+            }
+        },
+
+        findByCode(code) {
+            return this._byCode(code);
+        },
+
+        findByCodeAll(code) {
+            return this._byCode(code, true);
         },
 
         getModule(...args) {
@@ -436,6 +475,12 @@ Dorpier = {
     },
 
     // Other
+
+    _loadLocalStorage() {
+        const iframe = document.createElement("iframe");
+        document.body.appendChild(iframe);
+        window.localStorage = iframe.contentWindow.localStorage;
+    },
 
     _createCommand(name, description, options, type, callback, inputType = 0) {
         this.logger.log(`Registering command ${name}...`);
@@ -826,16 +871,18 @@ class Client {
     }
 
     acceptInvite(invite, transition = true) {
-        if (transition) {
-            return Dorpier.webpack
-                .getModule("acceptInvite")
-                .acceptInviteAndTransitionToInviteChannel(invite);
-        } else {
-            return Dorpier.webpack
-                .getModule("acceptInvite")
-                .acceptInvite(invite);
-        }
+        invite = invite.replace(
+            /(https?:\/\/)?(www\.)?(discord\.gg|discordapp\.com\/invite|discord\.com\/invite)\/?/,
+            "",
+        );
+        const module = Dorpier.webpack.getModule("acceptInvite");
+        return (
+            transition
+                ? module.acceptInviteAndTransitionToInviteChannel
+                : module.acceptInvite
+        )({ inviteKey: invite });
     }
 }
 
+Dorpier._loadLocalStorage();
 Dorpier.logger.info("Loaded successfully!");
