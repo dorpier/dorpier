@@ -188,7 +188,9 @@ Dorpier = {
                 if (arg instanceof RegExp) {
                     return this._byCode(arg, all);
                 } else if (Array.isArray(arg)) {
-                    return (all ? this.findByPropsAll : this.findByProps)(...arg);
+                    return (all ? this.findByPropsAll : this.findByProps)(
+                        ...arg,
+                    );
                 }
 
                 switch (typeof arg) {
