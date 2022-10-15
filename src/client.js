@@ -1,7 +1,7 @@
 import { createMessage, logger, sendLocalMessage } from "./utils/index.js";
 import webpack from "./webpack/api.js";
 import modules from "./webpack/modules.js";
-import patcher from "./webpack/patcher.js";
+import patcher from "./patcher.js";
 
 export class Client {
   constructor() {
