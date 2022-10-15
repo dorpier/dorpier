@@ -9,4 +9,3 @@ export { default as transitionTo } from "./utils/transition.js";
 export * as ui from "./utils/ui.js";
 export { default as webpack } from "./webpack/api.js";
 export * as patcher from "./webpack/patcher.js";
-
