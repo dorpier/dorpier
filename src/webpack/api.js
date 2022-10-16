@@ -39,8 +39,6 @@ export default {
         return findAndScope((m) => byProps(m, props), true);
     },
 
-    // TODO: This doesn't work for some reason
-    // even though findByCodeAll works fine
     findByCode(code) {
         return byCode(code);
     },

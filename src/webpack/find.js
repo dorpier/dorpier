@@ -110,6 +110,6 @@ export function byCode(code, all = false) {
         }
         return ret;
     } else {
-        return c[results.find(([id]) => c[id]?.exports)?.id || null]?.exports;
+        return c[results.find(([id]) => c[id]?.exports)?.[0] || null]?.exports;
     }
 }
