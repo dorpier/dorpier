@@ -18,6 +18,9 @@ export default {
         if (!func) {
             throw new TypeError("Must specify what function to patch");
         }
+        if (typeof module[func] !== "function") {
+            throw new TypeError("Function to patch not found");
+        }
         if (!callback) {
             throw new TypeError("Must specify a callback");
         }
@@ -40,26 +43,31 @@ export default {
             });
         }
 
+        const unpatcher = () => this.unpatch(module, func, signature);
+
         switch (type) {
             case "before":
                 originalFunction = module[func];
                 module[func] = function () {
-                    callback.apply(this, [...arguments]);
+                    const res = callback.apply(this, arguments);
+                    if (res?.result) return res.result;
+                    else if (res?.arguments) {
+                        return originalFunction.apply(this, res.arguments);
+                    }
                     return originalFunction.apply(this, arguments);
                 };
-                return () => this.unpatch(module, func, signature);
+                return unpatcher;
             case "after":
                 originalFunction = module[func];
                 module[func] = function () {
-                    let result = originalFunction.apply(this, arguments);
-                    callback.apply(this, [[...arguments], result]);
-                    return result;
+                    const result = originalFunction.apply(this, arguments);
+                    return callback.apply(this, [arguments, result]);
                 };
-                return () => this.unpatch(module, func, signature);
+                return unpatcher;
             case "instead":
                 originalFunction = module[func];
                 module[func] = callback;
-                return () => this.unpatch(module, func, signature);
+                return unpatcher;
             default:
                 throw new TypeError(
                     "Invalid patch type, must be one of: [before, after, instead]",
