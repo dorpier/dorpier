@@ -1,4 +1,4 @@
-import webpack from "../webpack/api";
+import { default as webpack } from "../webpack/api";
 import modules from "../webpack/modules.js";
 import { lazy } from "./lazy.js";
 

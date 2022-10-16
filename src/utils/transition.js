@@ -1,4 +1,4 @@
-import webpack from "../webpack/api.js";
+import { default as webpack } from "../webpack/api.js";
 
 export default {
     get history() {

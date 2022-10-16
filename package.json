@@ -15,7 +15,6 @@
     "rollup": "^3.1.0"
   },
   "dependencies": {
-    "@cumjar/websmack": "^1.2.0",
     "rollup-plugin-swc3": "^0.6.0"
   }
 }
