@@ -2,9 +2,6 @@ const _originalFunctions = new Map();
 const _currentPatches = new Array();
 
 function _patchModule(type, module, func, callback, signature) {
-    if (!type) {
-        throw new TypeError("Must specify what type of patch to perform");
-    }
     if (!module) {
         throw new TypeError("Must specify the module to patch");
     }
@@ -14,9 +11,7 @@ function _patchModule(type, module, func, callback, signature) {
     if (!callback) {
         throw new TypeError("Must specify a callback");
     }
-    if (!signature) {
-        throw new TypeError("Must specify a signature for your patch");
-    }
+    signature = signature || crypto.randomUUID();
 
     let originalFunction = module[func];
     if (!this._originalFunctions[func]) {
@@ -42,7 +37,7 @@ function _patchModule(type, module, func, callback, signature) {
                 callback.apply(this, [...arguments]);
                 return originalFunction.apply(this, arguments);
             };
-            break;
+            return () => this.unpatch(module, func, signature);
         case "after":
             originalFunction = module[func];
             module[func] = function () {
@@ -50,22 +45,16 @@ function _patchModule(type, module, func, callback, signature) {
                 callback.apply(this, [[...arguments], result]);
                 return result;
             };
-            break;
+            return () => this.unpatch(module, func, signature);
         case "instead":
             originalFunction = module[func];
             module[func] = callback;
-            break;
+            return () => this.unpatch(module, func, signature);
         default:
             throw new TypeError(
                 "Invalid patch type, must be one of: [before, after, instead]",
             );
     }
-
-    return () => this.unpatch(module, func, signature);
-}
-
-function _unpatchEntireModule(module, func) {
-    module[func] = this._originalFunctions[func];
 }
 
 function _removePatchesFromList(signature) {
@@ -75,7 +64,6 @@ function _removePatchesFromList(signature) {
             this._currentPatches.splice(i, 1);
         }
     }
-    return;
 }
 
 export default {
@@ -108,7 +96,7 @@ export default {
                 }
             }
         } else {
-            this._unpatchEntireModule(module, func);
+            this.unpatchAll(module, func);
             this._removePatchesFromList(signature);
             for (const patch of this._currentPatches) {
                 this._patchModule(
@@ -120,5 +108,16 @@ export default {
                 );
             }
         }
+    },
+
+    unpatchAll(module, func) {
+        if (!module) {
+            throw new TypeError("You must specify a module to unpatch");
+        }
+        if (!func) {
+            throw new TypeError("You must specify a function to unpatch");
+        }
+
+        module[func] = this._originalFunctions[func];
     },
 };

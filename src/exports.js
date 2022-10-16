@@ -8,4 +8,4 @@ export * as utils from "./utils/index.js";
 export { default as transitionTo } from "./utils/transition.js";
 export * as ui from "./utils/ui.js";
 export { default as webpack } from "./webpack/api.js";
-export * as patcher from "./patcher.js";
+export { default as patcher } from "./patcher.js";
