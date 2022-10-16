@@ -1,6 +1,6 @@
 export const __version__ = {
-  version: "5.0",
-  nightly: true,
+    version: "5.0",
+    nightly: true,
 };
 export const name = "Dorpier";
 

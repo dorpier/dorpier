@@ -3,11 +3,11 @@ import modules from "../webpack/modules.js";
 import { lazy } from "./lazy.js";
 
 export function random(min, max) {
-  if (max < min) {
-    [min, max] = [max, min];
-  }
+    if (max < min) {
+        [min, max] = [max, min];
+    }
 
-  return Math.floor(Math.random() * (max - min)) + min;
+    return Math.floor(Math.random() * (max - min)) + min;
 }
 
 /**
@@ -21,92 +21,92 @@ export * from "../webpack/modules.js";
 export * as lazy from "./lazy.js";
 
 export const logger = lazy(
-  () => new (webpack.findByProps("logger").logger.constructor)("dorpier"),
+    () => new (webpack.findByProps("logger").logger.constructor)("dorpier"),
 );
 
 export function loadLocalStorage() {
-  const iframe = document.createElement("iframe");
-  document.body.appendChild(iframe);
-  // @ts-ignore
-  window.localStorage ??= iframe.contentWindow?.localStorage;
-  iframe.remove();
-  return window.localStorage;
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+    // @ts-ignore
+    window.localStorage ??= iframe.contentWindow?.localStorage;
+    iframe.remove();
+    return window.localStorage;
 }
 
 export function createCommand(
-  name,
-  description,
-  options,
-  type,
-  callback,
-  inputType = 0,
+    name,
+    description,
+    options,
+    type,
+    callback,
+    inputType = 0,
 ) {
-  logger.log(`Registering command ${name}...`);
-  const commands = webpack.findByProps("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS;
+    logger.log(`Registering command ${name}...`);
+    const commands = webpack.findByProps("BUILT_IN_COMMANDS").BUILT_IN_COMMANDS;
 
-  options.forEach((option) => {
-    option.displayName = option.name;
-    option.displayDescription = option.description;
-    if (option.choices) {
-      option.choices.forEach((choice) => {
-        choice.displayName = choice.name;
-      });
-    }
-  });
-
-  const actualCallback = function (data) {
-    data.forEach((element) => {
-      delete element.focused;
+    options.forEach((option) => {
+        option.displayName = option.name;
+        option.displayDescription = option.description;
+        if (option.choices) {
+            option.choices.forEach((choice) => {
+                choice.displayName = choice.name;
+            });
+        }
     });
-    callback(data);
-  };
 
-  commands.push({
-    applicationId: "-1",
-    description: description,
-    displayDescription: description,
-    displayName: name,
-    id: `-${commands.length + 1}`,
-    execute: actualCallback,
-    name: name,
-    inputType: inputType,
-    options: options,
-    type: type,
-  });
+    const actualCallback = function (data) {
+        data.forEach((element) => {
+            delete element.focused;
+        });
+        callback(data);
+    };
+
+    commands.push({
+        applicationId: "-1",
+        description: description,
+        displayDescription: description,
+        displayName: name,
+        id: `-${commands.length + 1}`,
+        execute: actualCallback,
+        name: name,
+        inputType: inputType,
+        options: options,
+        type: type,
+    });
 }
 
 export const createMessage = (channel, content, embeds) =>
-  webpack
-    .findByProps("createBotMessage")
-    .createBotMessage(channel, content, embeds);
+    webpack
+        .findByProps("createBotMessage")
+        .createBotMessage(channel, content, embeds);
 
 export const sendLocalMessage = (channel, message) =>
-  webpack.findByProps("receiveMessage").receiveMessage(channel, message);
+    webpack.findByProps("receiveMessage").receiveMessage(channel, message);
 
 export function dispatch(name, data) {
-  logger.debug(`DirtyDispatching ${name.toUpperCase()}...`);
+    logger.debug(`DirtyDispatching ${name.toUpperCase()}...`);
 
-  data.type = name.toUpperCase();
+    data.type = name.toUpperCase();
 
-  const { dispatcher } = modules;
+    const { dispatcher } = modules;
 
-  if (dispatcher.isDispatching()) {
-    setTimeout(dispatcher.dispatch.bind(dispatcher, data), 0);
-  } else {
-    dispatcher.dispatch(data);
-  }
+    if (dispatcher.isDispatching()) {
+        setTimeout(dispatcher.dispatch.bind(dispatcher, data), 0);
+    } else {
+        dispatcher.dispatch(data);
+    }
 }
 
 export const editDeveloperOptions = (settings) =>
-  webpack
-    .findByProps("setDeveloperOptionSettings")
-    .setDeveloperOptionSettings(settings);
+    webpack
+        .findByProps("setDeveloperOptionSettings")
+        .setDeveloperOptionSettings(settings);
 
 export const toggleGuildFolder = (id) =>
-  webpack.findByProps("toggleGuildFolderExpand").toggleGuildFolderExpand(id);
+    webpack.findByProps("toggleGuildFolderExpand").toggleGuildFolderExpand(id);
 
 export const loginToken = (token) =>
-  webpack.findByProps("loginToken").loginToken(token);
+    webpack.findByProps("loginToken").loginToken(token);
 
 export const getToken = (id) => webpack.findByProps("hideToken").getToken(id);
 

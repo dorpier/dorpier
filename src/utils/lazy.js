@@ -4,9 +4,9 @@
  * @param {() => any} factory Factory function
  */
 export function makeLazy(factory) {
-  let cache;
+    let cache;
 
-  return () => cache ?? (cache = factory());
+    return () => cache ?? (cache = factory());
 }
 
 /**
@@ -21,18 +21,18 @@ export function makeLazy(factory) {
  * @type {<T>(fn: () => T) => T}
  */
 export const lazy = function (factory) {
-  const lazy = makeLazy(factory);
+    const lazy = makeLazy(factory);
 
-  return new Proxy(function () {}, {
-    get: (_, prop) => lazy()[prop],
-    set: (_, prop, value) => (lazy()[prop] = value),
-    has: (_, prop) => prop in lazy(),
-    apply: (_, $this, args) => lazy().apply($this, args),
-    ownKeys: () => Reflect.ownKeys(lazy()),
-    construct: (_, args) => Reflect.construct(lazy(), args),
-    deleteProperty: (_, prop) => delete lazy()[prop],
-    defineProperty: (_, property, attributes) =>
-      !!Object.defineProperty(lazy(), property, attributes),
-    getPrototypeOf: () => Object.getPrototypeOf(lazy()),
-  });
+    return new Proxy(function () {}, {
+        get: (_, prop) => lazy()[prop],
+        set: (_, prop, value) => (lazy()[prop] = value),
+        has: (_, prop) => prop in lazy(),
+        apply: (_, $this, args) => lazy().apply($this, args),
+        ownKeys: () => Reflect.ownKeys(lazy()),
+        construct: (_, args) => Reflect.construct(lazy(), args),
+        deleteProperty: (_, prop) => delete lazy()[prop],
+        defineProperty: (_, property, attributes) =>
+            !!Object.defineProperty(lazy(), property, attributes),
+        getPrototypeOf: () => Object.getPrototypeOf(lazy()),
+    });
 };
