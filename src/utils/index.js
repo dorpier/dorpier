@@ -2,7 +2,7 @@ import { default as webpack } from "../webpack/api";
 import { lazy } from "./lazy.js";
 import modules from "../webpack/modules.js";
 
-export const { datetime, hljs, markdown, string, timestamp, URL } = modules
+export const { datetime, hljs, markdown, string, timestamp, URL } = modules;
 export * as lazy from "./lazy.js";
 
 export function random(min, max) {
@@ -19,7 +19,6 @@ export function random(min, max) {
  * @example await sleep(3000)
  */
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 
 export const logger = lazy(
     () => new (webpack.findByProps("logger").logger.constructor)("dorpier"),
