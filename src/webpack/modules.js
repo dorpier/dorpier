@@ -16,7 +16,6 @@ export default lazy(() => ({
     analytics: webpack.findByProps("AnalyticEventConfigs"),
     dispatcher: webpack.findByProps("getUsers")._dispatcher,
     http: webpack.findByProps("getAPIBaseURL"),
-    router: webpack.findByProps("Router"),
     socket: webpack.findByProps("getSocket").getSocket(),
     transitionTo: webpack.findByCode("transitionTo - "),
 }));

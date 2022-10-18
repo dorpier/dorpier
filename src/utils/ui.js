@@ -1,4 +1,7 @@
 import { default as webpack } from "../webpack/api.js";
+import modules from "../webpack/modules.js";
+
+export const { React, ReactDOM } = modules;
 
 export function showToast(message, type) {
     // type = {normal: 0, success: 1, error: 2}

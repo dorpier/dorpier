@@ -12,5 +12,5 @@ export { default as transitionTo } from "./utils/transition.js";
 export * as ui from "./utils/ui.js";
 export { default as webpack } from "./webpack/api.js";
 export { default as patcher } from "./patcher.js";
-export const { socket, dispatcher, http, strings, constants, app } = modules;
+export const { socket, dispatcher, http, strings, constants, app, analytics } = modules;
 export const { currentGuild, currentChannel } = properties;
