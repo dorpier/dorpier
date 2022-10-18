@@ -1,0 +1,39 @@
+name: Build dist
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: pnpm/action-setup@v2.2.4
+        name: Install pnpm
+        with:
+          run_install: true
+
+      - name: Build dorpier
+        run: pnpm build
+
+      - name: Upload dorpier
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/dorpier/dists.git
+
+          cp dist.js dists/dist.js
+          cd dists
+
+          (git commit -am "Update dorpier dist") || true
+          (git push origin master) || true
