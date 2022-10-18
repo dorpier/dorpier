@@ -27,10 +27,12 @@ const getCurrentChannelID = () =>
 
 export default {
     get currentGuild() {
-        webpack.getModule("getGuild", "getGuilds").getGuild(getCurrentGuildID());
+        webpack
+            .getModule("getGuild", "getGuilds")
+            .getGuild(getCurrentGuildID());
     },
 
     get currentChannel() {
         webpack.getModule("hasChannel").getChannel(getCurrentChannelID());
     },
-}
+};
