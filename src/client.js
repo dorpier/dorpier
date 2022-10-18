@@ -84,7 +84,7 @@ export class Client {
     }
 
     get guilds() {
-        return webpack.getModule("getGuilds").getGuilds();
+        return webpack.getModule("getGuild", "getGuilds").getGuilds();
     }
 
     get guildFolders() {
