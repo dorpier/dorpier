@@ -1,5 +1,4 @@
 import { default as webpack } from "../webpack/api";
-import modules from "../webpack/modules.js";
 import { lazy } from "./lazy.js";
 
 export function random(min, max) {
@@ -83,20 +82,6 @@ export const createMessage = (channel, content, embeds) =>
 export const sendLocalMessage = (channel, message) =>
     webpack.findByProps("receiveMessage").receiveMessage(channel, message);
 
-export function dispatch(name, data) {
-    logger.debug(`DirtyDispatching ${name.toUpperCase()}...`);
-
-    data.type = name.toUpperCase();
-
-    const { dispatcher } = modules;
-
-    if (dispatcher.isDispatching()) {
-        setTimeout(dispatcher.dispatch.bind(dispatcher, data), 0);
-    } else {
-        dispatcher.dispatch(data);
-    }
-}
-
 export const editDeveloperOptions = (settings) =>
     webpack
         .findByProps("setDeveloperOptionSettings")
@@ -104,22 +89,3 @@ export const editDeveloperOptions = (settings) =>
 
 export const toggleGuildFolder = (id) =>
     webpack.findByProps("toggleGuildFolderExpand").toggleGuildFolderExpand(id);
-
-export const loginToken = (token) =>
-    webpack.findByProps("loginToken").loginToken(token);
-
-export const getToken = (id) => webpack.findByProps("hideToken").getToken(id);
-
-// TODO: current channel/guild id
-
-// get currentChannel() {
-//   return this.webpack
-//     .getModule("hasChannel")
-//     .getChannel(this._getCurrentChannelID());
-// },
-
-// get currentGuild() {
-//   return this.webpack
-//     .getModule("getGuild", "getGuilds")
-//     .getGuild(this._getCurrentGuildID());
-// },

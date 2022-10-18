@@ -1,30 +1,52 @@
 import { default as webpack } from "../webpack/api.js";
+import modules from "../webpack/modules.js";
+
+const { transitionTo } = modules;
+
+function find(string) {
+    const results = [];
+    for (const i of Object.getOwnPropertyNames(transitionTo)) {
+        const object = transitionTo[i];
+        if (
+            typeof object === "function" &&
+            object.toString().includes(string)
+        ) {
+            results.push(object);
+        }
+    }
+    return results.length > 1 ? results : results?.[0];
+}
 
 export default {
     get history() {
-        return webpack.getModule("transitionTo").getHistory();
+        const results = find("(){return");
+        for (const i of results) {
+            const ret = i();
+            if (ret) return ret;
+        }
     },
     route(path) {
-        return webpack.getModule("transitionTo").transitionTo(path);
+        return find("transitionTo - Transitioning to ")(path);
+    },
+    replace(path) {
+        return find("Replacing route with ")(path);
     },
     back() {
-        return webpack.getModule("transitionTo").back();
+        return find(".goBack()")();
     },
     forward() {
-        return webpack.getModule("transitionTo").forward();
+        return find(".goForward()")();
     },
     guild(id) {
-        return webpack.getModule("transitionToGuild").transitionToGuild(id);
+        return find("transitionToGuild")(id);
     },
     channel(id) {
-        return webpack.getModule("transitionToChannel").transitionToChannel(id);
-    },
-    thread(id) {
-        return webpack.getModule("transitionToThread").transitionToThread(id);
+        return this.message(id);
     },
     message(channelID, id) {
-        return webpack
-            .getModule("transitionToMessage")
-            .transitionToMessage(channelID, id);
+        const guildID = webpack
+            .findByProps("getChannel")
+            .getChannel(channelID)?.guild_id;
+        return find("transitionToGuild")(guildID, channelID, id);
     },
 };

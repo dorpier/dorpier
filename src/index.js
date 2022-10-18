@@ -9,4 +9,4 @@ window.Client = Client;
 
 loadLocalStorage();
 
-console.log("%c[dorpier] %cloaded successfully!", "color: purple", "");
+console.log("%c[dorpier] %cLoaded successfully!", "color: purple", "");
