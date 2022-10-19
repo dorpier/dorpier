@@ -33,7 +33,7 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/dorpier/dists.git
+          git clone https://.:${{ secrets.ACCESS_TOKEN }}@github.com/dorpier/dists.git
 
           cp dist.js dists/dist.js
           cd dists
