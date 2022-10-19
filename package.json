@@ -3,6 +3,7 @@
   "version": "5.0.0",
   "description": "A script-based client mod for Discord!",
   "main": "src/index.js",
+  "packageManager": "pnpm@6.11.0",
   "scripts": {
     "build": "rollup -c"
   },
