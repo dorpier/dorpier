@@ -50,18 +50,43 @@ export default {
                 originalFunction = module[func];
                 module[func] = function () {
                     const res = callback.apply(this, arguments);
-                    if (res?.result) return res.result;
-                    else if (res?.arguments) {
-                        return originalFunction.apply(this, res.arguments);
+
+                    function handleResult(result, originalThis, originalArgs) {
+                        if (result?.result) {
+                            return result.result;
+                        } else if (result?.arguments) {
+                            return originalFunction.apply(
+                                originalThis,
+                                result.arguments,
+                            );
+                        }
+                        return originalFunction.apply(
+                            originalThis,
+                            originalArgs,
+                        );
                     }
-                    return originalFunction.apply(this, arguments);
+
+                    if (res instanceof Promise) {
+                        return res.then((result) =>
+                            handleResult(result, this, arguments),
+                        );
+                    } else {
+                        return handleResult(res, this, arguments);
+                    }
                 };
                 return unpatcher;
             case "after":
                 originalFunction = module[func];
                 module[func] = function () {
                     const result = originalFunction.apply(this, arguments);
-                    return callback.apply(this, [arguments, result]);
+
+                    if (result instanceof Promise) {
+                        return result.then((value) =>
+                            callback.apply(this, [arguments, value]),
+                        );
+                    } else {
+                        return callback.apply(this, [arguments, result]);
+                    }
                 };
                 return unpatcher;
             case "instead":
