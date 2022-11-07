@@ -126,7 +126,10 @@ export class Client {
     }
 
     createDM(...id) {
-        return webpack.getModule("openPrivateChannel").openPrivateChannel(id).then((channel) => this.getChannel(channel));
+        return webpack
+            .getModule("openPrivateChannel")
+            .openPrivateChannel(id)
+            .then((channel) => this.getChannel(channel));
     }
 
     getUser(id) {
