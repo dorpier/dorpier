@@ -125,14 +125,8 @@ export class Client {
             .getAllThreadsForParent(channelID);
     }
 
-    createDM(id) {
-        const existing = webpack
-            .getModule("getDMFromUserId")
-            .getDMFromUserId(id);
-        if (existing) {
-            return this.getChannel(existing);
-        }
-        return webpack.getModule("openPrivateChannel").openPrivateChannel(id);
+    createDM(...id) {
+        return webpack.getModule("openPrivateChannel").openPrivateChannel(id).then((channel) => this.getChannel(channel));
     }
 
     getUser(id) {
