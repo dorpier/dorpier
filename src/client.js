@@ -159,6 +159,14 @@ export class Client {
         }
     }
 
+    startTyping(channelID) {
+        return webpack.getModule("startTyping").startTyping(channelID);
+    }
+
+    stopTyping(channelID) {
+        return webpack.getModule("stopTyping").stopTyping(channelID);
+    }
+
     getChannelMessages(channelID) {
         return webpack.getModule("getMessages").getMessages(channelID);
     }
