@@ -79,6 +79,10 @@ export class Client {
         return webpack.getModule("getFingerprint").getFingerprint();
     }
 
+    get requiredAction() {
+        return webpack.getModule("getAction").getAction();
+    }
+
     get user() {
         return webpack.getModule("getCurrentUser").getCurrentUser();
     }
