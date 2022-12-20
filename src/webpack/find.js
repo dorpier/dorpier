@@ -69,7 +69,7 @@ export function byDisplayName(exports, name) {
 export function byProps(exports, props) {
     var ret = null;
     for (const prop of props) {
-        if (exports && typeof exports === "object" && prop in exports) {
+        if (exports && ["object", "function"].includes(typeof exports) && prop in exports) {
             continue;
         }
 
@@ -80,7 +80,7 @@ export function byProps(exports, props) {
             }
 
             const object = exports[i];
-            if (object && typeof object === "object" && prop in object) {
+            if (object && ["object", "function"].includes(typeof object) && prop in object) {
                 res = i;
                 break;
             }
