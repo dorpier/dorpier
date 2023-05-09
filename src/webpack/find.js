@@ -48,21 +48,26 @@ export function findAndScope(filter, all = false) {
 }
 
 export function byDisplayName(exports, name) {
-    if (
-        exports?.displayName === name ||
-        (typeof exports?.getName === "function" && exports.getName() === name)
-    ) {
-        return true;
-    }
+    try {
+        if (
+            exports?.displayName === name ||
+            (typeof exports?.getName === "function" &&
+                exports.getName() === name)
+        ) {
+            return true;
+        }
+    } catch (e) {}
 
     for (const i of Object.getOwnPropertyNames(exports)) {
-        if (
-            exports[i]?.displayName === name ||
-            (typeof exports[i]?.getName === "function" &&
-                exports[i].getName() === name)
-        ) {
-            return i;
-        }
+        try {
+            if (
+                exports[i]?.displayName === name ||
+                (typeof exports[i]?.getName === "function" &&
+                    exports[i].getName() === name)
+            ) {
+                return i;
+            }
+        } catch (e) {}
     }
 }
 
